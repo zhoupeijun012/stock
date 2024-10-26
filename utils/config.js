@@ -3,5 +3,7 @@ module.exports = {
   DB_USER: 'root',
   DB_PWD: 'Zz7811181',
   DB_URL: 'localhost',
-  DB_NAME: 'stock'
+  DB_NAME: 'stock',
+  TABLE_PREFIX:'T_',
+  SERVER_PORT: 12345
 };

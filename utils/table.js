@@ -1,5 +1,6 @@
 const TOOL = require("./tool");
 const SQL = require("./sql");
+const CONFIG = require('./config');
 function createTable(tableName, column) {
   const keys = Object.keys(column);
   const pinKeys = keys.map((item) =>
@@ -9,7 +10,7 @@ function createTable(tableName, column) {
     (key, index) => `${pinKeys[index]} TEXT COMMENT '${key}'`
   );
   const sqlStr = `
-    CREATE TABLE IF NOT EXISTS ${tableName} (
+    CREATE TABLE IF NOT EXISTS ${CONFIG.TABLE_PREFIX}${tableName} (
     id INT AUTO_INCREMENT PRIMARY KEY COMMENT '主键',
     ${sqlArr.join(",")}
     )
@@ -18,7 +19,7 @@ function createTable(tableName, column) {
 }
 
 function dropTable(tableName) {
-  return SQL.query(`DROP TABLE IF EXISTS ${tableName}`);
+  return SQL.query(`DROP TABLE IF EXISTS ${CONFIG.TABLE_PREFIX}${tableName}`);
 }
 
 function insertTable(tableName, columns) {
@@ -37,12 +38,21 @@ function insertTable(tableName, columns) {
     return `(${valItemArr.join(",")})`;
   });
   const valStr = valArr.join(",");
-  const sqlStr = `INSERT INTO ${tableName} (${keySql}) VALUES ${valStr}`;
+  const sqlStr = `INSERT INTO ${CONFIG.TABLE_PREFIX}${tableName} (${keySql}) VALUES ${valStr}`;
   return SQL.query(sqlStr);
 }
 
+function pageTable(sqlStr) {
+  return SQL.query(sqlStr);
+}
+
+function queryTable(sqlStr) {
+  return SQL.query(sqlStr);
+}
 module.exports = {
   createTable,
   dropTable,
-  insertTable
+  insertTable,
+  pageTable,
+  queryTable
 };
