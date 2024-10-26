@@ -1,5 +1,5 @@
 # 使用官方的Node.js基础镜像
-FROM node:16
+FROM node:18
 
 # 设置工作目录
 WORKDIR /usr/src/app
