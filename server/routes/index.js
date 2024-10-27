@@ -12,7 +12,7 @@ router.post("/getPage", async (ctx) => {
   const pageNum = params.pageNum || 1;
   const ORDERBY = params.ORDERBY || "";
   const WHERE = params.WHERE || "";
-  const tableName = params.TABLE_NAME || CONFIG.DB_NAME;
+  const tableName = params.TABLE_NAME || 'T_' + CONFIG.DB_NAME;
 
   const pageStr = `SELECT * FROM ${tableName} ${WHERE} ${ORDERBY} LIMIT ${pageSize} OFFSET ${
     (pageNum - 1) * pageSize
@@ -44,7 +44,7 @@ WHERE TABLE_SCHEMA = '${CONFIG.DB_NAME}'
 router.post("/queryTable", async (ctx) => {
   const params = ctx.request.body;
   const QUERY_SQL = params.QUERY_SQL || "";
-  const tableName = params.TABLE_NAME || CONFIG.DB_NAME;
+  const tableName = params.TABLE_NAME || 'T_' + CONFIG.DB_NAME;
 
   const keyMapSql = `SELECT COLUMN_NAME, COLUMN_COMMENT
 FROM information_schema.COLUMNS
