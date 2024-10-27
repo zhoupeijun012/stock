@@ -12,7 +12,7 @@ router.post("/getPage", async (ctx) => {
   const pageNum = params.pageNum || 1;
   const ORDERBY = params.ORDERBY || "";
   const WHERE = params.WHERE || "";
-  const tableName = params.TABLE_NAME || "stock";
+  const tableName = params.TABLE_NAME || CONFIG.DB_NAME;
 
   const pageStr = `SELECT * FROM ${tableName} ${WHERE} ${ORDERBY} LIMIT ${pageSize} OFFSET ${
     (pageNum - 1) * pageSize
@@ -20,7 +20,7 @@ router.post("/getPage", async (ctx) => {
   const countSql = `SELECT COUNT(*) count FROM ${tableName}${WHERE}${ORDERBY}`;
   const keyMapSql = `SELECT COLUMN_NAME, COLUMN_COMMENT
 FROM information_schema.COLUMNS
-WHERE TABLE_SCHEMA = 'stock'
+WHERE TABLE_SCHEMA = '${CONFIG.DB_NAME}'
   AND TABLE_NAME = '${tableName}' `;
   // 获取请求体中的数据
   const res = await TABLE.pageTable(pageStr);
@@ -44,11 +44,11 @@ WHERE TABLE_SCHEMA = 'stock'
 router.post("/queryTable", async (ctx) => {
   const params = ctx.request.body;
   const QUERY_SQL = params.QUERY_SQL || "";
-  const tableName = params.TABLE_NAME || "stock";
+  const tableName = params.TABLE_NAME || CONFIG.DB_NAME;
 
   const keyMapSql = `SELECT COLUMN_NAME, COLUMN_COMMENT
 FROM information_schema.COLUMNS
-WHERE TABLE_SCHEMA = 'stock'
+WHERE TABLE_SCHEMA = '${CONFIG.DB_NAME}'
   AND TABLE_NAME = '${tableName}' `;
   // 获取请求体中的数据
   const res = await TABLE.pageTable(QUERY_SQL);
