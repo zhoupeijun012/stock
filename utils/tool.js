@@ -5,6 +5,7 @@ function getPinYin(chineseName) {
     const pinyinName = pinyin.pinyin(chineseName,  { toneType: "none", type: "array" });
     return pinyinName.join('').toLocaleUpperCase();
 }
+
 module.exports = {
     getPinYin
 }
