@@ -1,6 +1,6 @@
 const config = {
     GET_URL: 'http://aktools.amdyes.asia:8080',
-    SERVER_PORT: 8080,
+    SERVER_PORT: 12345,
     CACHE_PACKAGE: 'cache',
     ZT_CACHE: 'zt',
     HISTORY: 'history',
