@@ -1,7 +1,6 @@
 const Koa = require("koa");
-const CONFIG = require("../utils/config.js");
 const bodyParser = require("koa-bodyparser");
-const router = require("./routes/index");
+const router = require(RESOLVE_PATH("server/routes/static.js"));
 
 let app = null;
 function start() {
@@ -29,7 +28,7 @@ function start() {
   app.use(router.routes()).use(router.allowedMethods());
 
   app.listen(CONFIG.SERVER_PORT, () => {
-    console.log("Server is running on http://localhost:3000");
+    console.log(`Server is running on http://localhost:${CONFIG.SERVER_PORT}`);
   });
 }
 

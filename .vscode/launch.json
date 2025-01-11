@@ -13,9 +13,10 @@
             "restart": true,
             "runtimeExecutable": "nodemon",
             "skipFiles": [
-                "<node_internals>/**"
+                "<node_internals>/**",
+                "cache/**"
             ],
-            "type": "node"
+            "type": "node",
         },
     ]
 }
