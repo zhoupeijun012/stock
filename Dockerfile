@@ -1,6 +1,9 @@
 # 使用官方的Node.js基础镜像
 FROM node:18-alpine3.18
 
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+RUN echo 'Asia/Shanghai' >/etc/timezone
+
 # 设置工作目录
 WORKDIR /usr/src/app
 
