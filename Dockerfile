@@ -1,9 +1,6 @@
 # 使用官方的Node.js基础镜像
 FROM node:18-alpine3.18
 
-RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-RUN echo 'Asia/Shanghai' >/etc/timezone
-
 # 设置工作目录
 WORKDIR /usr/src/app
 
@@ -15,6 +12,9 @@ RUN npm install
 
 # 复制项目文件到工作目录
 COPY . .
+
+RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+RUN echo 'Asia/Shanghai' >/etc/timezone
 
 # 暴露应用运行的端口
 EXPOSE 12345
