@@ -94,7 +94,7 @@ class Store {
         await this.getStockInfo(stockCode);
         await this.getStockHistory(stockCode, startDate, endDate);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     }
   }

@@ -6,15 +6,18 @@ const config = {
     HISTORY: 'history',
     INFO: 'info',
     START_TIME: '0 9 * * *',
-    LOOP_TIME: '0 0/10 9-14 * * ?',
+    LOOP_TIME: '*/10 9-16 * * *',
     WECHAT_SEND_URL: "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=4c3f7e6e-2909-4c26-9d6f-02a3d8604cda",
     K_COUNT: 20,
-
+    // 接口重试次数
+    HTTP_RETRY_COUNT: 3,
+    // 接口重试间隔
+    HTTP_RETRY_DELAY: 2000,
     // 下面属于调试开关
-    DEBUG_START_TIME: '0 16 * * *',
-    DEBUGGER_LOOP_TIME: '0 0/10 9-19 * * ?',
+    DEBUG_START_TIME: '12 17 * * *',
+    DEBUGGER_LOOP_TIME: '*/10 9-19 * * *',
     OPEN_DAY: true,
-    PRODUCTION: true
+    // DEVELOPMENT: false
 }
 
 global.CONFIG = config;

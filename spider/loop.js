@@ -1,5 +1,5 @@
 const cron = require("node-cron");
-const start = require("./store").start;
+const start = require("./index").start;
 
 const startLoop = () => {
   WECHAT_SENG_TEXT(`${DAYJS().format("YYYY-MM-DD HH:mm:ss")}\n应用已启动`);
