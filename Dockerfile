@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 12345
 
 # 指定容器启动时执行的命令
-CMD ["node", "app.js"]
+CMD ["node", "index.js"]
