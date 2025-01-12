@@ -3,6 +3,7 @@ const config = {
     SERVER_PORT: 12345,
     CACHE_PACKAGE: 'cache',
     ZT_CACHE: 'zt',
+    ZB_CACHE: 'zb',
     HISTORY: 'history',
     INFO: 'info',
     START_TIME: '0 9 * * *',
@@ -14,10 +15,10 @@ const config = {
     // 接口重试间隔
     HTTP_RETRY_DELAY: 2000,
     // 下面属于调试开关
-    // DEBUG_START_TIME: '12 17 * * *',
-    // DEBUGGER_LOOP_TIME: '*/10 9-19 * * *',
-    // OPEN_DAY: true,
-    // DEVELOPMENT: false
+    DEBUG_START_TIME: '20 20 * * *',
+    DEBUGGER_LOOP_TIME: '*/10 9-23 * * *',
+    OPEN_DAY: true,
+    DEVELOPMENT: false
 }
 
 global.CONFIG = config;

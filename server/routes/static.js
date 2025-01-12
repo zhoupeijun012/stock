@@ -1,10 +1,17 @@
 const Router = require("@koa/router");
 const router = new Router({
-  // prefix: "/api",
+  prefix: "/api",
 });
 
 router.get("/zt", async (ctx) => {
-  ctx.body = "3223";
+  ctx.body = {
+    success: true,
+    message: '',
+    data: {
+      lastUpdate: HTTP_CACHE.getLastUpdate(),
+      list: HTTP_CACHE.getZT()
+    }
+  };
   ctx.status = 200;
 });
 

@@ -7,39 +7,60 @@ class Store {
 
     // 涨停列表
     PACKAGE_CREATE(`/${CONFIG.ZT_CACHE}`);
-    this.state[CONFIG.ZT_CACHE] = {};
+    this.set(CONFIG.ZT_CACHE,{})
+
+    // 炸板列表
+    PACKAGE_CREATE(`/${CONFIG.ZB_CACHE}`);
+    this.set(CONFIG.ZB_CACHE,{})
 
     // 涨停列表近20日数据
     PACKAGE_CREATE(`/${CONFIG.HISTORY}`);
-    this.state[CONFIG.HISTORY] = {};
+    this.set(CONFIG.HISTORY,{})
 
     // 股票信息
     PACKAGE_CREATE(`/${CONFIG.INFO}`);
-    this.state[CONFIG.INFO] = {};
+    this.set(CONFIG.INFO,{})
   }
   async clearCache() {
     // 清空涨停列表
     await PACKAGE_CLEAR(`/${CONFIG.ZT_CACHE}`);
+    // 清空炸板列表
+    await PACKAGE_CLEAR(`/${CONFIG.ZB_CACHE}`);
     // 清空历史数据
     await PACKAGE_CLEAR(`/${CONFIG.HISTORY}`);
 
     this.initCache();
   }
+  set(key,value,path) {
+    if(path) {
+      this.state[path][key] = value;
+    }else {
+      this.state[key] = value;
+    }
+  }
+  get(key,path) {
+    if(path) {
+      return this.state[path][key];
+    }else {
+      return this.state[key];
+    }
+  }
   // 获取数据
-  async getData(pack, key, requestFunc) {
-    if (this.state[pack][key]) {
-      return this.state[pack][key];
+  async getData(pack, key, requestFunc,readCache=true) {
+    if (readCache && this.get(key,pack)) {
+      return this.get(key,pack);
     }
     const path = `/${pack}/${key}.json`;
-    if (FILE_EXISTS(path)) {
-      this.state[pack][key] = await FILE_READ(path);
-      return this.state[pack][key];
+    if (readCache && FILE_EXISTS(path)) {
+      const readData = await FILE_READ(path);
+      this.set(key,readData,pack)
+      return this.get(key,pack);
     }
     const res = await requestFunc()
     await FILE_CACHE(path, JSON.stringify(res.data));
 
-    this.state[pack][key] = res.data;
-    return this.state[pack][key];
+    this.set(key,res.data,pack)
+    return this.get(key,pack);
   }
   // 获取涨停
   async getZT(date) {
@@ -49,7 +70,18 @@ class Store {
           date,
         },
       })
-    });
+    },false);
+    return returnData;
+  }
+  // 获取炸板
+  async getZB(date) {
+    const returnData = await this.getData(CONFIG.ZB_CACHE, date, () => {
+      return HTTP.get("/api/public/stock_zt_pool_zbgc_em", {
+        params: {
+          date,
+        },
+      })
+    },false);
     return returnData;
   }
   // 获取涨停近20日数据
@@ -86,10 +118,13 @@ class Store {
 
     // 获取涨停数据
     const ztData = await this.getZT(DAYJS().format("YYYYMMDD"));
+    // 获取炸板数据
+    const zbData = await this.getZB(DAYJS().format("YYYYMMDD"));
+    const allData = [...ztData,...zbData];
     // 循环获取涨停数据历史数据列表
-    for (let index = 0; index < ztData.length; index++) {
+    for (let index = 0; index < allData.length; index++) {
       // 获取涨停历史
-      const stockCode = ztData[index]["代码"];
+      const stockCode = allData[index]["代码"];
       try {
         await this.getStockInfo(stockCode);
         await this.getStockHistory(stockCode, startDate, endDate);
