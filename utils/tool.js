@@ -90,6 +90,8 @@ global.WECHAT_SENG_TEXT = (msg, group = "") => {
     headers: {
       "Content-type": "application/json",
     },
+  }).catch((error)=>{
+    console.log(error.message);
   });
 };
 
