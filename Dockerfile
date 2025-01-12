@@ -1,9 +1,6 @@
 # 使用官方的Node.js基础镜像
 FROM node:18-alpine3.18
 
-# nodemon守护
-RUN npm install nodemon -g
-
 # 设置工作目录
 WORKDIR /usr/src/app
 
@@ -20,4 +17,4 @@ COPY . .
 EXPOSE 12345
 
 # 指定容器启动时执行的命令
-CMD ["nodemon", "app.js"]
+CMD ["node", "app.js"]
