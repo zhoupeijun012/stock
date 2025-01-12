@@ -1,5 +1,5 @@
 {
-    "watch": ["spider/","utils/","index.js"],
+    "watch": ["spider/","utils/","server/","index.js"],
     "ext": "js,json",
     "ignore": ["cache/*"],
     "exec": "node index.js"
