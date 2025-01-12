@@ -11,7 +11,7 @@ const startLoop = () => {
         `${DAYJS().format("YYYY-MM-DD HH:mm:ss")}\nA股今日不开盘`,
         "@all"
       );
-      return;
+      // return;
     }
     WECHAT_SENG_TEXT(
       `${DAYJS().format("YYYY-MM-DD HH:mm:ss")}\nA股今日开盘，机器人已启动`,
