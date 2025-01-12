@@ -15,10 +15,10 @@ const config = {
     // 接口重试间隔
     HTTP_RETRY_DELAY: 2000,
     // 下面属于调试开关
-    DEBUG_START_TIME: '20 20 * * *',
-    DEBUGGER_LOOP_TIME: '*/10 9-23 * * *',
-    OPEN_DAY: true,
-    DEVELOPMENT: false
+    // DEBUG_START_TIME: '20 20 * * *',
+    // DEBUGGER_LOOP_TIME: '*/10 9-23 * * *',
+    // OPEN_DAY: true,
+    // DEVELOPMENT: true
 }
 
 global.CONFIG = config;
