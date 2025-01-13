@@ -69,6 +69,12 @@ class Store {
         params: {
           date,
         },
+      }).catch((error)=>{
+        WECHAT_SENG_TEXT(
+          `${DAYJS().format("YYYY-MM-DD HH:mm:ss")}\n获取${date}涨停数据失败\n${
+            error.message.slice(0,300)
+          }`
+        );
       })
     },false);
     return returnData;
@@ -80,6 +86,12 @@ class Store {
         params: {
           date,
         },
+      }).catch((error)=>{
+        WECHAT_SENG_TEXT(
+          `${DAYJS().format("YYYY-MM-DD HH:mm:ss")}\n获取${date}炸板数据失败\n${
+            error.message.slice(0,300)
+          }`
+        );
       })
     },false);
     return returnData;
@@ -95,6 +107,12 @@ class Store {
           end_date: endDate,
           adjust: "hfq",
         },
+      }).catch((error)=>{
+        WECHAT_SENG_TEXT(
+          `${DAYJS().format("YYYY-MM-DD HH:mm:ss")}\n获取${code}${CONFIG.K_COUNT}日K线数据失败\n${
+            error.message.slice(0,300)
+          }`
+        );
       });
     });
     return returnData;
@@ -106,7 +124,13 @@ class Store {
         params: {
           symbol: code,
         },
-      });
+      }).catch((error)=>{
+        WECHAT_SENG_TEXT(
+          `${DAYJS().format("YYYY-MM-DD HH:mm:ss")}\n获取${code}股票信息失败\n${
+            error.message.slice(0,300)
+          }`
+        );
+      })
     });
     return returnData;
   }
