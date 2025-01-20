@@ -14,6 +14,7 @@
     "axios": "^1.7.9",
     "chinese-days": "^1.4.0",
     "dayjs": "^1.11.13",
+    "fetch-sse": "^1.1.1",
     "koa": "^2.15.3",
     "koa-bodyparser": "^4.4.1",
     "node-cron": "^3.0.3"

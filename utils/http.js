@@ -30,6 +30,4 @@ const instance = axios.create({
   timeout: 60 * 1000,
 });
 
-
-
 global.HTTP = instance;

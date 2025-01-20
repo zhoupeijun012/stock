@@ -4,11 +4,11 @@ const FS = require("fs");
 const CHINESEDAY = require("chinese-days");
 
 global.RESOLVE_PATH = (dir = "") => {
-  return PATH.resolve(__dirname, "..", dir);
+  return PATH.resolve(__dirname, "../", dir);
 };
 
 global.FILE_CACHE = (path, data) => {
-  path = RESOLVE_PATH(CONFIG.CACHE_PACKAGE + path);
+  path = RESOLVE_PATH(path);
   return new Promise((resolve, reject) => {
     FS.writeFile(path, data, (error) => {
       if (!error) {
@@ -21,12 +21,16 @@ global.FILE_CACHE = (path, data) => {
 };
 
 global.FILE_EXISTS = (path) => {
-  path = RESOLVE_PATH(CONFIG.CACHE_PACKAGE + path);
-  return FS.existsSync(path);
+  path = RESOLVE_PATH(path);
+  try {
+    return FS.existsSync(path);
+  } catch(error) {
+    return false
+  }
 };
 
 global.FILE_READ = (path) => {
-  path = RESOLVE_PATH(CONFIG.CACHE_PACKAGE + path);
+  path = RESOLVE_PATH(path);
   return new Promise((resolve, reject) => {
     FS.readFile(path, "utf-8", (error, data) => {
       if (!error) {
@@ -39,14 +43,14 @@ global.FILE_READ = (path) => {
 };
 
 global.PACKAGE_CREATE = (path) => {
-  path = RESOLVE_PATH(CONFIG.CACHE_PACKAGE + path);
+  path = RESOLVE_PATH(path);
   if (!FILE_EXISTS(path)) {
     FS.mkdirSync(path, { recursive: true });
   }
 };
 
 global.PACKAGE_CLEAR = (path) => {
-  path = RESOLVE_PATH(CONFIG.CACHE_PACKAGE + path);
+  path = RESOLVE_PATH(path);
   if (!FILE_EXISTS(path)) {
     return new Promise((resolve, reject) => {
       FS.rm(path, { recursive: true }, (error) => {
@@ -58,22 +62,6 @@ global.PACKAGE_CLEAR = (path) => {
       });
     });
   }
-};
-
-global.generateRandomColor = () => {
-  //随机生成RGB颜色
-  let arr = [];
-  for (var i = 0; i < 3; i++) {
-    // 暖色
-    arr.push(Math.floor(Math.random() * 128 + 64));
-    // 亮色
-    arr.push(Math.floor(Math.random() * 128 + 128));
-  }
-  let [r, g, b] = arr;
-  // rgb颜色
-  var color = `rgb(${r},${g},${b})`;
-
-  return color;
 };
 
 global.DAYJS = dayjs;
@@ -100,7 +88,7 @@ global.IS_OPEN_DAY = (date) => {
 };
 
 global.GET_LAST_OPENDAY = (count) => {
-  let i = 0;
+  let i = 1;
   let j = 0;
   let date = '';
   do {
@@ -112,3 +100,11 @@ global.GET_LAST_OPENDAY = (count) => {
   } while (j < count);
   return date;
 };
+
+global.GET_LAST_DATE = (count)=>{
+  const arr = [];
+  for(let i = 1; i<=count;i++) {
+    arr.push(global.GET_LAST_OPENDAY(i).replaceAll('-',''));
+  }
+  return arr
+}
