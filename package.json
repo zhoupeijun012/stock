@@ -17,6 +17,7 @@
     "fetch-sse": "^1.1.1",
     "koa": "^2.15.3",
     "koa-bodyparser": "^4.4.1",
+    "koa-static": "^5.0.0",
     "node-cron": "^3.0.3"
   }
 }

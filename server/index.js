@@ -1,11 +1,13 @@
 const Koa = require("koa");
 const bodyParser = require("koa-bodyparser");
 const router = require(RESOLVE_PATH("server/routes/static.js"));
+const static = require("koa-static");
 
 let app = null;
 function start() {
   app = new Koa();
 
+  app.use(static(RESOLVE_PATH(CONFIG.CACHE_PACKAGE)));
   // 使用bodyparser中间件解析POST请求的请求体
   app.use(bodyParser());
   // 错误处理中间件
