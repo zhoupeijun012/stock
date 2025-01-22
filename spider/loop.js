@@ -16,13 +16,8 @@ const startLoop = () => {
       `${DAYJS().format("YYYY-MM-DD HH:mm:ss")}\nA股今日开盘，机器人已启动`
     );
 
-    // 第一次启动爬虫
-    start(true);
-
-    // 循环获取数据
-    cron.schedule(CONFIG.DEBUGGER_LOOP_TIME || CONFIG.LOOP_TIME, () => {
-      start();
-    });
+    // 启动爬虫
+    start();
   });
 };
 

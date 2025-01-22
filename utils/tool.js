@@ -108,3 +108,13 @@ global.GET_LAST_DATE = (count)=>{
   }
   return arr
 }
+
+global.GET_STOCK_AREA= (code) => {
+  return ['00','30'].some((item)=>code.startsWith(item)) ? 'SZ':'SH'
+}
+
+global.TIME_WAIT = (time)=>{
+  return new Promise((resolve,reject)=>{
+    setTimeout(resolve,time)
+  })
+}
