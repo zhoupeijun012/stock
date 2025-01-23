@@ -76,15 +76,15 @@ const calculZtLine = async () => {};
 
 const loopGetZt = async () => {
   try {
-    await TIME_WAIT(3000);
     // 轮训中-分为两个部分
     // 1、循环获取今日涨停与今日炸板数据，缓存，但不读取缓存
     await HELP.getTodayZt();
     // 2、获取沪深300、国证银行、微盘股、30年国债、人民币汇率、A50股指期货 数据，存储起来，不读取缓存
     await STORE.getZs("1.000001,0.399001,0.399006,0.899050,90.BK0910", false);
+
     // 3、获取涨停数据的概念信息，缓存，读取缓存
     await HELP.getGnByDate(DAYJS().format("YYYYMMDD"));
-
+    
     // 4、获取昨日涨停与今日涨停的竞价集合数据，缓存读取缓存
     // 5、获取K线，缓存读取缓存
     // 6、获取日K，缓存读取缓存
