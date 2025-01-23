@@ -1,10 +1,5 @@
 const HELP = require("./help");
 const STORE_PATH = require("./storePath");
-const inRange = () => {
-  return (
-    DAYJS().format("HHmmss") >= "092500" && DAYJS().format("HHmmss") <= "130000"
-  );
-};
 
 const calZtInfo = (allDayData, jsonData, date) => {
   if (!allDayData[jsonData["c"]]) {
@@ -33,7 +28,6 @@ const calZtInfo = (allDayData, jsonData, date) => {
     dataItem.last = 1;
   }
 };
-
 
 const calculZrSummary = async (today = true) => {
   const date = today ? DAYJS().format('YYYYMMDD'):GET_LAST_OPENDAY(1);
@@ -99,7 +93,7 @@ const loopGetZt = async () => {
     // 在这里，计算涨停jrzt.json
     await calculZrSummary(true);
 
-    if (inRange) {
+    if (IN_RANGE()) {
       loopGetZt();
     }
   } catch (error) {
@@ -121,12 +115,12 @@ const loopRefresh = async (count = 0) => {
     // 计算K线的涨停数据
     await calculZtLine(DAYJS().format("YYYYMMDD"));
 
-    // 获取日K的刷新时间为 1小时
-    if (count >= 30) {
+    // 获取日K的刷新时间为 30分钟
+    if (count >= 15) {
       await HELP.refreshKD();
       count = 0;
     }
-    if (inRange) {
+    if (IN_RANGE()) {
       loopRefresh(count + 1);
     }
   } catch (error) {
@@ -168,6 +162,7 @@ const start = async () => {
   // 循环刷新
   loopRefresh();
 };
+
 module.exports = {
   start,
 };

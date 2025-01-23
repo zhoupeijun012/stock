@@ -122,3 +122,6 @@ global.TIME_WAIT = (time)=>{
     setTimeout(resolve,time)
   })
 }
+global.IN_RANGE = () => {
+  return DAYJS().format("HHmmss") >= "092500" && DAYJS().format("HHmmss") <= "133000"
+};
