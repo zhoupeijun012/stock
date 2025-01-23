@@ -7,11 +7,8 @@ WORKDIR /usr/src/app
 # 复制package.json和package-lock.json到工作目录
 COPY package*.json ./
 
-# 安装yarn
-RUN npm install yarn -g
-
 # 安装项目依赖
-RUN yarn install
+RUN npm install
 
 # 复制项目文件到工作目录
 COPY . .
