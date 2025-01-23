@@ -2,7 +2,7 @@ const PATH = require("path");
 const dayjs = require("dayjs");
 const FS = require("fs");
 const CHINESEDAY = require("chinese-days");
-
+const zlib = require('zlib');
 global.RESOLVE_PATH = (dir = "") => {
   return PATH.resolve(__dirname, "../", dir);
 };
@@ -12,6 +12,9 @@ global.FILE_CACHE = (path, data) => {
   return new Promise((resolve, reject) => {
     FS.writeFile(path, data, (error) => {
       if (!error) {
+        const input = FS.createReadStream(path);
+        const output = FS.createWriteStream(path + '.gz');
+        input.pipe(zlib.createGzip()).pipe(output);
         resolve();
       } else {
         reject(error);
@@ -19,6 +22,7 @@ global.FILE_CACHE = (path, data) => {
     });
   });
 };
+
 
 global.FILE_EXISTS = (path) => {
   path = RESOLVE_PATH(path);

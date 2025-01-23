@@ -74,7 +74,7 @@ const calculZrSummary = async (today = true) => {
     Object.assign(item,zrHashMap[item['c']]);
   })
 
-  const filePath = STORE_PATH.getJsonPath(STORE_PATH.ZT_PATH, today ? 'jjzt':'zrzt');
+  const filePath = STORE_PATH.getJsonPath(STORE_PATH.ZT_PATH, today ? 'jrzt':'zrzt');
   await FILE_CACHE(filePath, JSON.stringify(zrData));
 };
 
@@ -96,7 +96,7 @@ const loopGetZt = async () => {
     // 6、获取日K，缓存读取缓存
     await HELP.getKlineCombin(DAYJS().format("YYYYMMDD"));
 
-    // 在这里，计算涨停jjzt.json
+    // 在这里，计算涨停jrzt.json
     await calculZrSummary(true);
 
     if (inRange) {
