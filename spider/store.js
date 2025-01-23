@@ -34,7 +34,7 @@ class Store {
   async getJJ(stockCode, readCache = false) {
     const filePath = STORE_PATH.getJsonPath(STORE_PATH.JJ_PATH, stockCode);
     if (readCache && FILE_EXISTS(filePath)) {
-      return;
+      return FILE_READ(filePath);
     }
     const jsonData = await INTERFACE.getJJ(stockCode);
     await FILE_CACHE(filePath, JSON.stringify(jsonData));
@@ -43,7 +43,7 @@ class Store {
   async getK(stockCode, readCache = false) {
     const filePath = STORE_PATH.getJsonPath(STORE_PATH.K_S_PATH, stockCode);
     if (readCache && FILE_EXISTS(filePath)) {
-      return;
+      return FILE_READ(filePath);
     }
     const jsonData = await INTERFACE.getK(
       stockCode,
@@ -55,7 +55,7 @@ class Store {
   async getKD(stockCode, readCache = false) {
     const filePath = STORE_PATH.getJsonPath(STORE_PATH.K_DAY_PATH, stockCode);
     if (readCache && FILE_EXISTS(filePath)) {
-      return;
+      return FILE_READ(filePath);
     }
     const jsonData = await INTERFACE.getK(
       stockCode,
@@ -67,7 +67,7 @@ class Store {
   async getKM(stockCode, readCache = false) {
     const filePath = STORE_PATH.getJsonPath(STORE_PATH.K_MON_PATH, stockCode);
     if (readCache && FILE_EXISTS(filePath)) {
-      return;
+      return FILE_READ(filePath);
     }
     const jsonData = await INTERFACE.getKM(
       stockCode,
@@ -88,7 +88,7 @@ class Store {
   async getZs(stockCode, readCache = false) {
     const filePath = STORE_PATH.getJsonPath(STORE_PATH.ZS_PATH, "all");
     if (readCache && FILE_EXISTS(filePath)) {
-      return;
+      return FILE_READ(filePath);
     }
     const jsonData = await INTERFACE.getZs(stockCode);
     await FILE_CACHE(filePath, JSON.stringify(jsonData));
@@ -97,10 +97,11 @@ class Store {
   async getGn(stockCode, readCache = false) {
     const filePath = STORE_PATH.getJsonPath(STORE_PATH.GN_PATH, stockCode);
     if (readCache && FILE_EXISTS(filePath)) {
-      return;
+      return await FILE_READ(filePath);
     }
     const jsonData = await INTERFACE.getGn(stockCode);
     await FILE_CACHE(filePath, JSON.stringify(jsonData));
+    return jsonData
   }
 }
 global.STORE = new Store();

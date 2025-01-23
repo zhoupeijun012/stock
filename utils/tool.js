@@ -98,13 +98,13 @@ global.GET_LAST_OPENDAY = (count) => {
     }
     i++;
   } while (j < count);
-  return date;
+  return date.replaceAll('-','');
 };
 
 global.GET_LAST_DATE = (count)=>{
   const arr = [];
   for(let i = 1; i<=count;i++) {
-    arr.push(global.GET_LAST_OPENDAY(i).replaceAll('-',''));
+    arr.push(global.GET_LAST_OPENDAY(i));
   }
   return arr
 }
