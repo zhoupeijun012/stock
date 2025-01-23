@@ -27,7 +27,9 @@ const startLoop = () => {
   }
   // 当日没有启动过
   if (!IN_RANGE()) {
-    loopSchedule();
+    setTimeout(()=>{
+      loopSchedule();
+    },100)
   }
   
   cron.schedule(CONFIG.START_TIME, loopSchedule);

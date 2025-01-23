@@ -8,7 +8,7 @@ class Help {
     last14Day.sort((cur, next) => next - cur);
     for (let date of last14Day) {
       await STORE.getZt(date, true);
-      await TIME_WAIT(100);
+      await TIME_WAIT(50);
     }
   }
   // 获取当日数据
@@ -25,7 +25,7 @@ class Help {
     const lastZtList = await STORE.getZt(date, true);
     for (let stockItem of lastZtList) {
       await STORE.getGn(stockItem["c"], true);
-      await TIME_WAIT(100);
+      await TIME_WAIT(50);
     }
   }
   // 获取K线
@@ -35,31 +35,31 @@ class Help {
       await STORE.getJJ(stockItem["c"], true);
       await STORE.getK(stockItem["c"], true);
       await STORE.getKD(stockItem["c"], true);
-      await TIME_WAIT(100);
+      await TIME_WAIT(50);
     }
   }
   async refreshK() {
     const lastZtList = await STORE.getZt(GET_LAST_DATE(1), true);
     for (let stockItem of lastZtList) {
       await STORE.getK(stockItem["c"], true);
-      await TIME_WAIT(100);
+      await TIME_WAIT(50);
     }
     const ztList = await STORE.getZt(DAYJS().format("YYYYMMDD"), true);
     for (let stockItem of ztList) {
       await STORE.getK(stockItem["c"], true);
-      await TIME_WAIT(100);
+      await TIME_WAIT(50);
     }
   }
   async refreshKD() {
     const lastZtList = await STORE.getZt(GET_LAST_DATE(1), true);
     for (let stockItem of lastZtList) {
       await STORE.getKD(stockItem["c"], true);
-      await TIME_WAIT(100);
+      await TIME_WAIT(50);
     }
     const ztList = await STORE.getZt(DAYJS().format("YYYYMMDD"), true);
     for (let stockItem of ztList) {
       await STORE.getKD(stockItem["c"], true);
-      await TIME_WAIT(100);
+      await TIME_WAIT(50);
     }
   }
   
