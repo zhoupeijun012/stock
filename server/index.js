@@ -30,7 +30,7 @@ function start() {
   app.use(async (ctx, next)=> {
     ctx.set('Access-Control-Allow-Origin', '*');
     ctx.set('Access-Control-Allow-Headers', 'Content-Type');
-    ctx.set('Access-Control-Allow-Methods', 'POST');
+    ctx.set('Access-Control-Allow-Methods', '*');
     await next();
   })
   // 使用定义的路由
