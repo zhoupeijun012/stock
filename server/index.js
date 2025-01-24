@@ -26,6 +26,13 @@ function start() {
       // 打印错误到控制台（或其他日志系统）
     }
   });
+
+  app.use(async (ctx, next)=> {
+    ctx.set('Access-Control-Allow-Origin', '*');
+    ctx.set('Access-Control-Allow-Headers', 'Content-Type');
+    ctx.set('Access-Control-Allow-Methods', 'POST');
+    await next();
+  })
   // 使用定义的路由
   app.use(router.routes()).use(router.allowedMethods());
 
