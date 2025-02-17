@@ -1,6 +1,6 @@
 const Koa = require("koa");
 const bodyParser = require("koa-bodyparser");
-const router = require(RESOLVE_PATH("server/routes/static.js"));
+const router = require(RESOLVE_PATH("server/routes/page.js"));
 const static = require("koa-static");
 
 let app = null;

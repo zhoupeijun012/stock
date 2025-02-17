@@ -2,7 +2,6 @@ const PATH = require("path");
 const dayjs = require("dayjs");
 const FS = require("fs");
 const CHINESEDAY = require("chinese-days");
-const zlib = require('zlib');
 global.RESOLVE_PATH = (dir = "") => {
   return PATH.resolve(__dirname, "../", dir);
 };
@@ -13,8 +12,7 @@ global.FILE_CACHE = (path, data) => {
     FS.writeFile(path, data, (error) => {
       if (!error) {
         const input = FS.createReadStream(path);
-        const output = FS.createWriteStream(path + '.gz');
-        input.pipe(zlib.createGzip()).pipe(output);
+        const output = FS.createWriteStream(path + ".gz");
         resolve();
       } else {
         reject(error);
@@ -23,13 +21,12 @@ global.FILE_CACHE = (path, data) => {
   });
 };
 
-
 global.FILE_EXISTS = (path) => {
   path = RESOLVE_PATH(path);
   try {
     return FS.existsSync(path);
-  } catch(error) {
-    return false
+  } catch (error) {
+    return false;
   }
 };
 
@@ -82,7 +79,7 @@ global.WECHAT_SENG_TEXT = (msg, group = "") => {
     headers: {
       "Content-type": "application/json",
     },
-  }).catch((error)=>{
+  }).catch((error) => {
     console.log(error.message);
   });
 };
@@ -94,7 +91,7 @@ global.IS_OPEN_DAY = (date) => {
 global.GET_LAST_OPENDAY = (count) => {
   let i = 1;
   let j = 0;
-  let date = '';
+  let date = "";
   do {
     date = DAYJS().subtract(i, "day").format("YYYY-MM-DD");
     if (IS_OPEN_DAY(date)) {
@@ -102,26 +99,31 @@ global.GET_LAST_OPENDAY = (count) => {
     }
     i++;
   } while (j < count);
-  return date.replaceAll('-','');
+  return date.replaceAll("-", "");
 };
 
-global.GET_LAST_DATE = (count)=>{
+global.GET_LAST_DATE = (count) => {
   const arr = [];
-  for(let i = 1; i<=count;i++) {
+  for (let i = 1; i <= count; i++) {
     arr.push(global.GET_LAST_OPENDAY(i));
   }
-  return arr
-}
-
-global.GET_STOCK_AREA= (code) => {
-  return ['00','30'].some((item)=>code.startsWith(item)) ? 'SZ':'SH'
-}
-
-global.TIME_WAIT = (time)=>{
-  return new Promise((resolve,reject)=>{
-    setTimeout(resolve,time)
-  })
-}
-global.IN_RANGE = () => {
-  return DAYJS().format("HHmmss") >= "092500" && DAYJS().format("HHmmss") <= "133000"
+  return arr;
 };
+
+global.GET_STOCK_AREA = (code) => {
+  return ["00", "30"].some((item) => code.startsWith(item)) ? "SZ" : "SH";
+};
+
+global.TIME_WAIT = (time) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, time);
+  });
+};
+
+global.IN_RANGE = () => {
+  return (
+    DAYJS().format("HHmmss") >= "092500" && DAYJS().format("HHmmss") <= "133000"
+  );
+};
+
+// global.DB = require('better-sqlite3')(global.RESOLVE_PATH("db.sqlite"));
