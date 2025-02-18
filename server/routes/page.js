@@ -8,7 +8,7 @@ const router = new Router({
 
 router.post("/getStockList", async (ctx, next) => {
   try {
-    let { pageNum, pageSize, matchKey } = ctx.request.body;
+    let { pageNum, pageSize, matchKey, prompt } = ctx.request.body;
     if(!Array.isArray(matchKey) || (Array.isArray(matchKey) && matchKey.length < 0) ) {
       matchKey = StockModelKeys;
     }
@@ -18,7 +18,32 @@ router.post("/getStockList", async (ctx, next) => {
       success: true,
       message: "成功",
       data: {
-        template: StockTemplate,
+        template: prompt ? StockTemplate: [],
+        ...data,
+      },
+    };
+  } catch (error) {
+    ctx.body = {
+      success: false,
+      message: error.message,
+      data: null,
+    };
+  }
+});
+
+router.post("/getEtfList", async (ctx, next) => {
+  try {
+    let { pageNum, pageSize, matchKey, prompt } = ctx.request.body;
+    if(!Array.isArray(matchKey) || (Array.isArray(matchKey) && matchKey.length < 0) ) {
+      matchKey = StockModelKeys;
+    }
+    const data = await Stock.queryPage(pageNum, pageSize,matchKey);
+
+    ctx.body = {
+      success: true,
+      message: "成功",
+      data: {
+        template: prompt ? StockTemplate: [],
         ...data,
       },
     };
