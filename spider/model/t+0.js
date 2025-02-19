@@ -1,4 +1,4 @@
-export const T_CODE = [
+exports.T_CODE = [
     "513050",
     "159607",
     "159605",

@@ -16,4 +16,4 @@ server.start();
 // jane.save();
 // },1000)
 
-// require(RESOLVE_PATH("spider/etf")).fetchList();
+require(RESOLVE_PATH("spider/etf")).fetchList();

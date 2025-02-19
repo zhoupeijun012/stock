@@ -31,6 +31,7 @@ class FetchPage {
 
   async queryPage(pageNum, pageSize, matchKey = [],orders = []) {
     const { count, rows } = await this.pageModel.findAndCountAll({
+      distinct: true,
       attributes: matchKey,
       offset: (pageNum - 1) * pageNum,
       limit: pageSize,

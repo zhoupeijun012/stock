@@ -1,6 +1,7 @@
 const FetchPage = require("./fetch-page");
 const { EtfModel } = require("./model/index.js");
 const { modelKeys } = require("./model/etf.js");
+const { T_CODE } = require("./model/t+0.js");
 class Stock extends FetchPage {
   constructor(pageModel, modelKeys, pageFunc) {
     super(pageModel, modelKeys, pageFunc);
@@ -13,7 +14,7 @@ const getPage = async (pageNum, pageSize) => {
     fltt: 1,
     invt: 2,
     cb: "cb",
-    fs: "m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048",
+    fs: "b:MK0021,b:MK0022,b:MK0023,b:MK0024,b:MK0827",
     fields: modelKeys.join(","),
     fid: "f3",
     pn: pageNum,
@@ -30,7 +31,14 @@ const getPage = async (pageNum, pageSize) => {
   let data = res.data;
   data = data.slice(3, -2);
   data = JSON.parse(data).data || {};
-  const { total, diff } = data;
+  const { total, diff=[] } = data;
+  diff.forEach((item)=>{
+    if(T_CODE.includes(item['f12'])) {
+      item['c1'] = '0'
+    } else {
+      item['c1'] = '1'
+    }
+  })
   return {
     total,
     list: diff,

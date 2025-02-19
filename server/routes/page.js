@@ -1,6 +1,9 @@
 const Stock = require(RESOLVE_PATH("spider/stock"));
 const StockTemplate = require(RESOLVE_PATH("spider/model/stock")).template;
 const StockModelKeys = require(RESOLVE_PATH("spider/model/stock")).modelKeys;
+const Etf = require(RESOLVE_PATH("spider/etf"));
+const ETfTemplate = require(RESOLVE_PATH("spider/model/etf")).template;
+const ETfModelKeys = require(RESOLVE_PATH("spider/model/etf")).modelKeys;
 const Router = require("@koa/router");
 const router = new Router({
   prefix: "/api",
@@ -33,17 +36,17 @@ router.post("/getStockList", async (ctx, next) => {
 
 router.post("/getEtfList", async (ctx, next) => {
   try {
-    let { pageNum, pageSize, matchKey, orders = [],prompt } = ctx.request.body;
+    let { pageNum, pageSize, matchKey,orders=[], prompt } = ctx.request.body;
     if(!Array.isArray(matchKey) || (Array.isArray(matchKey) && matchKey.length < 0) ) {
-      matchKey = StockModelKeys;
+      matchKey = ETfModelKeys;
     }
-    const data = await Stock.queryPage(pageNum, pageSize,matchKey,orders);
+    const data = await Etf.queryPage(pageNum, pageSize,matchKey,orders);
 
     ctx.body = {
       success: true,
       message: "成功",
       data: {
-        template: prompt ? StockTemplate: [],
+        template: prompt ? ETfTemplate: [],
         ...data,
       },
     };

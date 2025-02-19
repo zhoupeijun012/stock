@@ -22,7 +22,8 @@ const template = [
   { prop: "f22", label: "涨速" },
   { prop: "f23", label: "市净率" },
   { prop: "f24", label: "60日涨跌幅" },
-  { prop: "f25", label: "年初至今涨跌幅" }
+  { prop: "f25", label: "年初至今涨跌幅" },
+  { prop: "c1", label: "交易类型" },
 ];
 
 const modelKeys = template.map((item) => item.prop);
