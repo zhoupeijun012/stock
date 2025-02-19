@@ -29,11 +29,14 @@ class FetchPage {
     }
   }
 
-  async queryPage(pageNum, pageSize, matchKey = []) {
+  async queryPage(pageNum, pageSize, matchKey = [],orders = []) {
     const { count, rows } = await this.pageModel.findAndCountAll({
       attributes: matchKey,
       offset: (pageNum - 1) * pageNum,
       limit: pageSize,
+      order: orders.map((item)=>{
+        return [item.prop, item.order == 'ascending' ? 'ASC':'DESC']
+      })
     });
     return {
       total: count,

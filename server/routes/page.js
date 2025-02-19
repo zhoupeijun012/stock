@@ -8,11 +8,11 @@ const router = new Router({
 
 router.post("/getStockList", async (ctx, next) => {
   try {
-    let { pageNum, pageSize, matchKey, prompt } = ctx.request.body;
+    let { pageNum, pageSize, matchKey,orders=[], prompt } = ctx.request.body;
     if(!Array.isArray(matchKey) || (Array.isArray(matchKey) && matchKey.length < 0) ) {
       matchKey = StockModelKeys;
     }
-    const data = await Stock.queryPage(pageNum, pageSize,matchKey);
+    const data = await Stock.queryPage(pageNum, pageSize,matchKey,orders);
 
     ctx.body = {
       success: true,
@@ -33,11 +33,11 @@ router.post("/getStockList", async (ctx, next) => {
 
 router.post("/getEtfList", async (ctx, next) => {
   try {
-    let { pageNum, pageSize, matchKey, prompt } = ctx.request.body;
+    let { pageNum, pageSize, matchKey, orders = [],prompt } = ctx.request.body;
     if(!Array.isArray(matchKey) || (Array.isArray(matchKey) && matchKey.length < 0) ) {
       matchKey = StockModelKeys;
     }
-    const data = await Stock.queryPage(pageNum, pageSize,matchKey);
+    const data = await Stock.queryPage(pageNum, pageSize,matchKey,orders);
 
     ctx.body = {
       success: true,
