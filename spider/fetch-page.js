@@ -1,4 +1,5 @@
 const { sequelize } = require("./model/index.js");
+const { col } = require('sequelize');
 class FetchPage {
   constructor(pageModel, modelKeys, pageFunc) {
     this.pageModel = pageModel;
@@ -30,14 +31,15 @@ class FetchPage {
   }
 
   async queryPage(pageNum, pageSize, matchKey = [],orders = []) {
+    const tableOrders = orders.map((item)=>{
+      return [col(item.prop), item.order == 'ascending' ? 'ASC':'DESC']
+    });
     const { count, rows } = await this.pageModel.findAndCountAll({
       distinct: true,
       attributes: matchKey,
-      offset: (pageNum - 1) * pageNum,
+      offset: (pageNum - 1) * pageSize,
       limit: pageSize,
-      order: orders.map((item)=>{
-        return [item.prop, item.order == 'ascending' ? 'ASC':'DESC']
-      })
+      order: tableOrders 
     });
     return {
       total: count,
