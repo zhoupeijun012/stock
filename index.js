@@ -16,9 +16,9 @@ server.start();
 // jane.save();
 // },1000)
 
-// (async ()=>{
-//     // 获取股票列表
-//     await require(RESOLVE_PATH("spider/stock")).fetchList();
-//     // 获取etf列表
-//     await require(RESOLVE_PATH("spider/etf")).fetchList();
-// })()
+(async ()=>{
+    // 获取股票列表
+    await require(RESOLVE_PATH("spider/stock")).fetchList();
+    // 获取etf列表
+    await require(RESOLVE_PATH("spider/etf")).fetchList();
+})()
