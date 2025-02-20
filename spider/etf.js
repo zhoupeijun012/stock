@@ -2,9 +2,31 @@ const FetchPage = require("./fetch-page");
 const { EtfModel } = require("./model/index.js");
 const { modelKeys } = require("./model/etf.js");
 const { T_CODE } = require("./model/t+0.js");
+const { col,Op } = require('sequelize');
 class Stock extends FetchPage {
   constructor(pageModel, modelKeys, pageFunc) {
     super(pageModel, modelKeys, pageFunc);
+  }
+  queryPage(pageNum, pageSize, matchKey = [],orders = [],filters={}) {
+    const tableOrders = orders.map((item)=>{
+      return [col(item.prop), item.order == 'ascending' ? 'ASC':'DESC']
+    });
+
+    const where = {};
+    for(let key of Object.keys(filters)) {
+      if(key == 'c1') {
+        where[Op.and] = [{[key]: filters[key]}]
+      }
+      // 股票名称
+      if(key == 'f14' ) {
+        where[Op.substring] = `%${filters[key]}%`
+      }
+      // 股票代码
+      if(key == 'f12') {
+        where[Op.substring] = `%${filters[key]}%`
+      }
+    }
+    return super.queryPage(pageNum, pageSize, matchKey,tableOrders,where);
   }
 }
 

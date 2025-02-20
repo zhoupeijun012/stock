@@ -1,9 +1,16 @@
 const FetchPage = require("./fetch-page");
 const { EtfModel } = require("./model/index.js");
 const { modelKeys } = require("./model/etf.js");
+const { col,Op } = require('sequelize');
 class Stock extends FetchPage {
   constructor(pageModel, modelKeys, pageFunc) {
     super(pageModel, modelKeys, pageFunc);
+  }
+  queryPage(pageNum, pageSize, matchKey = [],orders = [],filters=[]) {
+    const tableOrders = orders.map((item)=>{
+      return [col(item.prop), item.order == 'ascending' ? 'ASC':'DESC']
+    });
+    return super.queryPage(pageNum, pageSize, matchKey,tableOrders,filters);
   }
 }
 
