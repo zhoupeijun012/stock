@@ -1,0 +1,5 @@
+node_modules
+cache
+pnpm-lock.yaml
+sqlite.db
+sqlite.db-journal
