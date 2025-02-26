@@ -8,7 +8,11 @@ const sequelize = new Sequelize({
 // 注册model
 exports.StockModel = sequelize.define("Stock", require("./stock").defineModel);
 exports.EtfModel = sequelize.define("Etf", require("./etf").defineModel);
-
+exports.ConceptModel = sequelize.define("Concept", require("./concept").defineModel);
+exports.IndustryModel = sequelize.define("Industry", require("./industry").defineModel);
+exports.RegionModel = sequelize.define("Region", require("./region").defineModel);
+exports.LofModel = sequelize.define("Lof", require("./lof").defineModel);
+exports.LimitModel = sequelize.define("Limit", require("./limit").defineModel);
 
 exports.init = ()=>{
   return sequelize.sync({ force: true }).catch((error) => {

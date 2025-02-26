@@ -1,6 +1,6 @@
 const FetchPage = require("./fetch-page");
-const { StockModel } = require("./model/index.js");
-const { modelKeys, template } = require("./model/stock.js");
+const { ConceptModel } = require("./model/index.js");
+const { modelKeys, template } = require("./model/concept.js");
 const { col, Op, cast } = require("sequelize");
 
 const getPage = async (pageNum, pageSize) => {
@@ -9,7 +9,7 @@ const getPage = async (pageNum, pageSize) => {
     fltt: 1,
     invt: 2,
     cb: "cb",
-    fs: "m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048",
+    fs: "m:90+t:3+f:!50",
     fields: modelKeys.join(","),
     fid: "f3",
     pn: pageNum,
@@ -26,7 +26,7 @@ const getPage = async (pageNum, pageSize) => {
   let data = res.data;
   data = data.slice(3, -2);
   data = JSON.parse(data).data || {};
-  const { total, diff } = data;
+  const { total, diff = [] } = data;
   return {
     total,
     list: diff,
@@ -43,12 +43,10 @@ class Stock extends FetchPage {
       pageSize,
       matchKey = [],
       orders = [],
-      filters = [],
+      filters = {},
     } = params;
-
     const tableOrders = orders.map((item) => {
-      if (item.prop == "f102" || item.prop == "f100") {
-        return [item.prop, item.order == "ascending" ? "ASC" : "DESC"];
+      if (item.prop == "10086") {
       } else {
         return [
           cast(col(item.prop), "SIGNED"),
@@ -60,7 +58,12 @@ class Stock extends FetchPage {
     const whereArr = [];
     for (let key of Object.keys(filters)) {
       // 股票名称
-      if (key == "10086") {
+      if (key == "c1") {
+        whereArr.push({
+          [key]: {
+            [Op.eq]: filters[key],
+          },
+        });
       } else {
         whereArr.push({
           [key]: {
@@ -73,7 +76,6 @@ class Stock extends FetchPage {
     const where = {
       [Op.and]: whereArr,
     };
-
     return super.queryPage({
       pageNum,
       pageSize,
@@ -101,12 +103,13 @@ class Stock extends FetchPage {
 
 let instance = null;
 if (!instance) {
-  Stock["stock"] = new Stock(StockModel, modelKeys);
-  instance = Stock["stock"];
+  Stock["concept"] = new Stock(ConceptModel, modelKeys);
+  instance = Stock["concept"];
 }
+
 exports.instance = instance;
 exports.useRouter = (app) => {
-  app.post("/getStockList", async (ctx, next) => {
+  app.post("/getConceptList", async (ctx, next) => {
     try {
       let {
         pageNum,

@@ -28,7 +28,6 @@ const template = [
   { prop: "f105", label: "下跌家数" },
   { prop: "f128", label: "领涨股票" },
   { prop: "f140", label: "领涨股票代码" },
-  { prop: "c1", label: "交易类型" },
 ];
 
 const modelKeys = template.map((item) => item.prop);

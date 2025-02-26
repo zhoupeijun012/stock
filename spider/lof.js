@@ -1,50 +1,7 @@
 const FetchPage = require("./fetch-page");
-const { EtfModel } = require("./model/index.js");
-const { modelKeys } = require("./model/etf.js");
+const { LofModel } = require("./model/index.js");
+const { modelKeys, template } = require("./model/lof.js");
 const { col, Op, cast } = require("sequelize");
-
-class Stock extends FetchPage {
-  constructor(pageModel, modelKeys, pageFunc) {
-    super(pageModel, modelKeys, pageFunc);
-  }
-  queryPage(params) {
-    const {
-      pageNum,
-      pageSize,
-      matchKey = [],
-      orders = [],
-      filters = [],
-    } = params;
-    const tableOrders = orders.map((item) => {
-      if (item.prop == "10086") {
-      } else {
-        return [
-          cast(col(item.prop), "SIGNED"),
-          item.order == "ascending" ? "ASC" : "DESC",
-        ];
-      }
-    });
-    const whereArr = [];
-    for (let key of Object.keys(filters)) {
-      // 股票名称
-      if (key == "10086") {
-      } else {
-        whereArr.push({
-          [key]: {
-            [Op.like]: `%${filters[key]}%`,
-          },
-        });
-      }
-    }
-    return super.queryPage({
-      pageNum,
-      pageSize,
-      matchKey,
-      orders: tableOrders,
-      filters: whereArr,
-    });
-  }
-}
 
 const getPage = async (pageNum, pageSize) => {
   const params = {
@@ -52,9 +9,9 @@ const getPage = async (pageNum, pageSize) => {
     fltt: 1,
     invt: 2,
     cb: "cb",
-    fs: "m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048",
+    fs: "b:MK0404,b:MK0405,b:MK0406,b:MK0407",
     fields: modelKeys.join(","),
-    fid: "f3",
+    fid: "f164",
     pn: pageNum,
     pz: pageSize,
     po: 1,
@@ -69,11 +26,129 @@ const getPage = async (pageNum, pageSize) => {
   let data = res.data;
   data = data.slice(3, -2);
   data = JSON.parse(data).data || {};
-  const { total, diff } = data;
+  const { total, diff = [] } = data;
   return {
     total,
     list: diff,
   };
 };
 
-module.exports = new Stock(EtfModel, modelKeys, getPage);
+class Stock extends FetchPage {
+  constructor(pageModel, modelKeys, pageFunc) {
+    super(pageModel, modelKeys, pageFunc);
+  }
+  queryPage(params) {
+    const {
+      pageNum,
+      pageSize,
+      matchKey = [],
+      orders = [],
+      filters = {},
+    } = params;
+    const tableOrders = orders.map((item) => {
+      if (item.prop == "10086") {
+      } else {
+        return [
+          cast(col(item.prop), "SIGNED"),
+          item.order == "ascending" ? "ASC" : "DESC",
+        ];
+      }
+    });
+
+    const whereArr = [];
+    for (let key of Object.keys(filters)) {
+      // 股票名称
+      if (key == "c1") {
+        whereArr.push({
+          [key]: {
+            [Op.eq]: filters[key],
+          },
+        });
+      } else {
+        whereArr.push({
+          [key]: {
+            [Op.like]: `%${filters[key]}%`,
+          },
+        });
+      }
+    }
+
+    const where = {
+      [Op.and]: whereArr,
+    };
+    return super.queryPage({
+      pageNum,
+      pageSize,
+      matchKey,
+      orders: tableOrders,
+      filters: where,
+    });
+  }
+  async fetchList() {
+    await this.clearList();
+    let pages = 1;
+    let count = 200;
+    try {
+      for (let index = 1; index <= pages; index++) {
+        const { list, total } = await getPage(index, count);
+        await TIME_WAIT(10);
+        pages = Math.ceil(total / count);
+        await this.saveList(list);
+      }
+    } catch(error){
+      console.log(error.message);
+    }
+  }
+}
+
+
+let instance = null;
+if (!instance) {
+  Stock["lof"] = new Stock(LofModel, modelKeys);
+  instance = Stock["lof"];
+}
+
+exports.instance = instance;
+exports.useRouter = (app) => {
+  app.post("/getLofList", async (ctx, next) => {
+    try {
+      let {
+        pageNum,
+        pageSize,
+        matchKey,
+        orders = [],
+        filters = [],
+        prompt,
+      } = ctx.request.body;
+      if (
+        !Array.isArray(matchKey) ||
+        (Array.isArray(matchKey) && matchKey.length < 0)
+      ) {
+        matchKey = modelKeys;
+      }
+      const data = await instance.queryPage({
+        pageNum,
+        pageSize,
+        matchKey,
+        orders,
+        filters,
+      });
+
+      ctx.body = {
+        success: true,
+        message: "成功",
+        data: {
+          template: prompt ? template : [],
+          ...data,
+        },
+      };
+    } catch (error) {
+      ctx.body = {
+        success: false,
+        message: error.message,
+        data: null,
+      };
+    }
+  });
+};
+

@@ -1,38 +1,8 @@
 const { sequelize } = require("./model/index.js");
 class FetchPage {
-  constructor(pageModel, modelKeys, pageFunc) {
+  constructor(pageModel, modelKeys) {
     this.pageModel = pageModel;
     this.modelKeys = modelKeys;
-    this.pageFunc = pageFunc;
-  }
-
-  async fetchList() {
-    await this.pageModel.drop();
-    await this.pageModel.sync({ force: true });
-    let pages = 1;
-    let count = 200;
-    try {
-      for (let index = 1; index <= pages; index++) {
-        const { list, total } = await this.pageFunc(index, count);
-        await TIME_WAIT(20);
-        pages = Math.ceil(total / count);
-        const t = await sequelize.transaction();
-        try {
-          for (let stockItem of list) {
-            const sqeObj = {};
-            this.modelKeys.forEach((key, index) => {
-              sqeObj[key] = stockItem[key];
-            });
-            await this.pageModel.create(sqeObj, { transaction: t });
-          }
-          await t.commit();
-        } catch (error) {
-          await t.rollback();
-        }
-      }
-    } catch(error){
-      console.log(error.message);
-    }
   }
 
   async queryPage(params) {
@@ -58,6 +28,31 @@ class FetchPage {
       pageSize,
       pages: Math.ceil(count / pageSize),
     };
+  }
+
+  async saveList(list = [], clear = false) {
+    if (clear) {
+      await this.clear();
+    } else {
+      await this.pageModel.sync({ force: false });
+    }
+    const t = await sequelize.transaction();
+    try {
+      for (let stockItem of list) {
+        const sqeObj = {};
+        this.modelKeys.forEach((key, index) => {
+          sqeObj[key] = stockItem[key];
+        });
+        await this.pageModel.create(sqeObj, { transaction: t });
+      }
+      await t.commit();
+    } catch (error) {
+      await t.rollback();
+    }
+  }
+  async clearList() {
+    await this.pageModel.drop();
+    await this.pageModel.sync({ force: false });
   }
 }
 
