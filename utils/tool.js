@@ -126,4 +126,9 @@ global.IN_RANGE = () => {
   );
 };
 
+global.getVal = (params, expres) => {
+  return expres.split(".").reduce((data, currentVal) => {
+    return data[currentVal];
+  }, params);
+};
 // global.DB = require('better-sqlite3')(global.RESOLVE_PATH("db.sqlite"));

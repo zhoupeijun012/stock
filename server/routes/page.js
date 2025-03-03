@@ -15,4 +15,6 @@ require(RESOLVE_PATH('spider/industry.js')).useRouter(router);
 
 require(RESOLVE_PATH('spider/region.js')).useRouter(router);
 
+require(RESOLVE_PATH('spider/limit.js')).useRouter(router);
+
 module.exports = router;

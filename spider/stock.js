@@ -83,7 +83,7 @@ class Stock extends FetchPage {
     });
   }
   async fetchList() {
-    await this.clearList();
+    await this.clear();
     let pages = 1;
     let count = 200;
     try {

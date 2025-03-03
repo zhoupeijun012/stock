@@ -17,19 +17,24 @@ server.start();
 // },1000)
 
 (async ()=>{
+
+    // // 获取概念列表
+    // await require(RESOLVE_PATH("spider/concept")).instance.fetchList();
+    // // 获取行业列表
+    // await require(RESOLVE_PATH("spider/industry")).instance.fetchList();
+    // // 获取行地区列表
+    // await require(RESOLVE_PATH("spider/region")).instance.fetchList();
+
+
     // 获取股票列表
-    await require(RESOLVE_PATH("spider/stock")).instance.fetchList();
-    // 获取etf列表
-    await require(RESOLVE_PATH("spider/etf")).instance.fetchList();
-    // 获取lof列表
-    await require(RESOLVE_PATH("spider/lof")).instance.fetchList();
-    // 获取概念列表
-    await require(RESOLVE_PATH("spider/concept")).instance.fetchList();
-    // 获取行业列表
-    await require(RESOLVE_PATH("spider/industry")).instance.fetchList();
-    // 获取行地区列表
-    await require(RESOLVE_PATH("spider/region")).instance.fetchList();
+    // await require(RESOLVE_PATH("spider/stock")).instance.fetchList();
+
+
+    // // 获取etf列表
+    // await require(RESOLVE_PATH("spider/etf")).instance.fetchList();
+    // // 获取lof列表
+    // await require(RESOLVE_PATH("spider/lof")).instance.fetchList();
 
     // 获取涨停列表，前20天
-    // await require(RESOLVE_PATH("spider/limit")).instance.fetchLast20List();
+    // await require(RESOLVE_PATH("spider/limit")).instance.fetchList();
 })()

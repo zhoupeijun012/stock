@@ -13,11 +13,12 @@ const template = [
   { prop: "zbc", alias: "f10004", label: "炸板次数" },
   { prop: "lbc", alias: "f10005", label: "连板数" },
   { prop: "hybk", alias: "f100", label: "所属行业" },
-  { prop: "days", alias: "f10006", label: "涨停区间" },
-  { prop: "ct", alias: "f10007", label: "区间涨停次数" },
+  { prop: "zttj.days", alias: "f10006", label: "涨停区间" },
+  { prop: "zttj.ct", alias: "f10007", label: "区间涨停次数" },
+  { prop: "date",label: "日期" },
 ];
 
-const modelKeys = template.map((item) => item.alias && item.prop);
+const modelKeys = template.map((item) => item.alias || item.prop);
 const modelLabels = template.map((item) => item.label);
 
 exports.modelKeys = modelKeys;

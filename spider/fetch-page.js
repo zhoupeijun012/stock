@@ -4,7 +4,9 @@ class FetchPage {
     this.pageModel = pageModel;
     this.modelKeys = modelKeys;
   }
-
+  async init() {
+    await this.pageModel.sync({ force: false });
+  }
   async queryPage(params) {
     const {
       pageNum,
@@ -50,9 +52,8 @@ class FetchPage {
       await t.rollback();
     }
   }
-  async clearList() {
-    await this.pageModel.drop();
-    await this.pageModel.sync({ force: false });
+  async clear() {
+    this.pageModel.truncate();
   }
 }
 

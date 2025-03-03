@@ -1,13 +1,13 @@
 const FetchPage = require("./fetch-page");
 const { LimitModel } = require("./model/index.js");
-const { modelKeys, template } = require("./model/lof.js");
+const { modelKeys, template } = require("./model/limit.js");
 const { col, Op, cast } = require("sequelize");
 
 const getPage = async (index, count, date) => {
   const params = {
     cb: "cb",
     dpt: "wz.ztzt",
-    Pageindex: index,
+    Pageindex: 0,
     pagesize: count,
     sort: "fbt:asc",
     date: date,
@@ -20,10 +20,10 @@ const getPage = async (index, count, date) => {
   let data = res.data;
   data = data.slice(3, -2);
   data = JSON.parse(data).data || {};
-  const { total, diff = [] } = data;
+  const { total, pool = [] } = data;
   return {
     total,
-    list: diff,
+    list: pool,
   };
 };
 
@@ -78,7 +78,7 @@ class Stock extends FetchPage {
       filters: where,
     });
   }
-  async fetchList() {
+  async fetchTodayList(dataArr) {
     let pages = 1;
     let count = 200;
     try {
@@ -92,25 +92,22 @@ class Stock extends FetchPage {
       console.log(error.message);
     }
   }
-
-  async fetchLast20List() {
-    await this.clearList();
+  async fetchList() {
+    await this.clear();
     const dateArr = GET_LAST_DATE(20);
-    let count = 400;
-    let pages= 1;
+    let count = 1000;
     try {
-      for (let index = 1; index <= dateArr.length; index++) {
+      for (let index = 0; index <= dateArr.length; index++) {
         let { list, total } = await getPage(index, count,dateArr[index]);
         await TIME_WAIT(10);
-        pages = Math.ceil(total / count);
 
         list = list.map((item)=>{
           const obj = {};
           template.forEach((templateItem)=>{
             if(templateItem.alias) {
-              obj[templateItem.alias] = item[templateItem.prop];
+              obj[templateItem.alias] = getVal(item,templateItem.prop);
             } else {
-              obj[templateItem.prop] = item[templateItem.prop];
+              obj[templateItem.prop] = getVal(item,templateItem.prop);
             }
           })
           obj['date'] = dateArr[index]

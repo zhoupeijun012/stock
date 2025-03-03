@@ -13,6 +13,7 @@ exports.IndustryModel = sequelize.define("Industry", require("./industry").defin
 exports.RegionModel = sequelize.define("Region", require("./region").defineModel);
 exports.LofModel = sequelize.define("Lof", require("./lof").defineModel);
 exports.LimitModel = sequelize.define("Limit", require("./limit").defineModel);
+exports.KLineModel = sequelize.define("Limit", require("./k-line").defineModel);
 
 exports.init = ()=>{
   return sequelize.sync({ force: true }).catch((error) => {
