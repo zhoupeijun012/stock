@@ -11,8 +11,6 @@ global.FILE_CACHE = (path, data) => {
   return new Promise((resolve, reject) => {
     FS.writeFile(path, data, (error) => {
       if (!error) {
-        const input = FS.createReadStream(path);
-        const output = FS.createWriteStream(path + ".gz");
         resolve();
       } else {
         reject(error);
