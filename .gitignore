@@ -3,3 +3,4 @@ cache
 pnpm-lock.yaml
 sqlite.db
 sqlite.db-journal
+config/index.json
