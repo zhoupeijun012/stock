@@ -1,4 +1,5 @@
-const { DataTypes } = require("sequelize");
+const { col, Op, cast } = require("sequelize");
+
 const template = [
   { prop: "f2", label: "最新价" },
   { prop: "f4", label: "涨跌额" },
@@ -154,19 +155,141 @@ const template = [
   { prop: "f221", label: "更新日期" },
 ];
 
-const modelKeys = template.map((item) => item.prop);
-const modelLabels = template.map((item) => item.label);
+class Stock extends require("./base") {
+  constructor(name, template) {
+    super(name, template);
+  }
+  async getPage(pageNum, pageSize) {
+    const params = {
+      np: 1,
+      fltt: 1,
+      invt: 2,
+      cb: "cb",
+      fs: "m:0+t:6,m:0+t:80,m:1+t:2,m:1+t:23,m:0+t:81+s:2048",
+      fields: this.modelKeys.join(","),
+      fid: "f3",
+      pn: pageNum,
+      pz: pageSize,
+      po: 1,
+      dect: 1,
+      ut: "fa5fd1943c7b386f172d6893dbfba10b",
+      wbp2u: "|0|0|0|web",
+      _: Date.now(),
+    };
+    const res = await HTTP.get(`https://push2.eastmoney.com/api/qt/clist/get`, {
+      params,
+    });
+    let data = res.data;
+    data = data.slice(3, -2);
+    data = JSON.parse(data).data || {};
+    const { total, diff } = data;
+    return {
+      total,
+      list: diff,
+    };
+  }
+  async fetchList() {
+    await this.clear();
+    let pages = 1;
+    let count = 200;
+    try {
+      for (let index = 1; index <= pages; index++) {
+        const { list, total } = await this.getPage(index, count);
+        await TIME_WAIT(10);
+        pages = Math.ceil(total / count);
+        await this.add(list);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+  queryPage(params) {
+    const {
+      pageNum,
+      pageSize,
+      matchKey = [],
+      orders = [],
+      filters = [],
+    } = params;
 
-exports.modelKeys = modelKeys;
-exports.modelLabels = modelLabels;
-exports.template = template;
+    const tableOrders = orders.map((item) => {
+      if (item.prop == "f102" || item.prop == "f100") {
+        return [item.prop, item.order == "ascending" ? "ASC" : "DESC"];
+      } else {
+        return [
+          cast(col(item.prop), "SIGNED"),
+          item.order == "ascending" ? "ASC" : "DESC",
+        ];
+      }
+    });
 
-const defineModel = {};
-modelKeys.forEach((modelItem) => {
-  defineModel[modelItem] = {
-    type: DataTypes.STRING,
-    allowNull: true,
-    defaultValue: "",
-  };
-});
-exports.defineModel = defineModel;
+    const whereArr = [];
+    for (let key of Object.keys(filters)) {
+      // 股票名称
+      if (key == "10086") {
+      } else {
+        whereArr.push({
+          [key]: {
+            [Op.like]: `%${filters[key]}%`,
+          },
+        });
+      }
+    }
+
+    const where = {
+      [Op.and]: whereArr,
+    };
+
+    return super.queryPage({
+      pageNum,
+      pageSize,
+      matchKey,
+      orders: tableOrders,
+      filters: where,
+    });
+  }
+  useRouter(app) {
+    app.post("/getStockList", async (ctx, next) => {
+      try {
+        let {
+          pageNum,
+          pageSize,
+          matchKey,
+          orders = [],
+          filters = [],
+          prompt,
+        } = ctx.request.body;
+        if (
+          !Array.isArray(matchKey) ||
+          (Array.isArray(matchKey) && matchKey.length < 0)
+        ) {
+          matchKey = this.modelKeys;
+        }
+        const data = await this.queryPage({
+          pageNum,
+          pageSize,
+          matchKey,
+          orders,
+          filters,
+        });
+
+        ctx.body = {
+          success: true,
+          message: "成功",
+          data: {
+            template: prompt ? template : [],
+            ...data,
+          },
+        };
+      } catch (error) {
+        ctx.body = {
+          success: false,
+          message: error.message,
+          data: null,
+        };
+      }
+    });
+  }
+}
+
+module.exports = new Stock("Stock", template);

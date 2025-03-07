@@ -3,18 +3,12 @@ const router = new Router({
   prefix: "/api",
 });
 
-require(RESOLVE_PATH('spider/stock.js')).useRouter(router);
-
-require(RESOLVE_PATH('spider/etf.js')).useRouter(router);
-
-require(RESOLVE_PATH('spider/lof.js')).useRouter(router);
-
-require(RESOLVE_PATH('spider/concept.js')).useRouter(router);
-
-require(RESOLVE_PATH('spider/industry.js')).useRouter(router);
-
-require(RESOLVE_PATH('spider/region.js')).useRouter(router);
-
-require(RESOLVE_PATH('spider/limit.js')).useRouter(router);
+require(RESOLVE_PATH('spider/model/concept.js')).useRouter(router);
+require(RESOLVE_PATH('spider/model/etf.js')).useRouter(router);
+require(RESOLVE_PATH('spider/model/lof.js')).useRouter(router);
+require(RESOLVE_PATH('spider/model/industry.js')).useRouter(router);
+require(RESOLVE_PATH('spider/model/region.js')).useRouter(router);
+require(RESOLVE_PATH('spider/model/limit.js')).useRouter(router);
+require(RESOLVE_PATH('spider/model/stock.js')).useRouter(router);
 
 module.exports = router;
