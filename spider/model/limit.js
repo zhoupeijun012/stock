@@ -70,7 +70,7 @@ class Limit extends require("./base") {
         await this.add(list);
       }
     } catch (error) {
-      console.log(error.message);
+      throw error
     }
   }
   async fetchTodayList() {}
@@ -96,6 +96,12 @@ class Limit extends require("./base") {
     for (let key of Object.keys(filters)) {
       // 股票名称
       if (key == "c1") {
+        whereArr.push({
+          [key]: {
+            [Op.eq]: filters[key],
+          },
+        });
+      } else if (key == "date") {
         whereArr.push({
           [key]: {
             [Op.eq]: filters[key],

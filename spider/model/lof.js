@@ -76,7 +76,7 @@ class Lof extends require("./base") {
         await this.add(list);
       }
     } catch (error) {
-      console.log(error.message);
+      throw error
     }
   }
   queryPage(params) {

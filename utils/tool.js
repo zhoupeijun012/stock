@@ -73,12 +73,12 @@ global.WECHAT_SENG_TEXT = (msg, group = "") => {
       mentioned_list: [group],
     },
   };
-  HTTP.post(CONFIG.WECHAT_SEND_URL, params, {
+  return HTTP.post(CONFIG.WECHAT_SEND_URL, params, {
     headers: {
       "Content-type": "application/json",
     },
   }).catch((error) => {
-    console.log(error.message);
+    throw error
   });
 };
 

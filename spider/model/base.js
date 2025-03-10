@@ -17,18 +17,22 @@ class BaseModel {
   }
 
   async add(list) {
-    const t = await sequelize.transaction();
-    try {
-      for (let stockItem of list) {
-        const sqeObj = {};
-        this.modelKeys.forEach((key, index) => {
-          sqeObj[key] = stockItem[key];
-        });
-        await this.pageModel.create(sqeObj, { transaction: t });
+    if (Array.isArray(list)) {
+      const t = await sequelize.transaction();
+      try {
+        for (let stockItem of list) {
+          const sqeObj = {};
+          this.modelKeys.forEach((key, index) => {
+            sqeObj[key] = stockItem[key];
+          });
+          await this.pageModel.create(sqeObj, { transaction: t });
+        }
+        await t.commit();
+      } catch (error) {
+        await t.rollback();
       }
-      await t.commit();
-    } catch (error) {
-      await t.rollback();
+    } else {
+      await this.pageModel.create(list);
     }
   }
 
@@ -59,7 +63,43 @@ class BaseModel {
 
   async query() {}
 
-  async update() {}
+  async update(uniqueKey, list) {
+    if (Array.isArray(list)) {
+      const t = await sequelize.transaction();
+      try {
+        for (let stockItem of list) {
+          const sqeObj = {};
+          this.modelKeys.forEach((key, index) => {
+            sqeObj[key] = stockItem[key];
+          });
+          await this.pageModel.update(
+            sqeObj,
+            {
+              where: {
+                [uniqueKey]: sqeObj[uniqueKey],
+              },
+            },
+            { transaction: t }
+          );
+        }
+        await t.commit();
+      } catch (error) {
+        await t.rollback();
+      }
+    } else {
+      await this.pageModel.update(list, {
+        where: {
+          [uniqueKey]: list[uniqueKey],
+        },
+      });
+    }
+  }
+  
+  async delete(obj) {
+    await this.pageModel.destroy({
+      where: obj,
+    });
+  }
 
   async clear() {
     await this.pageModel.truncate();
