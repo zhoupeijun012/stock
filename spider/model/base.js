@@ -1,4 +1,4 @@
-const { sequelize } = require("./index.js");
+const { sequelize } = require(RESOLVE_PATH("utils/sql.js"));
 const { DataTypes } = require("sequelize");
 class BaseModel {
   constructor(name, template) {
@@ -41,16 +41,16 @@ class BaseModel {
       pageNum,
       pageSize,
       matchKey = [],
-      orders = [],
-      filters = [],
+      order = [],
+      where = [],
     } = params;
     const { count, rows } = await this.pageModel.findAndCountAll({
       distinct: true,
       attributes: matchKey,
       offset: (pageNum - 1) * pageSize,
       limit: pageSize,
-      order: orders,
-      where: filters,
+      order: order,
+      where: where,
     });
     return {
       total: count,

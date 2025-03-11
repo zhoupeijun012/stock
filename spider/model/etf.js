@@ -461,8 +461,10 @@ class Etf extends require("./base") {
       list: diff,
     };
   }
-  async fetchList() {
-    await this.clear();
+  async fetchList(update = false) {
+    if(!update) {
+      await this.clear();
+    }
     let pages = 1;
     let count = 200;
     try {
@@ -470,7 +472,11 @@ class Etf extends require("./base") {
         const { list, total } = await this.getPage(index, count);
         await TIME_WAIT(10);
         pages = Math.ceil(total / count);
-        await this.add(list);
+        if(update) {
+          await this.update('f12',list);
+        } else {
+          await this.add(list);
+        }
       }
     } catch (error) {
       throw error
@@ -481,10 +487,10 @@ class Etf extends require("./base") {
       pageNum,
       pageSize,
       matchKey = [],
-      orders = [],
-      filters = {},
+      order = [],
+      where = {},
     } = params;
-    const tableOrders = orders.map((item) => {
+    const tableOrders = order.map((item) => {
       if (item.prop == "10086") {
       } else {
         return [
@@ -495,32 +501,32 @@ class Etf extends require("./base") {
     });
 
     const whereArr = [];
-    for (let key of Object.keys(filters)) {
+    for (let key of Object.keys(where)) {
       // 股票名称
       if (key == "c1") {
         whereArr.push({
           [key]: {
-            [Op.eq]: filters[key],
+            [Op.eq]: where[key],
           },
         });
       } else {
         whereArr.push({
           [key]: {
-            [Op.like]: `%${filters[key]}%`,
+            [Op.like]: `%${where[key]}%`,
           },
         });
       }
     }
 
-    const where = {
+    const whereMap = {
       [Op.and]: whereArr,
     };
     return super.queryPage({
       pageNum,
       pageSize,
       matchKey,
-      orders: tableOrders,
-      filters: where,
+      order: tableOrders,
+      where: whereMap,
     });
   }
   useRouter(app) {
@@ -530,8 +536,8 @@ class Etf extends require("./base") {
           pageNum,
           pageSize,
           matchKey,
-          orders = [],
-          filters = [],
+          order = [],
+          where = [],
           prompt,
         } = ctx.request.body;
         if (
@@ -544,8 +550,8 @@ class Etf extends require("./base") {
           pageNum,
           pageSize,
           matchKey,
-          orders,
-          filters,
+          order,
+          where,
         });
 
         ctx.body = {

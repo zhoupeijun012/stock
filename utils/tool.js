@@ -73,7 +73,7 @@ global.WECHAT_SENG_TEXT = (msg, group = "") => {
       mentioned_list: [group],
     },
   };
-  return HTTP.post(CONFIG.WECHAT_SEND_URL, params, {
+  return HTTP.post("https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=4c3f7e6e-2909-4c26-9d6f-02a3d8604cda", params, {
     headers: {
       "Content-type": "application/json",
     },
@@ -84,6 +84,10 @@ global.WECHAT_SENG_TEXT = (msg, group = "") => {
 
 global.IS_OPEN_DAY = (date) => {
   return CHINESEDAY.isWorkday(date) && !CHINESEDAY.isInLieu(date);
+};
+
+global.IN_OPEN_TIME = () => {
+  return DAYJS().format("HHmmss") >= "092500" && DAYJS().format("HHmmss") <= "150000"
 };
 
 global.GET_LAST_OPENDAY = (count) => {
@@ -118,15 +122,9 @@ global.TIME_WAIT = (time) => {
   });
 };
 
-global.IN_RANGE = () => {
-  return (
-    DAYJS().format("HHmmss") >= "092500" && DAYJS().format("HHmmss") <= "133000"
-  );
-};
 
-global.getVal = (params, expres) => {
+global.GET_VAL = (params, expres) => {
   return expres.split(".").reduce((data, currentVal) => {
     return data[currentVal];
   }, params);
 };
-// global.DB = require('better-sqlite3')(global.RESOLVE_PATH("db.sqlite"));

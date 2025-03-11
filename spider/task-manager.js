@@ -8,30 +8,59 @@ class TaskManager {
   }
   async start() {
     // 获取全局数据
-    const globalConfig = await require(RESOLVE_PATH("config/index.js")).init();
+    const globalConfig = await require(RESOLVE_PATH("utils/config.js")).init();
     // 判断项目是否初始化过
     if (!globalConfig.get("init")) {
       const initTasks = this.tasks.filter((item) => item.type == "init");
       await this._execTask(initTasks);
-      await globalConfig.set("init", true);
+      await globalConfig.set("init", "1");
     }
+
+    // 盘前任务
+    cron.schedule("0 9 * * *", () => {
+      if (IS_OPEN_DAY(DAYJS().format("YYYY-MM-DD"))) {
+        WECHAT_SENG_TEXT(`${DAYJS().format("YYYY-MM-DD")}\nA股今日开盘`).catch(
+          (error) => {
+            console.log(error.message);
+          }
+        );
+      } else {
+        WECHAT_SENG_TEXT(
+          `${DAYJS().format("YYYY-MM-DD")}\nA股今日不开盘`
+        ).catch((error) => {
+          console.log(error.message);
+        });
+      }
+    });
 
     // 盘中任务
     const midTasks = this.tasks.filter((item) => item.type == "mid");
     cron.schedule("*/5 9-15 * * *", () => {
-      this._execTask(midTasks);
+      if (IS_OPEN_DAY(DAYJS().format("YYYY-MM-DD")) && IN_OPEN_TIME()) {
+        this._execTask(midTasks);
+      } else {
+        console.log('当前非开盘时间');
+      }
     });
 
-    // 盘中任务
+    // 盘中快速任务
     const quickTasks = this.tasks.filter((item) => item.type == "quick");
     cron.schedule("*/1 9-15 * * *", () => {
-      this._execTask(quickTasks);
+      if (IS_OPEN_DAY(DAYJS().format("YYYY-MM-DD")) && IN_OPEN_TIME()) {
+        this._execTask(quickTasks);
+      }else {
+        console.log('当前非开盘时间');
+      }
     });
 
     // 收盘结束任务
     const closeTasks = this.tasks.filter((item) => item.type == "close");
     cron.schedule("0 15 * * *", () => {
-      this._execTask(closeTasks);
+      if (IS_OPEN_DAY(DAYJS().format("YYYY-MM-DD"))) {
+        this._execTask(closeTasks);
+      } else {
+        console.log('今日不开盘');
+      }
     });
   }
 

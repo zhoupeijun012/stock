@@ -7,7 +7,7 @@ axios.interceptors.response.use(null, (err) => {
   // 在请求对象上设置重试次数
   config.__retryCount = __retryCount;
   // 判断是否超过了重试次数
-  if (__retryCount >= CONFIG.HTTP_RETRY_COUNT) {
+  if (__retryCount >= 3) {
     return Promise.reject(err);
   }
   // 增加重试次数
@@ -16,7 +16,7 @@ axios.interceptors.response.use(null, (err) => {
   const delay = new Promise((resolve) => {
     setTimeout(() => {
       resolve();
-    }, CONFIG.HTTP_RETRY_DELAY);
+    }, 1000);
   });
   // 重新发起请求
   return delay.then(function () {
@@ -26,7 +26,6 @@ axios.interceptors.response.use(null, (err) => {
 
 // 创建一个具有默认配置的axios实例
 const instance = axios.create({
-  baseURL: CONFIG.GET_URL,
   timeout: 60 * 1000,
 });
 

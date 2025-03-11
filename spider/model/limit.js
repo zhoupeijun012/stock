@@ -59,9 +59,9 @@ class Limit extends require("./base") {
           const obj = {};
           template.forEach((templateItem) => {
             if (templateItem.alias) {
-              obj[templateItem.alias] = getVal(item, templateItem.prop);
+              obj[templateItem.alias] = GET_VAL(item, templateItem.prop);
             } else {
-              obj[templateItem.prop] = getVal(item, templateItem.prop);
+              obj[templateItem.prop] = GET_VAL(item, templateItem.prop);
             }
           });
           obj["date"] = dateArr[index];
@@ -70,19 +70,47 @@ class Limit extends require("./base") {
         await this.add(list);
       }
     } catch (error) {
-      throw error
+      throw error;
     }
   }
-  async fetchTodayList() {}
+  async fetchTodayList() {
+    const currentDay = DAYJS().format("YYYYMMDD");
+
+    // 先清空当天数据
+    await this.delete({
+      date: currentDay,
+    });
+
+    let count = 1000;
+    try {
+      let { list, total } = await this.getPage(0, count, currentDay);
+
+      list = list.map((item) => {
+        const obj = {};
+        template.forEach((templateItem) => {
+          if (templateItem.alias) {
+            obj[templateItem.alias] = GET_VAL(item, templateItem.prop);
+          } else {
+            obj[templateItem.prop] = GET_VAL(item, templateItem.prop);
+          }
+        });
+        obj["date"] = currentDay;
+        return obj;
+      });
+      await this.add(list);
+    } catch (error) {
+      throw error;
+    }
+  }
   queryPage(params) {
     const {
       pageNum,
       pageSize,
       matchKey = [],
-      orders = [],
-      filters = {},
+      order = [],
+      where = {},
     } = params;
-    const tableOrders = orders.map((item) => {
+    const tableOrders = order.map((item) => {
       if (item.prop == "10086") {
       } else {
         return [
@@ -93,38 +121,38 @@ class Limit extends require("./base") {
     });
 
     const whereArr = [];
-    for (let key of Object.keys(filters)) {
+    for (let key of Object.keys(where)) {
       // 股票名称
       if (key == "c1") {
         whereArr.push({
           [key]: {
-            [Op.eq]: filters[key],
+            [Op.eq]: where[key],
           },
         });
       } else if (key == "date") {
         whereArr.push({
           [key]: {
-            [Op.eq]: filters[key],
+            [Op.eq]: where[key],
           },
         });
       } else {
         whereArr.push({
           [key]: {
-            [Op.like]: `%${filters[key]}%`,
+            [Op.like]: `%${where[key]}%`,
           },
         });
       }
     }
 
-    const where = {
+    const whereMap = {
       [Op.and]: whereArr,
     };
     return super.queryPage({
       pageNum,
       pageSize,
       matchKey,
-      orders: tableOrders,
-      filters: where,
+      order: tableOrders,
+      where: whereMap,
     });
   }
   useRouter(app) {
@@ -134,8 +162,8 @@ class Limit extends require("./base") {
           pageNum,
           pageSize,
           matchKey,
-          orders = [],
-          filters = [],
+          order = [],
+          where = [],
           prompt,
         } = ctx.request.body;
         if (
@@ -148,8 +176,8 @@ class Limit extends require("./base") {
           pageNum,
           pageSize,
           matchKey,
-          orders,
-          filters,
+          order,
+          where,
         });
 
         ctx.body = {

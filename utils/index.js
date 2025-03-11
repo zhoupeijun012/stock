@@ -1,3 +1,2 @@
-require('./tool');
-require('./config');
-require('./http');
+require("./tool.js");
+require("./http.js");

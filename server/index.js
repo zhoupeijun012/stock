@@ -1,13 +1,13 @@
 const Koa = require("koa");
 const bodyParser = require("koa-bodyparser");
 const router = require(RESOLVE_PATH("server/routes/page.js"));
-const static = require("koa-static");
+// const static = require("koa-static");
 
 let app = null;
 function start() {
   app = new Koa();
 
-  app.use(static(RESOLVE_PATH(CONFIG.CACHE_PACKAGE)));
+  // app.use(static(RESOLVE_PATH(CONFIG.CACHE_PACKAGE)));
   // 使用bodyparser中间件解析POST请求的请求体
   app.use(bodyParser());
   // 错误处理中间件
@@ -36,8 +36,8 @@ function start() {
   // 使用定义的路由
   app.use(router.routes()).use(router.allowedMethods());
 
-  app.listen(CONFIG.SERVER_PORT, () => {
-    console.log(`Server is running on http://localhost:${CONFIG.SERVER_PORT}`);
+  app.listen(12345, () => {
+    console.log(`Server is running on http://localhost:12345`);
   });
 }
 

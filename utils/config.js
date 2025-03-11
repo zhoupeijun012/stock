@@ -1,17 +1,44 @@
-const config = {
-    GET_URL: 'http://aktools.amdyes.asia:8080',
-    SERVER_PORT: 12345,
-    CACHE_PACKAGE: 'cache',
-    START_TIME: '0 9 * * *',
-    WECHAT_SEND_URL: "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=4c3f7e6e-2909-4c26-9d6f-02a3d8604cda",
-    // 接口重试次数
-    HTTP_RETRY_COUNT: 3,
-    // 接口重试间隔
-    HTTP_RETRY_DELAY: 2000,
-    // 下面属于调试开关
-    // DEBUG_START_TIME: '35 19 * * *',
-    // OPEN_DAY: true,
-    // DEVELOPMENT: true
+const { DataTypes } = require("sequelize");
+const { sequelize } = require(RESOLVE_PATH("utils/sql.js"));
+
+const model = {
+  key: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
+  value: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    defaultValue: "",
+  },
+};
+class Config {
+  constructor() {
+    this.config = {};
+    this.defineModel = null;
+  }
+  async init() {
+    this.defineModel = sequelize.define("Config", model);
+    await this.defineModel.sync({ force: false });
+    const list = await this.defineModel.findAll();
+    list.forEach((item) => {
+      this.config[item.key] = item.value;
+    });
+    return this;
+  }
+  get(key) {
+    return this.config[key];
+  }
+  async set(key, val) {
+    this.config[key] = val;
+    await this.defineModel.findOrCreate({
+      where: { key },
+      defaults: {
+        value: val,
+      },
+    });
+  }
 }
 
-global.CONFIG = config;
+module.exports = new Config();
