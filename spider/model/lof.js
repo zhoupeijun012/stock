@@ -65,7 +65,7 @@ class Lof extends require("./base") {
     };
   }
   async fetchList(update = false) {
-    if(!update) {
+    if (!update) {
       await this.clear();
     }
     let pages = 1;
@@ -74,25 +74,22 @@ class Lof extends require("./base") {
       for (let index = 1; index <= pages; index++) {
         const { list, total } = await this.getPage(index, count);
         await TIME_WAIT(10);
+        if (index == 1) {
+          count = list.length;
+        }
         pages = Math.ceil(total / count);
-        if(update) {
-          await this.update('f12',list);
+        if (update) {
+          await this.update("f12", list);
         } else {
           await this.add(list);
         }
       }
     } catch (error) {
-      throw error
+      throw error;
     }
   }
   queryPage(params) {
-    const {
-      pageNum,
-      pageSize,
-      matchKey = [],
-      order = [],
-      where = {},
-    } = params;
+    const { pageNum, pageSize, matchKey = [], order = [], where = {} } = params;
     const tableOrders = order.map((item) => {
       if (item.prop == "10086") {
       } else {

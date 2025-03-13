@@ -69,11 +69,14 @@ class Concept extends require("./base") {
       await this.clear();
     }
     let pages = 1;
-    let count = 200;
+    let count = 1000;
     try {
       for (let index = 1; index <= pages; index++) {
         const { list, total } = await this.getPage(index, count);
         await TIME_WAIT(10);
+        if(index == 1) {
+          count = list.length;
+        }
         pages = Math.ceil(total / count);
         if(update) {
           await this.update('f12',list);

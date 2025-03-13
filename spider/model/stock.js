@@ -116,8 +116,6 @@ const template = [
   { prop: "f82", label: "小单流入" },
   { prop: "f83", label: "小单流出" },
 
-
-
   { prop: "f88", label: "当日DDX" },
   { prop: "f89", label: "当日DDY" },
   { prop: "f90", label: "当日DDZ" },
@@ -140,8 +138,6 @@ const template = [
   { prop: "f114", label: "市盈率（静）" },
   { prop: "f115", label: "市盈率（TTM）" },
   { prop: "f124", label: "当前交易时间" },
-
-
 
   { prop: "f128", label: "板块领涨股" },
   { prop: "f129", label: "净利润" },
@@ -189,34 +185,31 @@ class Stock extends require("./base") {
     };
   }
   async fetchList(update = false) {
-    if(!update) {
+    if (!update) {
       await this.clear();
     }
     let pages = 1;
-    let count = 200;
+    let count = 100;
     try {
       for (let index = 1; index <= pages; index++) {
         const { list, total } = await this.getPage(index, count);
         await TIME_WAIT(10);
+        if (index == 1) {
+          count = list.length;
+        }
         pages = Math.ceil(total / count);
-        if(update) {
-          await this.update('f12',list);
+        if (update) {
+          await this.update("f12", list);
         } else {
           await this.add(list);
         }
       }
     } catch (error) {
-      throw error
+      throw error;
     }
   }
   queryPage(params) {
-    const {
-      pageNum,
-      pageSize,
-      matchKey = [],
-      order = [],
-      where = [],
-    } = params;
+    const { pageNum, pageSize, matchKey = [], order = [], where = [] } = params;
 
     const tableOrders = order.map((item) => {
       if (item.prop == "f102" || item.prop == "f100") {
