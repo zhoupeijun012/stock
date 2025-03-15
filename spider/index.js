@@ -42,6 +42,8 @@ taskManage.register({
 
     // 获取股票数据
     await require(RESOLVE_PATH("spider/model/stock.js")).fetchList();
+
+    await require(RESOLVE_PATH("spider/model/np.js")).fetchList();
   },
 });
 
@@ -59,6 +61,7 @@ taskManage.register({
 
     // 获取股票数据
     await require(RESOLVE_PATH("spider/model/stock.js")).fetchList(true);
+
   },
 });
 
@@ -72,7 +75,7 @@ taskManage.register({
     await require(RESOLVE_PATH("spider/model/limit.js")).fetchTodayList();
 
     // 监控的指数
-    // await require(RESOLVE_PATH("spider/model/limit.js")).fetchList();
+    await require(RESOLVE_PATH("spider/model/np.js")).fetchList();
   },
 });
 
