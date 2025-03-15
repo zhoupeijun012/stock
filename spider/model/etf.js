@@ -1,4 +1,5 @@
 const { col, Op, cast } = require("sequelize");
+const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
 
 const template = [
   { prop: "f2", label: "最新价" },
@@ -250,7 +251,7 @@ const T_CODE = [
   "161124",
   "501303",
   "164906",
-  "501310"
+  "501310",
 ];
 
 class Etf extends require("./base") {
@@ -297,25 +298,76 @@ class Etf extends require("./base") {
     if (!update) {
       await this.clear();
     }
-    let pages = 1;
-    let count = 200;
+
     try {
-      for (let index = 1; index <= pages; index++) {
-        const { list, total } = await this.getPage(index, count);
-        await TIME_WAIT(10);
-        if (index == 1) {
-          count = list.length;
-        }
-        pages = Math.ceil(total / count);
-        if (update) {
-          await this.update("f12", list);
-        } else {
-          await this.add(list);
-        }
+      const { list, total } = await this.fetchOne({
+        pageNum: 1,
+        pageSize: 1000,
+        update,
+      });
+      const count = list.length;
+      const pages = Math.ceil(total / count);
+
+      for (let index = 2; index <= pages; index++) {
+        await taskQueue.push({
+          taskName: "获取ETF列表",
+          modelName: "etf",
+          modelFunc: "fetchOne",
+          taskParams: JSON.stringify({
+            pageNum: index,
+            pageSize: count,
+            update,
+          }),
+          taskLevel: "10",
+        });
       }
     } catch (error) {
       throw error;
     }
+  }
+  async fetchOne(params) {
+    const queryParams = {
+      np: 1,
+      fltt: 1,
+      invt: 2,
+      cb: "cb",
+      fs: "b:MK0021,b:MK0022,b:MK0023,b:MK0024,b:MK0827",
+      fields: this.modelKeys.join(","),
+      fid: "f3",
+      pn: params.pageNum,
+      pz: params.pageSize,
+      po: 1,
+      dect: 1,
+      ut: "fa5fd1943c7b386f172d6893dbfba10b",
+      wbp2u: "|0|0|0|web",
+      _: Date.now(),
+    };
+    const res = await HTTP.get(`https://push2.eastmoney.com/api/qt/clist/get`, {
+      params: queryParams,
+    });
+    let data = res.data;
+    data = data.slice(3, -2);
+    data = JSON.parse(data).data || {};
+    const { total, diff = [] } = data;
+
+    diff.forEach((item) => {
+      if (T_CODE.includes(item["f12"])) {
+        item["c1"] = "0";
+      } else {
+        item["c1"] = "1";
+      }
+    });
+
+    if (params.update) {
+      await this.update("f12", diff);
+    } else {
+      await this.add(diff);
+    }
+
+    return {
+      total,
+      list: diff,
+    };
   }
   queryPage(params) {
     const { pageNum, pageSize, matchKey = [], order = [], where = {} } = params;

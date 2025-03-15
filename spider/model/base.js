@@ -4,13 +4,20 @@ class BaseModel {
   constructor(name, template) {
     const modelKeys = template.map((item) => item.alias || item.prop);
     const defineModel = {};
-    modelKeys.forEach((modelItem) => {
-      defineModel[modelItem] = {
+    template.forEach((templateItem) => {
+      defineModel[templateItem.alias || templateItem.prop] = {
         type: DataTypes.STRING,
         allowNull: true,
-        defaultValue: "",
+        defaultValue: templateItem.default ? templateItem.default : "",
       };
     });
+
+    defineModel["uuid"] = {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    };
+    modelKeys.push("uuid");
 
     this.pageModel = sequelize.define(name, defineModel);
     this.modelKeys = modelKeys;
@@ -37,13 +44,10 @@ class BaseModel {
   }
 
   async queryPage(params) {
-    const {
-      pageNum,
-      pageSize,
-      matchKey = [],
-      order = [],
-      where = [],
-    } = params;
+    const { pageNum, pageSize, matchKey = [], order = [], where = [] } = params;
+    if (matchKey.length > 0) {
+      matchKey.push("uuid");
+    }
     const { count, rows } = await this.pageModel.findAndCountAll({
       distinct: true,
       attributes: matchKey,
@@ -70,7 +74,9 @@ class BaseModel {
         for (let stockItem of list) {
           const sqeObj = {};
           this.modelKeys.forEach((key, index) => {
-            sqeObj[key] = stockItem[key];
+            if (stockItem[key]) {
+              sqeObj[key] = stockItem[key];
+            }
           });
           await this.pageModel.update(
             sqeObj,
@@ -94,7 +100,7 @@ class BaseModel {
       });
     }
   }
-  
+
   async delete(obj) {
     await this.pageModel.destroy({
       where: obj,

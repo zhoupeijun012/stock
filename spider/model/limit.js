@@ -1,4 +1,5 @@
 const { col, Op, cast } = require("sequelize");
+const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
 
 const template = [
   { prop: "n", alias: "f14", label: "股票名称" },
@@ -48,68 +49,88 @@ class Limit extends require("./base") {
   }
   async fetchList() {
     await this.clear();
+    
     const dateArr = GET_LAST_DATE(20);
+
     let count = 1000;
     try {
       for (let index = 0; index <= dateArr.length; index++) {
-        let { list, total } = await this.getPage(index, count, dateArr[index]);
-        await TIME_WAIT(10);
-
-        list = list.map((item) => {
-          const obj = {};
-          template.forEach((templateItem) => {
-            if (templateItem.alias) {
-              obj[templateItem.alias] = GET_VAL(item, templateItem.prop);
-            } else {
-              obj[templateItem.prop] = GET_VAL(item, templateItem.prop);
-            }
-          });
-          obj["date"] = dateArr[index];
-          return obj;
+        await taskQueue.push({
+          taskName: "获取昨日涨停列表",
+          modelName: "limit",
+          modelFunc: "fetchOne",
+          taskParams: JSON.stringify({
+            pageNum: 0,
+            pageSize: count,
+            date: dateArr[index],
+          }),
+          taskLevel: "10",
         });
-        await this.add(list);
       }
     } catch (error) {
       throw error;
     }
   }
   async fetchTodayList() {
-    const currentDay = DAYJS().format("YYYYMMDD");
+    if(IS_OPEN_DAY(DAYJS().format("YYYY-MM-DD"))) {
+      return ''
+    }
 
-    // 先清空当天数据
-    await this.delete({
-      date: currentDay,
-    });
+    const currentDay = DAYJS().format("YYYYMMDD");
 
     let count = 1000;
     try {
-      let { list, total } = await this.getPage(0, count, currentDay);
-
-      list = list.map((item) => {
-        const obj = {};
-        template.forEach((templateItem) => {
-          if (templateItem.alias) {
-            obj[templateItem.alias] = GET_VAL(item, templateItem.prop);
-          } else {
-            obj[templateItem.prop] = GET_VAL(item, templateItem.prop);
-          }
-        });
-        obj["date"] = currentDay;
-        return obj;
+      await taskQueue.push({
+        taskName: "获取今日涨停列表",
+        modelName: "limit",
+        modelFunc: "fetchOne",
+        needRetry: '0',
+        taskParams: JSON.stringify({
+          pageNum: 0,
+          pageSize: count,
+          date: currentDay,
+        }),
+        taskLevel: "1",
       });
-      await this.add(list);
     } catch (error) {
       throw error;
     }
   }
+  async fetchOne(params) {
+    const queryParams = {
+      cb: "cb",
+      dpt: "wz.ztzt",
+      Pageindex: 0,
+      pagesize: params.pageSize,
+      sort: "fbt:asc",
+      date: params.date,
+      ut: "7eea3edcaed734bea9cbfc24409ed989",
+      _: Date.now(),
+    };
+    const res = await HTTP.get(`https://push2ex.eastmoney.com/getTopicZTPool`, {
+      params: queryParams,
+    });
+    let data = res.data;
+    data = data.slice(3, -2);
+    data = JSON.parse(data).data || {};
+    let { pool = [] } = data;
+
+    pool = pool.map((item) => {
+      const obj = {};
+      template.forEach((templateItem) => {
+        if (templateItem.alias) {
+          obj[templateItem.alias] = GET_VAL(item, templateItem.prop);
+        } else {
+          obj[templateItem.prop] = GET_VAL(item, templateItem.prop);
+        }
+      });
+      obj["date"] = params.date;
+      return obj;
+    });
+    await this.add(pool);
+  }
   queryPage(params) {
-    const {
-      pageNum,
-      pageSize,
-      matchKey = [],
-      order = [],
-      where = {},
-    } = params;
+    const { pageNum, pageSize, matchKey = [], order = [], where = {} } = params;
     const tableOrders = order.map((item) => {
       if (item.prop == "10086") {
       } else {

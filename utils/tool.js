@@ -2,6 +2,9 @@ const PATH = require("path");
 const dayjs = require("dayjs");
 const FS = require("fs");
 const CHINESEDAY = require("chinese-days");
+const requireContext = require('simple-require-context');
+const BASENAME = require('path').basename
+
 global.RESOLVE_PATH = (dir = "") => {
   return PATH.resolve(__dirname, "../", dir);
 };
@@ -128,3 +131,15 @@ global.GET_VAL = (params, expres) => {
     return data[currentVal];
   }, params);
 };
+
+global.PACKAGE_EXCUTE = async (path,excute = [],callback)=>{
+  const context = requireContext(path, false, /\.js$/);
+  const keys = context.keys();
+  for(let index = 0; index < keys.length; index ++) {
+    const key = keys[index];
+    const basename = BASENAME(key);
+    if(!excute.includes(basename) && typeof callback == 'function') {
+      await callback(context(key),basename.replace('.js',''))
+    }
+  }
+}
