@@ -1,5 +1,4 @@
 const { col, Op, cast } = require("sequelize");
-const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
 
 const template = [
   { prop: "n", alias: "f14", label: "股票名称" },
@@ -21,82 +20,10 @@ const template = [
 ];
 
 class Limit extends require("./base") {
-  constructor(name, template) {
-    super(name, template);
+  constructor(params) {
+    super(params);
   }
-  async getPage(index, count, date) {
-    const params = {
-      cb: "cb",
-      dpt: "wz.ztzt",
-      Pageindex: 0,
-      pagesize: count,
-      sort: "fbt:asc",
-      date: date,
-      ut: "7eea3edcaed734bea9cbfc24409ed989",
-      _: Date.now(),
-    };
-    const res = await HTTP.get(`https://push2ex.eastmoney.com/getTopicZTPool`, {
-      params,
-    });
-    let data = res.data;
-    data = data.slice(3, -2);
-    data = JSON.parse(data).data || {};
-    const { total, pool = [] } = data;
-    return {
-      total,
-      list: pool,
-    };
-  }
-  async fetchList() {
-    await this.clear();
-    
-    const dateArr = GET_LAST_DATE(20);
-
-    let count = 1000;
-    try {
-      for (let index = 0; index <= dateArr.length; index++) {
-        await taskQueue.push({
-          taskName: "获取昨日涨停列表",
-          modelName: "limit",
-          modelFunc: "fetchOne",
-          taskParams: JSON.stringify({
-            pageNum: 0,
-            pageSize: count,
-            date: dateArr[index],
-          }),
-          taskLevel: "10",
-        });
-      }
-    } catch (error) {
-      throw error;
-    }
-  }
-  async fetchTodayList() {
-    if(IS_OPEN_DAY(DAYJS().format("YYYY-MM-DD"))) {
-      return ''
-    }
-
-    const currentDay = DAYJS().format("YYYYMMDD");
-
-    let count = 1000;
-    try {
-      await taskQueue.push({
-        taskName: "获取今日涨停列表",
-        modelName: "limit",
-        modelFunc: "fetchOne",
-        needRetry: '0',
-        taskParams: JSON.stringify({
-          pageNum: 0,
-          pageSize: count,
-          date: currentDay,
-        }),
-        taskLevel: "1",
-      });
-    } catch (error) {
-      throw error;
-    }
-  }
-  async fetchOne(params) {
+  async getPage(params) {
     const queryParams = {
       cb: "cb",
       dpt: "wz.ztzt",
@@ -126,6 +53,59 @@ class Limit extends require("./base") {
       });
       obj["date"] = params.date;
       return obj;
+    });
+    return pool;
+  }
+  async fetchList() {
+    const dateArr = GET_LAST_DATE(20);
+    try {
+      const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
+      for (let index = 0; index < dateArr.length; index++) {
+        await taskQueue.push({
+          taskName: `获取${this.chineseName}列表`,
+          modelName: this.name,
+          modelFunc: "fetchOne",
+          taskParams: JSON.stringify({
+            pageNum: 1,
+            pageSize: 1000,
+            date: dateArr[index],
+          }),
+          taskLevel: "10",
+        });
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+  async fetchTodayList() {
+    if(IS_OPEN_DAY(DAYJS().format("YYYY-MM-DD"))) {
+      return ''
+    }
+
+    const currentDay = DAYJS().format("YYYYMMDD");
+
+    try {
+      const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
+      await taskQueue.push({
+        taskName: "获取今日涨停列表",
+        modelName: "limit",
+        modelFunc: "fetchOne",
+        needRetry: "0",
+        taskParams: JSON.stringify({
+          pageNum: 0,
+          pageSize: 1000,
+          date: currentDay,
+        }),
+        taskLevel: "1",
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+  async fetchOne(params) {
+    const pool = await this.getPage(params);
+    await this.delete({
+      date: params.date,
     });
     await this.add(pool);
   }
@@ -220,4 +200,9 @@ class Limit extends require("./base") {
   }
 }
 
-module.exports = new Limit("Limit", template);
+module.exports = new Limit({
+  name: "limit",
+  template,
+  chineseName: "涨停",
+  updateKey: "f12",
+});

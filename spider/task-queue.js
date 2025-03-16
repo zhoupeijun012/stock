@@ -103,6 +103,45 @@ class TaskQueue {
       excuting = false;
     }
   }
+  async taskRetry(uuid) {
+    let updateList = [];
+    if (Array.isArray(uuid)) {
+      updateList = uuid.map((item) => {
+        return {
+          uuid: item,
+          retryCount: 1,
+        };
+      });
+    } else {
+      updateList.push({
+        uuid,
+        retryCount: 1,
+      });
+    }
+    await taskInstance.update("uuid", updateList);
+    this._execTask();
+  }
+  useRouter(app) {
+    app.post("/taskRetry", async (ctx, next) => {
+      try {
+        let { uuid } = ctx.request.body;
+
+        await this.taskRetry(uuid);
+
+        ctx.body = {
+          success: true,
+          message: "成功",
+          data: 1,
+        };
+      } catch (error) {
+        ctx.body = {
+          success: false,
+          message: error.message,
+          data: 0,
+        };
+      }
+    });
+  }
 }
 
 module.exports = new TaskQueue();

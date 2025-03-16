@@ -9,10 +9,12 @@ class TaskManager {
   async start() {
     // 获取全局数据
     const globalConfig = await require(RESOLVE_PATH("utils/config.js")).init();
+
+    await this._execTask("config");
+
     // 判断项目是否初始化过
     if (!globalConfig.get("init")) {
-      const initTasks = this.tasks.filter((item) => item.type == "init");
-      await this._execTask(initTasks);
+      await this._execTask("init");
       await globalConfig.set("init", "1");
     }
 
@@ -34,37 +36,36 @@ class TaskManager {
     });
 
     // 盘中任务
-    const midTasks = this.tasks.filter((item) => item.type == "mid");
     cron.schedule("*/5 9-15 * * *", () => {
       if (IS_OPEN_DAY(DAYJS().format("YYYY-MM-DD")) && IN_OPEN_TIME()) {
-        this._execTask(midTasks);
+        this._execTask("mid");
       } else {
-        console.log('当前非开盘时间');
+        console.log("当前非开盘时间");
       }
     });
 
     // 盘中快速任务
-    const quickTasks = this.tasks.filter((item) => item.type == "quick");
     cron.schedule("*/1 9-15 * * *", () => {
       if (IS_OPEN_DAY(DAYJS().format("YYYY-MM-DD")) && IN_OPEN_TIME()) {
-        this._execTask(quickTasks);
-      }else {
-        console.log('当前非开盘时间');
+        this._execTask("quick");
+      } else {
+        console.log("当前非开盘时间");
       }
     });
 
     // 收盘结束任务
-    const closeTasks = this.tasks.filter((item) => item.type == "close");
     cron.schedule("0 15 * * *", () => {
       if (IS_OPEN_DAY(DAYJS().format("YYYY-MM-DD"))) {
-        this._execTask(closeTasks);
+        this._execTask("close");
       } else {
-        console.log('今日不开盘');
+        console.log("今日不开盘");
       }
     });
   }
 
-  async _execTask(tasks) {
+  async _execTask(taskType) {
+    const tasks = this.tasks.filter((item) => item.type == taskType);
+
     const asyncTasks = tasks.filter((item) => item.async);
     for (let i = 0; i < asyncTasks.length; i++) {
       asyncTasks[i].func();

@@ -1,5 +1,4 @@
 const { col, Op, cast } = require("sequelize");
-const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
 
 const template = [
   { prop: "f2", label: "最新价" },
@@ -30,72 +29,11 @@ const template = [
   { prop: "f128", label: "领涨股票" },
   { prop: "f140", label: "领涨股票代码" },
 ];
-
 class Concept extends require("./base") {
-  constructor(name, template) {
-    super(name, template);
+  constructor(params) {
+    super(params);
   }
-  async getPage(pageNum, pageSize) {
-    const params = {
-      np: 1,
-      fltt: 1,
-      invt: 2,
-      cb: "cb",
-      fs: "m:90+t:3+f:!50",
-      fields: this.modelKeys.join(","),
-      fid: "f3",
-      pn: pageNum,
-      pz: pageSize,
-      po: 1,
-      dect: 1,
-      ut: "fa5fd1943c7b386f172d6893dbfba10b",
-      wbp2u: "|0|0|0|web",
-      _: Date.now(),
-    };
-    const res = await HTTP.get(`https://push2.eastmoney.com/api/qt/clist/get`, {
-      params,
-    });
-    let data = res.data;
-    data = data.slice(3, -2);
-    data = JSON.parse(data).data || {};
-    const { total, diff = [] } = data;
-    return {
-      total,
-      list: diff,
-    };
-  }
-  async fetchList(update = false) {
-    if (!update) {
-      await this.clear();
-    }
-
-    try {
-      const { list, total } = await this.fetchOne({
-        pageNum: 1,
-        pageSize: 1000,
-        update,
-      });
-      const count = list.length;
-      const pages = Math.ceil(total / count);
-
-      for (let index = 2; index <= pages; index++) {
-        await taskQueue.push({
-          taskName: "获取概念列表",
-          modelName: "concept",
-          modelFunc: "fetchOne",
-          taskParams: JSON.stringify({
-            pageNum: index,
-            pageSize: count,
-            update,
-          }),
-          taskLevel: "10",
-        });
-      }
-    } catch (error) {
-      throw error;
-    }
-  }
-  async fetchOne(params) {
+  async getPage(params) {
     const queryParams = {
       np: 1,
       fltt: 1,
@@ -119,16 +57,13 @@ class Concept extends require("./base") {
     data = data.slice(3, -2);
     data = JSON.parse(data).data || {};
     const { total, diff = [] } = data;
-
-    if (params.update) {
-      await this.update("f12", diff);
-    } else {
-      await this.add(diff);
-    }
-
+    const pages = Math.ceil(total / diff.length);
     return {
       total,
       list: diff,
+      pageSize: diff.length,
+      pageNum: params.pageNum,
+      pages,
     };
   }
   queryPage(params) {
@@ -216,4 +151,9 @@ class Concept extends require("./base") {
   }
 }
 
-module.exports = new Concept("Concept", template);
+module.exports = new Concept({
+  name: "concept",
+  template,
+  chineseName: "概念",
+  updateKey: "f12",
+});

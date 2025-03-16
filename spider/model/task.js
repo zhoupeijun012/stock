@@ -11,9 +11,9 @@ const template = [
   { prop: "message", label: "错误原因" },
 ];
 
-class Concept extends require("./base") {
-  constructor(name, template) {
-    super(name, template);
+class Task extends require("./base") {
+  constructor(params) {
+    super(params);
   }
   queryPage(params) {
     const { pageNum, pageSize, matchKey = [], order = [], where = {} } = params;
@@ -102,4 +102,9 @@ class Concept extends require("./base") {
   }
 }
 
-module.exports = new Concept("Task", template);
+module.exports = new Task({
+  name: "task",
+  template,
+  chineseName: "任务",
+  updateKey: "uuid",
+});

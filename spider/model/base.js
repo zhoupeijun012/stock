@@ -1,7 +1,8 @@
 const { sequelize } = require(RESOLVE_PATH("utils/sql.js"));
 const { DataTypes } = require("sequelize");
+
 class BaseModel {
-  constructor(name, template) {
+  constructor({ name, template, chineseName = "模板", updateKey = "f12" }) {
     const modelKeys = template.map((item) => item.alias || item.prop);
     const defineModel = {};
     template.forEach((templateItem) => {
@@ -20,26 +21,60 @@ class BaseModel {
     modelKeys.push("uuid");
 
     this.pageModel = sequelize.define(name, defineModel);
+    this.name = name;
     this.modelKeys = modelKeys;
+    this.chineseName = chineseName;
+    this.updateKey = updateKey;
   }
-
-  async add(list) {
-    if (Array.isArray(list)) {
-      const t = await sequelize.transaction();
-      try {
-        for (let stockItem of list) {
-          const sqeObj = {};
-          this.modelKeys.forEach((key, index) => {
-            sqeObj[key] = stockItem[key];
-          });
-          await this.pageModel.create(sqeObj, { transaction: t });
-        }
-        await t.commit();
-      } catch (error) {
-        await t.rollback();
-      }
+  async fetchList(update = false) {
+    if (!update) {
+      await this.clear();
+    }
+    try {
+      const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
+      await taskQueue.push({
+        taskName: `获取${this.chineseName}列表`,
+        modelName: this.name,
+        modelFunc: "fetchOne",
+        taskParams: JSON.stringify({
+          type: "list",
+          updateKey: this.updateKey,
+          pageNum: 1,
+          pageSize: 1000,
+          update,
+          taskLevel: "10",
+        }),
+        taskLevel: "1",
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+  async fetchOne(params) {
+    const { pageSize, pageNum, pages, total, list } = await this.getPage(
+      params
+    );
+    if (params.update) {
+      await this.update(params.updateKey, list);
     } else {
-      await this.pageModel.create(list);
+      await this.add(list);
+    }
+    if (params.type == "list" && params.pageNum <= 1) {
+      const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
+      for (let index = pageNum + 1; index <= pages; index++) {
+        await taskQueue.push({
+          taskName: `获取${this.chineseName}列表`,
+          modelName: this.name,
+          modelFunc: "fetchOne",
+          taskParams: JSON.stringify({
+            updateKey: this.updateKey,
+            pageNum: index,
+            pageSize,
+            update: params.update,
+          }),
+          taskLevel: params.taskLevel,
+        });
+      }
     }
   }
 
@@ -66,7 +101,25 @@ class BaseModel {
   }
 
   async query() {}
-
+  async add(list) {
+    if (Array.isArray(list)) {
+      const t = await sequelize.transaction();
+      try {
+        for (let stockItem of list) {
+          const sqeObj = {};
+          this.modelKeys.forEach((key, index) => {
+            sqeObj[key] = stockItem[key];
+          });
+          await this.pageModel.create(sqeObj, { transaction: t });
+        }
+        await t.commit();
+      } catch (error) {
+        await t.rollback();
+      }
+    } else {
+      await this.pageModel.create(list);
+    }
+  }
   async update(uniqueKey, list) {
     if (Array.isArray(list)) {
       const t = await sequelize.transaction();

@@ -1,5 +1,4 @@
 const { col, Op, cast } = require("sequelize");
-const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
 
 const template = [
   { prop: "f2", label: "最新价" },
@@ -15,29 +14,10 @@ const template = [
 ];
 
 class Np extends require("./base") {
-  constructor(name, template) {
-    super(name, template);
+  constructor(params) {
+    super(params);
   }
-  async fetchList(update = false) {
-    if (!update) {
-      await this.clear();
-    }
-
-    try {
-      await taskQueue.push({
-        taskName: "获取指数列表",
-        modelName: "np",
-        modelFunc: "fetchOne",
-        taskParams: JSON.stringify({
-          update,
-        }),
-        taskLevel: "1",
-      });
-    } catch (error) {
-      throw error;
-    }
-  }
-  async fetchOne(params) {
+  async getPage(params) {
     const queryParams = {
       ut: "6d2ffaa6a585d612eda28417681d58fb",
       fields: template.map((item) => item.prop).join(","),
@@ -56,11 +36,14 @@ class Np extends require("./base") {
     data = data.slice(3, -2);
     data = JSON.parse(data).data || {};
     const { total, diff = [] } = data;
-    if (params.update) {
-      await this.update("f12", diff);
-    } else {
-      await this.add(diff);
-    }
+    const pages = Math.ceil(total / diff.length);
+    return {
+      total,
+      list: diff,
+      pageSize: diff.length,
+      pageNum: params.pageNum,
+      pages,
+    };
   }
   queryPage(params) {
     const { pageNum, pageSize, matchKey = [], order = [], where = {} } = params;
@@ -139,4 +122,9 @@ class Np extends require("./base") {
   }
 }
 
-module.exports = new Np("Np", template);
+module.exports = new Np({
+  name: "np",
+  template,
+  chineseName: "指数",
+  updateKey: "f12",
+});

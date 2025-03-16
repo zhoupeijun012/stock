@@ -1,6 +1,22 @@
 const taskManage = require("./task-manager");
 const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
 
+// 初始化模型
+taskManage.register({
+  type: "config",
+  async: false,
+  func: async () => {
+    // 初始化模型
+    await PACKAGE_EXCUTE(
+      RESOLVE_PATH("spider/model"),
+      ["base.js"],
+      async (module, moduleName) => {
+        taskQueue.registerModel(moduleName, module);
+      }
+    );
+  },
+});
+
 // 初始化数据库
 taskManage.register({
   type: "init",
@@ -12,7 +28,6 @@ taskManage.register({
       ["base.js"],
       async (module, moduleName) => {
         await module.init();
-        taskQueue.registerModel(moduleName, module);
       }
     );
 
@@ -42,7 +57,6 @@ taskManage.register({
 
     // 获取股票数据
     await require(RESOLVE_PATH("spider/model/stock.js")).fetchList();
-
     await require(RESOLVE_PATH("spider/model/np.js")).fetchList();
   },
 });
@@ -61,7 +75,6 @@ taskManage.register({
 
     // 获取股票数据
     await require(RESOLVE_PATH("spider/model/stock.js")).fetchList(true);
-
   },
 });
 
