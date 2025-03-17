@@ -42,22 +42,27 @@ taskManage.register({
   async: false,
   func: async () => {
     // 先获取概念/行业/地区数据
-    await require(RESOLVE_PATH("spider/model/concept.js")).fetchList();
-    await require(RESOLVE_PATH("spider/model/industry.js")).fetchList();
-    await require(RESOLVE_PATH("spider/model/region.js")).fetchList();
+    // await require(RESOLVE_PATH("spider/model/concept.js")).fetchList();
+    // await require(RESOLVE_PATH("spider/model/industry.js")).fetchList();
+    // await require(RESOLVE_PATH("spider/model/region.js")).fetchList();
 
-    // 获取etf与lof数据
-    await require(RESOLVE_PATH("spider/model/etf.js")).fetchList();
-    await require(RESOLVE_PATH("spider/model/lof.js")).fetchList();
+    // // 获取etf与lof数据
+    // await require(RESOLVE_PATH("spider/model/etf.js")).fetchList();
+    // await require(RESOLVE_PATH("spider/model/lof.js")).fetchList();
 
-    // 获取涨停板数据前20日
-    await require(RESOLVE_PATH("spider/model/limit.js")).fetchList();
-    // 当日涨停数据
-    await require(RESOLVE_PATH("spider/model/limit.js")).fetchTodayList();
+    // // 获取涨停板数据前20日
+    // await require(RESOLVE_PATH("spider/model/limit.js")).fetchList();
+    // // 当日涨停数据
+    // await require(RESOLVE_PATH("spider/model/limit.js")).fetchTodayList();
 
     // 获取股票数据
     await require(RESOLVE_PATH("spider/model/stock.js")).fetchList();
     await require(RESOLVE_PATH("spider/model/np.js")).fetchList();
+
+    // 获取K线数据
+    await require(RESOLVE_PATH("spider/model/stock.js")).fetchKList('day');
+    await require(RESOLVE_PATH("spider/model/stock.js")).fetchKList('mon');
+
   },
 });
 

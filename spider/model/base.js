@@ -77,6 +77,33 @@ class BaseModel {
       }
     }
   }
+  async fetchKList(type) {
+    const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
+    const { list } = await this.queryPage({
+      pageNum: 1,
+      pageSize: 10000,
+      matchKey: ["f12", "f14"],
+    });
+    for (let index = 0; index <= list; index++) {
+      const listItem = list[index];
+      await taskQueue.push({
+        taskName: `获取${listItem.f14}K线`,
+        modelName: this.name,
+        modelFunc: "fetchOneK",
+        taskParams: JSON.stringify({
+          code: listItem.f12,
+          type,
+        }),
+        taskLevel: "100",
+      });
+    }
+  }
+  async fetchOneK(params) {
+    const { f12, f14, f40001, f40002 } = await this.getKLine(params);
+    const kInstance = require(RESOLVE_PATH("splider/model/kline"));
+    await kInstance.delete({ f12 });
+    await kInstance.add({ f12, f14, f40001, f40002 });
+  }
 
   async queryPage(params) {
     const { pageNum, pageSize, matchKey = [], order = [], where = [] } = params;
