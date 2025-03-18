@@ -119,6 +119,16 @@ global.GET_STOCK_AREA = (code) => {
   return ["00", "30"].some((item) => code.startsWith(item)) ? "SZ" : "SH";
 };
 
+global.GET_STOCK_PREFIX = (code) => {
+  if(["60", "688","900"].some((item) => code.startsWith(item))) {
+    return "1." +code
+  } else if(["00", "300","200"].some((item) => code.startsWith(item))) {
+    return '0.' + code
+  } else {
+    return '0.' + code
+  }
+};
+
 global.TIME_WAIT = (time) => {
   return new Promise((resolve, reject) => {
     setTimeout(resolve, time);

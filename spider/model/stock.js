@@ -151,7 +151,7 @@ const template = [
   { prop: "f221", label: "更新日期" },
 ];
 
-class Stock extends require("./base") {
+class Stock extends require("./base-query") {
   constructor(params) {
     super(params);
   }
@@ -190,13 +190,14 @@ class Stock extends require("./base") {
   }
   async getKLine(params) {
     const typeMap = {
-      day: "101",
-      week: "102",
-      mon: "103",
+      day: 101,
+      week: 102,
+      mon: 103,
+      quarter: 104
     };
     const queryParams = {
       cb: "cb",
-      secid: params.code,
+      secid: GET_STOCK_PREFIX(params.code),
       ut: "fa5fd1943c7b386f172d6893dbfba10b",
       fields1: "f1,f2,f3,f4,f5,f6",
       fields2: "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61",
@@ -263,48 +264,6 @@ class Stock extends require("./base") {
       matchKey,
       order: tableOrders,
       where: whereMap,
-    });
-  }
-  useRouter(app) {
-    app.post("/getStockList", async (ctx, next) => {
-      try {
-        let {
-          pageNum,
-          pageSize,
-          matchKey,
-          order = [],
-          where = [],
-          prompt,
-        } = ctx.request.body;
-        if (
-          !Array.isArray(matchKey) ||
-          (Array.isArray(matchKey) && matchKey.length < 0)
-        ) {
-          matchKey = this.modelKeys;
-        }
-        const data = await this.queryPage({
-          pageNum,
-          pageSize,
-          matchKey,
-          order,
-          where,
-        });
-
-        ctx.body = {
-          success: true,
-          message: "成功",
-          data: {
-            template: prompt ? template : [],
-            ...data,
-          },
-        };
-      } catch (error) {
-        ctx.body = {
-          success: false,
-          message: error.message,
-          data: null,
-        };
-      }
     });
   }
 }

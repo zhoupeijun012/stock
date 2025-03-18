@@ -11,7 +11,7 @@ const template = [
   { prop: "message", label: "错误原因" },
 ];
 
-class Task extends require("./base") {
+class Task extends require("./base-query") {
   constructor(params) {
     super(params);
   }
@@ -56,48 +56,6 @@ class Task extends require("./base") {
       matchKey,
       order: tableOrders,
       where: whereMap,
-    });
-  }
-  useRouter(app) {
-    app.post("/getTaskList", async (ctx, next) => {
-      try {
-        let {
-          pageNum,
-          pageSize,
-          matchKey,
-          order = [],
-          where = [],
-          prompt,
-        } = ctx.request.body;
-        if (
-          !Array.isArray(matchKey) ||
-          (Array.isArray(matchKey) && matchKey.length < 0)
-        ) {
-          matchKey = this.modelKeys;
-        }
-        const data = await this.queryPage({
-          pageNum,
-          pageSize,
-          matchKey,
-          order,
-          where,
-        });
-
-        ctx.body = {
-          success: true,
-          message: "成功",
-          data: {
-            template: prompt ? template : [],
-            ...data,
-          },
-        };
-      } catch (error) {
-        ctx.body = {
-          success: false,
-          message: error.message,
-          data: null,
-        };
-      }
     });
   }
 }

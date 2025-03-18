@@ -3,10 +3,14 @@ const router = new Router({
   prefix: "/api",
 });
 
-PACKAGE_EXCUTE(RESOLVE_PATH('spider/model'),['base.js'],(module,moduleName)=>{
-  module.useRouter(router);
-})
+PACKAGE_EXCUTE(
+  RESOLVE_PATH("spider/model"),
+  ["base.js", "base-query.js"],
+  (module, moduleName) => {
+    module.useRouter(router);
+  }
+);
 
-require(RESOLVE_PATH('spider/task-queue')).useRouter(router);
+require(RESOLVE_PATH("spider/task-queue")).useRouter(router);
 
 module.exports = router;
