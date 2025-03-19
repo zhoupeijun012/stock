@@ -57,11 +57,10 @@ taskManage.register({
 
     // 获取股票数据
     await require(RESOLVE_PATH("spider/model/stock.js")).fetchList();
-    await require(RESOLVE_PATH("spider/model/np.js")).fetchList();
+    // await require(RESOLVE_PATH("spider/model/np.js")).fetchList();
 
     // 获取K线数据
     await require(RESOLVE_PATH("spider/model/stock.js")).fetchKList('day');
-    await require(RESOLVE_PATH("spider/model/stock.js")).fetchKList('mon');
 
   },
 });

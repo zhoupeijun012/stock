@@ -1,3 +1,4 @@
+const dayjs = require("dayjs");
 const { col, Op, cast } = require("sequelize");
 
 const template = [
@@ -193,21 +194,18 @@ class Stock extends require("./base-query") {
       day: 101,
       week: 102,
       mon: 103,
-      quarter: 104
+      quarter: 104,
     };
     const queryParams = {
-      cb: "cb",
       secid: GET_STOCK_PREFIX(params.code),
       ut: "fa5fd1943c7b386f172d6893dbfba10b",
       fields1: "f1,f2,f3,f4,f5,f6",
       fields2: "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61",
       klt: typeMap[params.type] ? typeMap[params.type] : params.type,
-      fqt: 1,
-      beg: 0,
-      end: "20500101",
-      smplmt: "460",
-      lmt: "1000000",
-      _: Date.now(),
+      fqt: "1",
+      end: dayjs().format("YYYYMMDD"),
+      lmt: "210",
+      cb: "cb",
     };
     const res = await HTTP.get(
       `https://push2his.eastmoney.com/api/qt/stock/kline/get`,
@@ -244,7 +242,8 @@ class Stock extends require("./base-query") {
     const whereArr = [];
     for (let key of Object.keys(where)) {
       // 股票名称
-      if (key == "10086") {
+      if (key == "f6666") {
+        
       } else {
         whereArr.push({
           [key]: {
