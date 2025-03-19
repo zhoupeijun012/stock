@@ -60,6 +60,18 @@ class BaseQuery extends require("./base") {
   }
   async fetchKList(type) {
     const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
+    await taskQueue.push({
+      taskName: `开启K线获取`,
+      modelName: this.name,
+      modelFunc: "startFetchKTask",
+      taskParams: JSON.stringify({
+        type,
+      }),
+      taskLevel: "100",
+    });
+  }
+  async startFetchKTask(params) {
+    const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
     const { list } = await this.queryPage({
       pageNum: 1,
       pageSize: 20,
@@ -73,7 +85,7 @@ class BaseQuery extends require("./base") {
         modelFunc: "fetchOneK",
         taskParams: JSON.stringify({
           code: listItem.f12,
-          type,
+          type: params.type,
         }),
         taskLevel: "100",
       });
@@ -134,7 +146,7 @@ class BaseQuery extends require("./base") {
           order = [],
           where = [],
           matchKey = [],
-          prompt
+          prompt,
         } = ctx.request.body;
         if (
           !Array.isArray(matchKey) ||
