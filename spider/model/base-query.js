@@ -74,7 +74,7 @@ class BaseQuery extends require("./base") {
     const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
     const { list } = await this.queryPage({
       pageNum: 1,
-      pageSize: 10,
+      pageSize: 10000,
       matchKey: ["f12", "f14"],
     });
     for (let index = 0; index < list.length; index++) {
