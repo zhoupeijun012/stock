@@ -22,7 +22,7 @@ taskManage.register({
   type: "init",
   async: false,
   func: async () => {
-    初始化数据库
+    // 初始化数据库
     await PACKAGE_EXCUTE(
       RESOLVE_PATH("spider/model"),
       ["base.js","base-query.js"],
