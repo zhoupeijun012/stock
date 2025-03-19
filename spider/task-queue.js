@@ -13,7 +13,11 @@ class TaskQueue {
     this.modelList[modelName] = model;
   }
   async push(taskInfo) {
-    await taskInstance.add(taskInfo);
+    if (Array.isArray(taskInfo)) {
+      await taskInstance.add(taskInfo);
+    } else {
+      await taskInstance.add(taskInfo);
+    }
     this._execTask();
   }
 
