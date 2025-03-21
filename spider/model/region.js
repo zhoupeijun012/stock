@@ -67,6 +67,36 @@ class Region extends require("./base-query") {
       pages,
     };
   }
+  async getKLine(params) {
+    const queryParams = {
+      secid: `90.${params.code}`,
+      ut: "fa5fd1943c7b386f172d6893dbfba10b",
+      fields1: "f1,f2,f3,f4,f5,f6",
+      fields2: "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61",
+      klt: GET_KLT(params.type),
+      fqt: "1",
+      end: DAYJS().format("YYYYMMDD"),
+      lmt: "210",
+      cb: "cb",
+    };
+    const res = await HTTP.get(
+      `https://push2his.eastmoney.com/api/qt/stock/kline/get`,
+      {
+        params: queryParams,
+      }
+    );
+
+    let data = res.data;
+    data = data.slice(3, -2);
+    data = JSON.parse(data).data || {};
+    const { code, name, klines = [] } = data;
+    return {
+      f12: code,
+      f14: name,
+      f40001: params.type,
+      f40002: JSON.stringify(klines),
+    };
+  }
   queryPage(params) {
     const { pageNum, pageSize, matchKey = [], order = [], where = {} } = params;
     const tableOrders = order.map((item) => {

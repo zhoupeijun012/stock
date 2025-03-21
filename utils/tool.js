@@ -2,8 +2,8 @@ const PATH = require("path");
 const dayjs = require("dayjs");
 const FS = require("fs");
 const CHINESEDAY = require("chinese-days");
-const requireContext = require('simple-require-context');
-const BASENAME = require('path').basename
+const requireContext = require("simple-require-context");
+const BASENAME = require("path").basename;
 
 global.RESOLVE_PATH = (dir = "") => {
   return PATH.resolve(__dirname, "../", dir);
@@ -76,12 +76,16 @@ global.WECHAT_SENG_TEXT = (msg, group = "") => {
       mentioned_list: [group],
     },
   };
-  return HTTP.post("https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=4c3f7e6e-2909-4c26-9d6f-02a3d8604cda", params, {
-    headers: {
-      "Content-type": "application/json",
-    },
-  }).catch((error) => {
-    throw error
+  return HTTP.post(
+    "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=4c3f7e6e-2909-4c26-9d6f-02a3d8604cda",
+    params,
+    {
+      headers: {
+        "Content-type": "application/json",
+      },
+    }
+  ).catch((error) => {
+    throw error;
   });
 };
 
@@ -90,7 +94,9 @@ global.IS_OPEN_DAY = (date) => {
 };
 
 global.IN_OPEN_TIME = () => {
-  return DAYJS().format("HHmmss") >= "092500" && DAYJS().format("HHmmss") <= "150000"
+  return (
+    DAYJS().format("HHmmss") >= "092500" && DAYJS().format("HHmmss") <= "150000"
+  );
 };
 
 global.GET_LAST_OPENDAY = (count) => {
@@ -120,12 +126,12 @@ global.GET_STOCK_AREA = (code) => {
 };
 
 global.GET_STOCK_PREFIX = (code) => {
-  if(["60", "688","900"].some((item) => code.startsWith(item))) {
-    return "1." +code
-  } else if(["00", "300","200"].some((item) => code.startsWith(item))) {
-    return '0.' + code
+  if (["60", "688", "900"].some((item) => code.startsWith(item))) {
+    return "1." + code;
+  } else if (["00", "300", "200"].some((item) => code.startsWith(item))) {
+    return "0." + code;
   } else {
-    return '0.' + code
+    return "0." + code;
   }
 };
 
@@ -135,21 +141,30 @@ global.TIME_WAIT = (time) => {
   });
 };
 
-
 global.GET_VAL = (params, expres) => {
   return expres.split(".").reduce((data, currentVal) => {
     return data[currentVal];
   }, params);
 };
 
-global.PACKAGE_EXCUTE = async (path,excute = [],callback)=>{
+global.PACKAGE_EXCUTE = async (path, excute = [], callback) => {
   const context = requireContext(path, false, /\.js$/);
   const keys = context.keys();
-  for(let index = 0; index < keys.length; index ++) {
+  for (let index = 0; index < keys.length; index++) {
     const key = keys[index];
     const basename = BASENAME(key);
-    if(!excute.includes(basename) && typeof callback == 'function') {
-      await callback(context(key),basename.replace('.js',''))
+    if (!excute.includes(basename) && typeof callback == "function") {
+      await callback(context(key), basename.replace(".js", ""));
     }
   }
-}
+};
+
+global.GET_KLT = (val) => {
+  const typeMap = {
+    day: 101,
+    week: 102,
+    mon: 103,
+    quarter: 104,
+  };
+  return typeMap[val] ? typeMap[val] : val;
+};

@@ -42,8 +42,9 @@ class BaseQuery extends require("./base") {
     }
     if (params.type == "list" && params.pageNum <= 1) {
       const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
+      const taskList = [];
       for (let index = pageNum + 1; index <= pages; index++) {
-        await taskQueue.push({
+        taskList.push({
           taskName: `获取${this.chineseName}列表`,
           modelName: this.name,
           modelFunc: "fetchOne",
@@ -56,6 +57,7 @@ class BaseQuery extends require("./base") {
           taskLevel: params.taskLevel,
         });
       }
+      await taskQueue.push(taskList);
     }
   }
   async fetchKList(type) {
@@ -97,6 +99,43 @@ class BaseQuery extends require("./base") {
     const kInstance = require(RESOLVE_PATH("spider/model/kline"));
     await kInstance.delete({ f12, f40001 });
     await kInstance.add({ f12, f14, f40001, f40002 });
+  }
+  async fetchFundList() {
+    const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
+    await taskQueue.push({
+      taskName: `开启获取资金流`,
+      modelName: this.name,
+      modelFunc: "startFetchFundTask",
+      taskParams: JSON.stringify({}),
+      taskLevel: "100",
+    });
+  }
+  async startFetchFundTask() {
+    const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
+    const { list = [] } = await this.queryPage({
+      pageNum: 1,
+      pageSize: 10000,
+      matchKey: ["f12", "f14"],
+    });
+
+    const fetchList = list.map((listItem) => {
+      return {
+        taskName: `获取${listItem.f14}资金流`,
+        modelName: this.name,
+        modelFunc: "fetchOneFund",
+        taskParams: JSON.stringify({
+          code: listItem.f12,
+        }),
+        taskLevel: "100",
+      };
+    });
+    taskQueue.push(fetchList);
+  }
+  async fetchOneFund(params) {
+    const { f12, f14, f40003 } = await this.getFundPage(params);
+    const kInstance = require(RESOLVE_PATH("spider/model/fund"));
+    await kInstance.delete({ f12 });
+    await kInstance.add({ f12, f14, f40003 });
   }
   useRouter(app) {
     const upperName = this.name.charAt(0).toUpperCase() + this.name.slice(1);
