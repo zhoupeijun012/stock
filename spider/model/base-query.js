@@ -69,7 +69,7 @@ class BaseQuery extends require("./base") {
       taskParams: JSON.stringify({
         type,
       }),
-      taskLevel: "100",
+      taskLevel: "1000",
     });
   }
   async startFetchKTask(params) {
@@ -89,7 +89,7 @@ class BaseQuery extends require("./base") {
           code: listItem.f12,
           type: params.type,
         }),
-        taskLevel: "100",
+        taskLevel: "10000",
       };
     });
     taskQueue.push(fetchList);
@@ -107,7 +107,7 @@ class BaseQuery extends require("./base") {
       modelName: this.name,
       modelFunc: "startFetchFundTask",
       taskParams: JSON.stringify({}),
-      taskLevel: "100",
+      taskLevel: "1000",
     });
   }
   async startFetchFundTask() {
