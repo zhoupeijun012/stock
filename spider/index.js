@@ -61,17 +61,17 @@ taskManage.register({
 
     await TIME_WAIT(1000 * 300);
 
-    await require(RESOLVE_PATH("spider/model/concept.js")).fetchKList("day");
+    // await require(RESOLVE_PATH("spider/model/concept.js")).fetchKList("day");
     // await require(RESOLVE_PATH("spider/model/concept.js")).fetchFundList('day');
 
     await require(RESOLVE_PATH("spider/model/stock.js")).fetchKList("day");
-    // await require(RESOLVE_PATH("spider/model/stock.js")).fetchFundList('day');
+    // // await require(RESOLVE_PATH("spider/model/stock.js")).fetchFundList('day');
 
-    await require(RESOLVE_PATH("spider/model/industry.js")).fetchKList("day");
-    // await require(RESOLVE_PATH("spider/model/industry.js")).fetchFundList('day');
+    // await require(RESOLVE_PATH("spider/model/industry.js")).fetchKList("day");
+    // // await require(RESOLVE_PATH("spider/model/industry.js")).fetchFundList('day');
 
-    await require(RESOLVE_PATH("spider/model/region.js")).fetchKList("day");
-    // await require(RESOLVE_PATH("spider/model/region.js")).fetchFundList('day');
+    // await require(RESOLVE_PATH("spider/model/region.js")).fetchKList("day");
+    // // await require(RESOLVE_PATH("spider/model/region.js")).fetchFundList('day');
   },
 });
 
