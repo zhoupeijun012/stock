@@ -121,7 +121,7 @@ class Concept extends require("./base-query") {
     return {
       f12: code,
       f14: name,
-      f40003: JSON.stringify(klines),
+      f50003: JSON.stringify(klines),
     };
   }
   queryPage(params) {

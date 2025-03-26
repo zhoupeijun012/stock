@@ -132,10 +132,10 @@ class BaseQuery extends require("./base") {
     taskQueue.push(fetchList);
   }
   async fetchOneFund(params) {
-    const { f12, f14, f40003 } = await this.getFundPage(params);
+    const { f12, f14, f50003 } = await this.getFundPage(params);
     const kInstance = require(RESOLVE_PATH("spider/model/fund"));
     await kInstance.delete({ f12 });
-    await kInstance.add({ f12, f14, f40003 });
+    await kInstance.add({ f12, f14, f50003 });
   }
   useRouter(app) {
     const upperName = this.name.charAt(0).toUpperCase() + this.name.slice(1);

@@ -3,7 +3,7 @@ const { col, Op, cast } = require("sequelize");
 const template = [
   { prop: "f12", label: "股票代码" },
   { prop: "f14", label: "股票名称" },
-  { prop: "f40003", label: "资金数据" },
+  { prop: "f50003", label: "资金数据" },
 ];
 
 class Fund extends require("./base-query") {
