@@ -2,7 +2,7 @@
 FROM node:18-alpine3.18
 
 # 设置工作目录
-WORKDIR /usr/src/app
+WORKDIR /usr/www
 
 # 复制package.json和package-lock.json到工作目录
 COPY package*.json ./
