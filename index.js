@@ -20,8 +20,8 @@ spider.start();
 //     await require(RESOLVE_PATH("spider/task-queue.js")).init();
 //     await require(RESOLVE_PATH("spider/model/stock.js")).fetchOne({
 //       updateKey: "f12",
-//       pageNum: 2,
-//       pageSize: 1,
+//       pageNum: 50,
+//       pageSize: 2,
 //       update: false,
 //     });
 //     await require(RESOLVE_PATH("spider/model/stock.js")).fetchKList("day");

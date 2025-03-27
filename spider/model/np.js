@@ -85,4 +85,5 @@ module.exports = new Np({
   template,
   chineseName: "指数",
   updateKey: "f12",
+  extend: require(RESOLVE_PATH("spider/model/kline")).extend
 });

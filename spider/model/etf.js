@@ -348,4 +348,5 @@ module.exports = new Etf({
   template,
   chineseName: "ETF",
   updateKey: "f12",
+  extend: require(RESOLVE_PATH("spider/model/kline")).extend
 });

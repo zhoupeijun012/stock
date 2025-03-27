@@ -1,4 +1,4 @@
-const { col, Op, cast } = require("sequelize");
+const { col, Op, cast, fn, literal } = require("sequelize");
 
 const template = [
   { prop: "f2", label: "最新价" },
@@ -118,6 +118,42 @@ class Industry extends require("./base-query") {
             [Op.eq]: where[key],
           },
         });
+      } else if (key == "f6666") {
+        const arr = where["f6666"].map((item) => {
+          return {
+            [Op.startsWith]: item,
+          };
+        });
+        whereArr.push({
+          ["f12"]: {
+            [Op.or]: arr,
+          },
+        });
+      } else if (key == "f21") {
+        if (where[key].length > 1) {
+          whereArr.push(
+            literal(`CAST(${key} AS INTEGER) >= ${where[key][0] * 100000000}`)
+          );
+          whereArr.push(
+            literal(`CAST(${key} AS INTEGER) < ${where[key][1] * 100000000}`)
+          );
+        } else {
+          whereArr.push(
+            literal(`CAST(${key} AS INTEGER) >= ${where[key][0] * 100000000}`)
+          );
+        }
+      } else if (key == "f9") {
+        if (where[key] > 0) {
+          whereArr.push(literal(`CAST(${key} AS INTEGER) < 0`));
+        } else {
+          whereArr.push(literal(`CAST(${key} AS INTEGER) >= 0`));
+        }
+      } else if (key == "f23") {
+        if (where[key] > 0) {
+          whereArr.push(literal(`CAST(${key} AS INTEGER) < 1`));
+        } else {
+          whereArr.push(literal(`CAST(${key} AS INTEGER) >= 1`));
+        }
       } else {
         whereArr.push({
           [key]: {
@@ -145,4 +181,5 @@ module.exports = new Industry({
   template,
   chineseName: "行业",
   updateKey: "f12",
+  extend: require(RESOLVE_PATH("spider/model/kline")).extend,
 });

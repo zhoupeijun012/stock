@@ -60,4 +60,5 @@ module.exports = new Fund({
   template,
   chineseName: "现金流",
   updateKey: "uuid",
+  extend: require(RESOLVE_PATH("spider/model/kline")).extend
 });

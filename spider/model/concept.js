@@ -1,4 +1,5 @@
-const { col, Op, cast } = require("sequelize");
+const { extend } = require("dayjs");
+const { col, Op, cast, fn, literal } = require("sequelize");
 
 const template = [
   { prop: "f2", label: "最新价" },
@@ -98,14 +99,14 @@ class Concept extends require("./base-query") {
   }
   async getFundPage(params) {
     const queryParams = {
-      cb: 'cb',
-      lmt: '0',
-      klt: '101',
-      fields1: 'f1,f2,f3,f7',
-      fields2: 'f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63,f64,f65',
-      ut: 'b2884a393a59ad64002292a3e90d46a5',
+      cb: "cb",
+      lmt: "0",
+      klt: "101",
+      fields1: "f1,f2,f3,f7",
+      fields2: "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63,f64,f65",
+      ut: "b2884a393a59ad64002292a3e90d46a5",
       secid: `90.${params.code}`,
-      _: Date.now()
+      _: Date.now(),
     };
     const res = await HTTP.get(
       `https://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get`,
@@ -145,6 +146,42 @@ class Concept extends require("./base-query") {
             [Op.eq]: where[key],
           },
         });
+      } else if (key == "f6666") {
+        const arr = where["f6666"].map((item) => {
+          return {
+            [Op.startsWith]: item,
+          };
+        });
+        whereArr.push({
+          ["f12"]: {
+            [Op.or]: arr,
+          },
+        });
+      } else if (key == "f21") {
+        if (where[key].length > 1) {
+          whereArr.push(
+            literal(`CAST(${key} AS INTEGER) >= ${where[key][0] * 100000000}`)
+          );
+          whereArr.push(
+            literal(`CAST(${key} AS INTEGER) < ${where[key][1] * 100000000}`)
+          );
+        } else {
+          whereArr.push(
+            literal(`CAST(${key} AS INTEGER) >= ${where[key][0] * 100000000}`)
+          );
+        }
+      } else if (key == "f9") {
+        if (where[key] > 0) {
+          whereArr.push(literal(`CAST(${key} AS INTEGER) < 0`));
+        } else {
+          whereArr.push(literal(`CAST(${key} AS INTEGER) >= 0`));
+        }
+      } else if (key == "f23") {
+        if (where[key] > 0) {
+          whereArr.push(literal(`CAST(${key} AS INTEGER) < 1`));
+        } else {
+          whereArr.push(literal(`CAST(${key} AS INTEGER) >= 1`));
+        }
       } else {
         whereArr.push({
           [key]: {
@@ -172,4 +209,5 @@ module.exports = new Concept({
   template,
   chineseName: "概念",
   updateKey: "f12",
+  extend: require(RESOLVE_PATH("spider/model/kline")).extend,
 });

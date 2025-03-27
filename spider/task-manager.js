@@ -54,7 +54,7 @@ class TaskManager {
     });
 
     // 收盘结束任务
-    cron.schedule("0 15 * * *", () => {
+    cron.schedule("50 15 * * *", () => {
       if (IS_OPEN_DAY(DAYJS().format("YYYY-MM-DD"))) {
         this._execTask("close");
       } else {

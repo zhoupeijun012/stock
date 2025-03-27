@@ -2,10 +2,10 @@ const { sequelize } = require(RESOLVE_PATH("utils/sql.js"));
 const { DataTypes } = require("sequelize");
 
 class BaseModel {
-  constructor({ name, template }) {
+  constructor({ name, template, extend = [] }) {
     const modelKeys = template.map((item) => item.alias || item.prop);
     const defineModel = {};
-    template.forEach((templateItem) => {
+    [...template,...extend].forEach((templateItem) => {
       defineModel[templateItem.alias || templateItem.prop] = {
         type: DataTypes.STRING,
         allowNull: true,

@@ -163,4 +163,5 @@ module.exports = new Limit({
   template,
   chineseName: "涨停",
   updateKey: "f12",
+  extend: require(RESOLVE_PATH("spider/model/kline")).extend
 });

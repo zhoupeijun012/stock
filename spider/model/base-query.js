@@ -1,8 +1,9 @@
 class BaseQuery extends require("./base") {
-  constructor({ name, template, chineseName = "模板", updateKey = "f12" }) {
+  constructor({ name, template,extend, chineseName = "模板", updateKey = "f12" }) {
     super({
       name,
       template,
+      extend
     });
     this.chineseName = chineseName;
     this.updateKey = updateKey;
@@ -99,6 +100,8 @@ class BaseQuery extends require("./base") {
     const kInstance = require(RESOLVE_PATH("spider/model/kline"));
     await kInstance.delete({ f12, f40001 });
     await kInstance.add({ f12, f14, f40001, f40002 });
+    const indexObj = kInstance.calculateIndex({ f12, f14, f40001, f40002 });
+    await this.update('f12',indexObj)
   }
   async fetchFundList() {
     const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));

@@ -118,4 +118,5 @@ module.exports = new Lof({
   template,
   chineseName: "LOF",
   updateKey: "f12",
+  extend: require(RESOLVE_PATH("spider/model/kline")).extend
 });

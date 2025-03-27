@@ -5,20 +5,22 @@ const template = [
   { prop: "f14", label: "股票名称" },
   { prop: "f40001", label: "K线类型" },
   { prop: "f40002", label: "K线数据" },
-  { prop: "f40003", label: "历史最低价" },
-  { prop: "f40004", label: "历史最高价" },
-  { prop: "f40005", label: "至今涨跌幅倍数" },
-  { prop: "f40006", label: "2024年9月20日至今涨幅" },
-  { prop: "f40007", label: "2025年2月05日至今涨幅" },
-  { prop: "f40008", label: "是否均线多头排列" },
-  { prop: "f40009", label: "均线多头排列天数" },
-  { prop: "f40010", label: "是否站上60日均线" },
-  { prop: "f40011", label: "站上60日均线天数" },
 ];
 
 class Kline extends require("./base-query") {
   constructor(params) {
     super(params);
+    this.extend = [
+      { prop: "f40003", label: "历史最低价" },
+      { prop: "f40004", label: "历史最高价" },
+      { prop: "f40005", label: "至今涨跌幅倍数" },
+      { prop: "f40006", label: "2024年9月20日至今涨幅" },
+      { prop: "f40007", label: "2025年2月05日至今涨幅" },
+      { prop: "f40008", label: "是否均线多头排列" },
+      { prop: "f40009", label: "均线多头排列天数" },
+      { prop: "f40010", label: "是否站上60日均线" },
+      { prop: "f40011", label: "站上60日均线天数" },
+    ]
   }
   queryPage(params) {
     const { pageNum, pageSize, matchKey = [], order = [], where = {} } = params;
@@ -64,8 +66,8 @@ class Kline extends require("./base-query") {
     });
   }
   // 在这里计算数据
-  add(stockKLineItem) {
-    const { f40002 } = stockKLineItem;
+  calculateIndex(stockKLineItem) {
+    const { f12, f40002 } = stockKLineItem;
     let klines = JSON.parse(f40002);
     klines = klines.map((kItem) => {
       const dates = kItem.split(",");
@@ -74,37 +76,46 @@ class Kline extends require("./base-query") {
     const closePrices = klines.map((dates) => {
       return parseFloat(dates[2]);
     });
+
+    const indexObj = {
+      f12,
+    };
     // 1、先计算ma
     const maArray = this.MA(closePrices);
     // 2、再计算 f40003 历史最低价
     const f40003 = this.MAX(closePrices);
-    stockKLineItem["f40003"] = f40003;
+    indexObj["f40003"] = f40003;
     // 3、再计算 f40004 历史最高价
     const f40004 = this.MIN(closePrices);
-    stockKLineItem["f40004"] = f40004;
+    indexObj["f40004"] = f40004;
     // 4、再计算 f40005 涨跌幅倍数
     const f40005 =
       parseInt((f40003 / closePrices[closePrices.length - 1]) * 100) / 100;
-    stockKLineItem["f40005"] = f40005;
+    indexObj["f40005"] = f40005;
     // 5、再计算 f40006 2024年9月20日至今涨幅
-    const f40006 = this.destDate(JSON.parse(JSON.stringify(klines)), "20240920");
-    stockKLineItem["f40006"] = f40006;
+    const f40006 = this.destDate(
+      JSON.parse(JSON.stringify(klines)),
+      "20240920"
+    );
+    indexObj["f40006"] = f40006;
     // 6、再计算 f40007 2025年2月05日至今涨幅
-    const f40007 = this.destDate(JSON.parse(JSON.stringify(klines)), "20250205");
-    stockKLineItem["f40007"] = f40007;
+    const f40007 = this.destDate(
+      JSON.parse(JSON.stringify(klines)),
+      "20250205"
+    );
+    indexObj["f40007"] = f40007;
     // 7、再计算 f40008 f40009 是否均线多头排列/均线多头排列天数
     const { f40008, f40009 } = this.UP(maArray);
-    stockKLineItem["f40008"] = f40008;
-    stockKLineItem["f40009"] = f40009;
+    indexObj["f40008"] = f40008;
+    indexObj["f40009"] = f40009;
     // 8、再计算 f40010 f40011 是否站上60日均线/站上60日均线天数
     const { f40010, f40011 } = this.UP60(maArray, closePrices);
 
-    stockKLineItem["f40010"] = f40010;
-    stockKLineItem["f40011"] = f40011;
+    indexObj["f40010"] = f40010;
+    indexObj["f40011"] = f40011;
 
-    return super.add(stockKLineItem);
+    return indexObj;
   }
-
   MA(closePrices) {
     const periods = [5, 10, 20, 30, 60];
     const movingAverages = {};
@@ -200,9 +211,10 @@ class Kline extends require("./base-query") {
   }
 }
 
-module.exports = new Kline({
+module.exports =  new Kline({
   name: "kline",
   template,
   chineseName: "K线",
   updateKey: "uuid",
 });
+
