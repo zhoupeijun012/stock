@@ -3,7 +3,7 @@ let excuting = false;
 class TaskQueue {
   constructor() {
     this.modelList = {};
-    this.asyncCount = 10;
+    this.asyncCount = 5;
   }
   async init() {
     // 初始化任务列表数据库
