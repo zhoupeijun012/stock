@@ -104,24 +104,20 @@ class BaseModel {
         }
       }
     }
-   
+
     return whereArr;
   }
   async add(list) {
     if (Array.isArray(list)) {
-      const t = await sequelize.transaction();
-      try {
-        for (let stockItem of list) {
-          const sqeObj = {};
-          this.modelKeys.forEach((key, index) => {
-            sqeObj[key] = stockItem[key];
-          });
-          await this.pageModel.create(sqeObj, { transaction: t });
-        }
-        await t.commit();
-      } catch (error) {
-        await t.rollback();
+      const listArr = [];
+      for (let stockItem of list) {
+        const sqeObj = {};
+        this.modelKeys.forEach((key, index) => {
+          sqeObj[key] = stockItem[key];
+        });
+        listArr.push(sqeObj);
       }
+      await this.pageModel.bulkCreate(listArr);
     } else {
       await this.pageModel.create(list);
     }
