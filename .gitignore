@@ -1,6 +1,6 @@
 node_modules
 cache
 pnpm-lock.yaml
-sqlite.db
-sqlite.db-journal
+db/sqlite.db
+db/sqlite.db-journal
 config/index.json
