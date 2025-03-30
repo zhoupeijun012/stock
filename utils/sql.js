@@ -3,6 +3,7 @@ const { Sequelize } = require("sequelize");
 const sequelize = new Sequelize({
   dialect: "sqlite",
   storage: RESOLVE_PATH("db/sqlite.db"),
+  logging: false,
 });
 
 exports.sequelize = sequelize;

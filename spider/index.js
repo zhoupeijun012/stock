@@ -42,6 +42,11 @@ taskManage.register({
   async: false,
   func: async () => {
 
+    await require(RESOLVE_PATH("spider/model/stock.js")).fetchList();
+    await TIME_WAIT(1000 * 20);
+    await require(RESOLVE_PATH("spider/model/stock.js")).fetchKList("day");
+    await require(RESOLVE_PATH("spider/model/stock.js")).fetchFundList();
+
     await require(RESOLVE_PATH("spider/model/region.js")).fetchList();
     await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/region.js")).fetchKList("day");
@@ -58,11 +63,6 @@ taskManage.register({
     await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/industry.js")).fetchKList("day");
     await require(RESOLVE_PATH("spider/model/industry.js")).fetchFundList();
-
-    await require(RESOLVE_PATH("spider/model/stock.js")).fetchList();
-    await TIME_WAIT(1000 * 20);
-    await require(RESOLVE_PATH("spider/model/stock.js")).fetchKList("day");
-    await require(RESOLVE_PATH("spider/model/stock.js")).fetchFundList();
 
     // 获取etf与lof数据
     await require(RESOLVE_PATH("spider/model/etf.js")).fetchList();
