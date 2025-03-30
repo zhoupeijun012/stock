@@ -17,24 +17,24 @@ taskManage.register({
   },
 });
 
-// // 初始化数据库
-// taskManage.register({
-//   type: "init",
-//   async: false,
-//   func: async () => {
-//     // 初始化数据库
-//     await PACKAGE_EXCUTE(
-//       RESOLVE_PATH("spider/model"),
-//       ["base.js", "base-query.js"],
-//       async (module, moduleName) => {
-//         await module.init();
-//       }
-//     );
+// 初始化数据库
+taskManage.register({
+  type: "init",
+  async: false,
+  func: async () => {
+    // 初始化数据库
+    await PACKAGE_EXCUTE(
+      RESOLVE_PATH("spider/model"),
+      ["base.js", "base-query.js"],
+      async (module, moduleName) => {
+        await module.init();
+      }
+    );
 
-//     // 初始化任务数据库
-//     await require(RESOLVE_PATH("spider/task-queue.js")).init();
-//   },
-// });
+    // 初始化任务数据库
+    await require(RESOLVE_PATH("spider/task-queue.js")).init();
+  },
+});
 
 // 初始化爬取数据
 taskManage.register({
