@@ -43,24 +43,19 @@ taskManage.register({
   func: async () => {
 
     await require(RESOLVE_PATH("spider/model/stock.js")).fetchList();
-    await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/stock.js")).fetchKList("day");
     await require(RESOLVE_PATH("spider/model/stock.js")).fetchFundList();
 
     await require(RESOLVE_PATH("spider/model/region.js")).fetchList();
-    await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/region.js")).fetchKList("day");
     await require(RESOLVE_PATH("spider/model/region.js")).fetchFundList();
 
     // 先获取概念/行业/地区数据
     await require(RESOLVE_PATH("spider/model/concept.js")).fetchList();
-    await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/concept.js")).fetchKList("day");
     await require(RESOLVE_PATH("spider/model/concept.js")).fetchFundList();
 
-
     await require(RESOLVE_PATH("spider/model/industry.js")).fetchList();
-    await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/industry.js")).fetchKList("day");
     await require(RESOLVE_PATH("spider/model/industry.js")).fetchFundList();
 
@@ -117,19 +112,12 @@ taskManage.register({
   func: async () => {
     // 获取K线
     await require(RESOLVE_PATH("spider/model/concept.js")).fetchKList("day");
-    await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/concept.js")).fetchFundList();
-    await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/stock.js")).fetchKList("day");
-    await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/stock.js")).fetchFundList();
-    await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/industry.js")).fetchKList("day");
-    await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/industry.js")).fetchFundList();
-    await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/region.js")).fetchKList("day");
-    await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/region.js")).fetchFundList();
   },
 });
