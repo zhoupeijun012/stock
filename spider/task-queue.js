@@ -3,7 +3,7 @@ let excuting = false;
 class TaskQueue {
   constructor() {
     this.modelList = {};
-    this.asyncCount = 5;
+    this.asyncCount = 10;
   }
   async init() {
     // 初始化任务列表数据库
@@ -47,7 +47,12 @@ class TaskQueue {
         },
       });
 
-      const { list, total } = data;
+      let { list } = data;
+      const levelList = list.map((item)=>item.taskLevel);
+      const minLevel = Math.min(...levelList);
+      list = list.filter((item)=>item.taskLevel == minLevel);
+      const total = list.length;
+      
       const promiseArr = [];
       const promiseResult = [];
       for (let index = 0; index < list.length; index++) {

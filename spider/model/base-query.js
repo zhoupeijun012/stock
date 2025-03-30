@@ -130,7 +130,7 @@ class BaseQuery extends require("./base") {
         taskParams: JSON.stringify({
           code: listItem.f12,
         }),
-        taskLevel: "100",
+        taskLevel: "10000",
       };
     });
     taskQueue.push(fetchList);
