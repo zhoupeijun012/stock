@@ -13,46 +13,23 @@ class Kline extends require("./base-query") {
     this.extend = [
       { prop: "f40003", label: "历史最低价" },
       { prop: "f40004", label: "历史最高价" },
-      { prop: "f40005", label: "至今涨跌幅倍数" },
-      { prop: "f40006", label: "2024年9月20日至今涨幅" },
-      { prop: "f40007", label: "2025年2月05日至今涨幅" },
-      { prop: "f40008", label: "是否均线多头排列" },
-      { prop: "f40009", label: "均线多头排列天数" },
-      { prop: "f40010", label: "是否站上60日均线" },
-      { prop: "f40011", label: "站上60日均线天数" },
-    ]
+      { prop: "f40005", label: "至今涨跌幅倍数", filter: 'range' },
+      { prop: "f40006", label: "2024年9月20日至今涨幅", filter: 'range' },
+      { prop: "f40007", label: "2025年2月05日至今涨幅", filter: 'range' },
+      { prop: "f40008", label: "均线多头排列天数", filter: 'range' },
+      { prop: "f40009", label: "均线多头排列涨幅", filter: 'range' },
+      { prop: "f40010", label: "站上60日均线天数", filter: 'range' },
+      { prop: "f40011", label: "站上60日均线涨幅", filter: 'range' },
+    ];
   }
   queryPage(params) {
     const { pageNum, pageSize, matchKey = [], order = [], where = {} } = params;
 
-    const tableOrders = order.map((item) => {
-      if (item.prop == "10086") {
-      } else {
-        return [
-          cast(col(item.prop), "SIGNED"),
-          item.order == "ascending" ? "ASC" : "DESC",
-        ];
-      }
-    });
+    const tableOrders = this.orderArray(order);
 
-    const whereArr = [];
-    for (let key of Object.keys(where)) {
-      // 股票名称
-      if (key == "retryCount") {
-        whereArr.push({
-          [key]: {
-            [Op.lt]: where[key],
-          },
-        });
-      } else {
-        whereArr.push({
-          [key]: {
-            [Op.like]: `%${where[key]}%`,
-          },
-        });
-      }
-    }
-
+    let whereArr = [];
+    whereArr = whereArr.concat(this.whereArray(where));
+    
     const whereMap = {
       [Op.and]: whereArr,
     };
@@ -105,7 +82,7 @@ class Kline extends require("./base-query") {
     );
     indexObj["f40007"] = f40007;
     // 7、再计算 f40008 f40009 是否均线多头排列/均线多头排列天数
-    const { f40008, f40009 } = this.UP(maArray);
+    const { f40008, f40009 } = this.UP(maArray, closePrices);
     indexObj["f40008"] = f40008;
     indexObj["f40009"] = f40009;
     // 8、再计算 f40010 f40011 是否站上60日均线/站上60日均线天数
@@ -144,25 +121,25 @@ class Kline extends require("./base-query") {
   MIN(closePrices) {
     return Math.min(...closePrices);
   }
-  UP(maArray) {
+  UP(maArray, closePrices) {
     let f40008 = 0;
     let f40009 = 0;
     const MA5 = maArray["5日"];
     const MA10 = maArray["10日"];
     const MA20 = maArray["20日"];
     const MA30 = maArray["30日"];
-    const MA60 = maArray["60日"];
 
     for (let index = MA5.length - 1; index >= 0; index--) {
       if (
         parseFloat(MA5[index]) >= parseFloat(MA10[index]) &&
         parseFloat(MA10[index]) >= parseFloat(MA20[index]) &&
-        parseFloat(MA20[index]) >= parseFloat(MA30[index]) &&
-        parseFloat(MA30[index]) >= parseFloat(MA60[index])
+        parseFloat(MA20[index]) >= parseFloat(MA30[index])
       ) {
-        f40008 = 1;
-        f40009++;
+        f40008++;
       } else {
+        const lastPrice = closePrices[closePrices.length - 1];
+        const curPrice = closePrices[index];
+        f40009 = parseInt(((lastPrice - curPrice) / curPrice) * 10000);
         break;
       }
     }
@@ -178,9 +155,11 @@ class Kline extends require("./base-query") {
 
     for (let index = MA60.length - 1; index >= 0; index--) {
       if (parseFloat(closePrices[index]) >= parseFloat(MA60[index])) {
-        f40010 = 1;
-        f40011++;
+        f40010++;
       } else {
+        const lastPrice = closePrices[closePrices.length - 1];
+        const curPrice = closePrices[index];
+        f40011 = parseInt(((lastPrice - curPrice) / curPrice) * 10000);
         break;
       }
     }
@@ -201,20 +180,16 @@ class Kline extends require("./base-query") {
         break;
       }
     }
-    return (
-      parseInt(
-        ((parseFloat(lastPrice) - parseFloat(desPrice)) /
-          parseFloat(desPrice)) *
-          100
-      ) / 100
+    return parseInt(
+      ((parseFloat(lastPrice) - parseFloat(desPrice)) / parseFloat(desPrice)) *
+        10000
     );
   }
 }
 
-module.exports =  new Kline({
+module.exports = new Kline({
   name: "kline",
   template,
   chineseName: "K线",
   updateKey: "uuid",
 });
-

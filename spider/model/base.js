@@ -1,11 +1,11 @@
 const { sequelize } = require(RESOLVE_PATH("utils/sql.js"));
 const { DataTypes } = require("sequelize");
-
+const { col, Op, cast, fn, literal } = require("sequelize");
 class BaseModel {
   constructor({ name, template, extend = [] }) {
     const modelKeys = template.map((item) => item.alias || item.prop);
     const defineModel = {};
-    [...template,...extend].forEach((templateItem) => {
+    [...template, ...extend].forEach((templateItem) => {
       defineModel[templateItem.alias || templateItem.prop] = {
         type: DataTypes.STRING,
         allowNull: true,
@@ -23,8 +23,9 @@ class BaseModel {
     this.pageModel = sequelize.define(name, defineModel);
     this.name = name;
     this.modelKeys = modelKeys;
+    this.template = template;
+    this.extend = extend;
   }
-
   async query(params) {
     const { where = [] } = params;
     const data = await this.pageModel.findOne({ where });
@@ -37,7 +38,9 @@ class BaseModel {
     }
     const { count, rows } = await this.pageModel.findAndCountAll({
       distinct: true,
-      attributes: matchKey,
+      attributes: {
+        include: matchKey,
+      },
       offset: (pageNum - 1) * pageSize,
       limit: pageSize,
       order: order,
@@ -50,6 +53,59 @@ class BaseModel {
       pageSize,
       pages: Math.ceil(count / pageSize),
     };
+  }
+  orderArray(order = []) {
+    return order.map((item) => {
+      return [
+        cast(col(item.prop), "SIGNED"),
+        item.order == "ascending" ? "ASC" : "DESC",
+      ];
+    });
+  }
+  whereArray(where = []) {
+    const template = [...this.template, ...this.extend];
+    const whereArr = [];
+    for (let key of Object.keys(where)) {
+      const findObj = template.find((item) => item.prop == key);
+      if (findObj) {
+        const filterType = findObj.filter || "like";
+
+        // 处理范围筛选
+        if (filterType == "range" && where[key].length > 0) {
+          if (where[key].length > 1) {
+            whereArr.push(
+              literal(`CAST(${key} AS INTEGER) >= ${where[key][0]}`)
+            );
+            whereArr.push(
+              literal(`CAST(${key} AS INTEGER) <= ${where[key][1]}`)
+            );
+          } else {
+            whereArr.push(
+              literal(`CAST(${key} AS INTEGER) >= ${where[key][0]}`)
+            );
+          }
+        }
+
+        // 处理模糊筛选
+        if (filterType == "like") {
+          whereArr.push({
+            [key]: {
+              [Op.like]: `%${where[key]}%`,
+            },
+          });
+        }
+
+        if (filterType == "eq") {
+          whereArr.push({
+            [key]: {
+              [Op.eq]: where[key],
+            },
+          });
+        }
+      }
+    }
+   
+    return whereArr;
   }
   async add(list) {
     if (Array.isArray(list)) {
@@ -103,13 +159,11 @@ class BaseModel {
       });
     }
   }
-
   async delete(obj) {
     await this.pageModel.destroy({
       where: obj,
     });
   }
-
   async clear() {
     await this.pageModel.truncate();
   }

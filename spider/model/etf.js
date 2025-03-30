@@ -25,7 +25,7 @@ const template = [
   { prop: "f23", label: "市净率" },
   { prop: "f24", label: "60日涨跌幅" },
   { prop: "f25", label: "年初至今涨跌幅" },
-  { prop: "c1", label: "交易类型" },
+  { prop: "c1", label: "交易类型",filter: 'eq' },
 ];
 const T_CODE = [
   "518860",
@@ -302,33 +302,10 @@ class Etf extends require("./base-query") {
   }
   queryPage(params) {
     const { pageNum, pageSize, matchKey = [], order = [], where = {} } = params;
-    const tableOrders = order.map((item) => {
-      if (item.prop == "10086") {
-      } else {
-        return [
-          cast(col(item.prop), "SIGNED"),
-          item.order == "ascending" ? "ASC" : "DESC",
-        ];
-      }
-    });
+    const tableOrders = this.orderArray(order);
 
-    const whereArr = [];
-    for (let key of Object.keys(where)) {
-      // 股票名称
-      if (key == "c1") {
-        whereArr.push({
-          [key]: {
-            [Op.eq]: where[key],
-          },
-        });
-      } else {
-        whereArr.push({
-          [key]: {
-            [Op.like]: `%${where[key]}%`,
-          },
-        });
-      }
-    }
+    let whereArr = [];
+    whereArr = whereArr.concat(this.whereArray(where));
 
     const whereMap = {
       [Op.and]: whereArr,
@@ -348,5 +325,8 @@ module.exports = new Etf({
   template,
   chineseName: "ETF",
   updateKey: "f12",
-  extend: require(RESOLVE_PATH("spider/model/kline")).extend
+  extend: [
+    ...require(RESOLVE_PATH("spider/model/kline")).extend,
+    ...require(RESOLVE_PATH("spider/model/fund")).extend
+  ]
 });

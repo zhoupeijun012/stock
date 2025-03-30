@@ -16,7 +16,7 @@ const template = [
   { prop: "hybk", alias: "f100", label: "所属行业" },
   { prop: "zttj.days", alias: "f10006", label: "涨停区间" },
   { prop: "zttj.ct", alias: "f10007", label: "区间涨停次数" },
-  { prop: "date", label: "日期" },
+  { prop: "date", label: "日期",filter: 'eq' },
 ];
 
 class Limit extends require("./base-query") {
@@ -111,39 +111,10 @@ class Limit extends require("./base-query") {
   }
   queryPage(params) {
     const { pageNum, pageSize, matchKey = [], order = [], where = {} } = params;
-    const tableOrders = order.map((item) => {
-      if (item.prop == "10086") {
-      } else {
-        return [
-          cast(col(item.prop), "SIGNED"),
-          item.order == "ascending" ? "ASC" : "DESC",
-        ];
-      }
-    });
+    const tableOrders = this.orderArray(order);
 
-    const whereArr = [];
-    for (let key of Object.keys(where)) {
-      // 股票名称
-      if (key == "c1") {
-        whereArr.push({
-          [key]: {
-            [Op.eq]: where[key],
-          },
-        });
-      } else if (key == "date") {
-        whereArr.push({
-          [key]: {
-            [Op.eq]: where[key],
-          },
-        });
-      } else {
-        whereArr.push({
-          [key]: {
-            [Op.like]: `%${where[key]}%`,
-          },
-        });
-      }
-    }
+    let whereArr = [];
+    whereArr = whereArr.concat(this.whereArray(where));
 
     const whereMap = {
       [Op.and]: whereArr,
@@ -163,5 +134,4 @@ module.exports = new Limit({
   template,
   chineseName: "涨停",
   updateKey: "f12",
-  extend: require(RESOLVE_PATH("spider/model/kline")).extend
 });

@@ -1,5 +1,5 @@
 const { extend } = require("dayjs");
-const { col, Op, cast, fn, literal } = require("sequelize");
+const { col, Op, cast, literal } = require("sequelize");
 
 const template = [
   { prop: "f2", label: "最新价" },
@@ -25,6 +25,8 @@ const template = [
   { prop: "f23", label: "市净率" },
   { prop: "f24", label: "60日涨跌幅" },
   { prop: "f25", label: "年初至今涨跌幅" },
+  { prop: "f62", label: "今日主力净流入" },
+  { prop: "f63", label: "集合竞价" },
   { prop: "f104", label: "上涨家数" },
   { prop: "f105", label: "下跌家数" },
   { prop: "f128", label: "领涨股票" },
@@ -127,70 +129,11 @@ class Concept extends require("./base-query") {
   }
   queryPage(params) {
     const { pageNum, pageSize, matchKey = [], order = [], where = {} } = params;
-    const tableOrders = order.map((item) => {
-      if (item.prop == "10086") {
-      } else {
-        return [
-          cast(col(item.prop), "SIGNED"),
-          item.order == "ascending" ? "ASC" : "DESC",
-        ];
-      }
-    });
+    const tableOrders = this.orderArray(order);
 
-    const whereArr = [];
-    for (let key of Object.keys(where)) {
-      // 股票名称
-      if (key == "c1") {
-        whereArr.push({
-          [key]: {
-            [Op.eq]: where[key],
-          },
-        });
-      } else if (key == "f6666") {
-        const arr = where["f6666"].map((item) => {
-          return {
-            [Op.startsWith]: item,
-          };
-        });
-        whereArr.push({
-          ["f12"]: {
-            [Op.or]: arr,
-          },
-        });
-      } else if (key == "f21") {
-        if (where[key].length > 1) {
-          whereArr.push(
-            literal(`CAST(${key} AS INTEGER) >= ${where[key][0] * 100000000}`)
-          );
-          whereArr.push(
-            literal(`CAST(${key} AS INTEGER) < ${where[key][1] * 100000000}`)
-          );
-        } else {
-          whereArr.push(
-            literal(`CAST(${key} AS INTEGER) >= ${where[key][0] * 100000000}`)
-          );
-        }
-      } else if (key == "f9") {
-        if (where[key] > 0) {
-          whereArr.push(literal(`CAST(${key} AS INTEGER) < 0`));
-        } else {
-          whereArr.push(literal(`CAST(${key} AS INTEGER) >= 0`));
-        }
-      } else if (key == "f23") {
-        if (where[key] > 0) {
-          whereArr.push(literal(`CAST(${key} AS INTEGER) < 1`));
-        } else {
-          whereArr.push(literal(`CAST(${key} AS INTEGER) >= 1`));
-        }
-      } else {
-        whereArr.push({
-          [key]: {
-            [Op.like]: `%${where[key]}%`,
-          },
-        });
-      }
-    }
-
+    let whereArr = [];
+    whereArr = whereArr.concat(this.whereArray(where));
+    
     const whereMap = {
       [Op.and]: whereArr,
     };
@@ -209,5 +152,8 @@ module.exports = new Concept({
   template,
   chineseName: "概念",
   updateKey: "f12",
-  extend: require(RESOLVE_PATH("spider/model/kline")).extend,
+  extend: [
+    ...require(RESOLVE_PATH("spider/model/kline")).extend,
+    ...require(RESOLVE_PATH("spider/model/fund")).extend
+  ]
 });

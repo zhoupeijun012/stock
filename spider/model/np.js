@@ -47,25 +47,10 @@ class Np extends require("./base-query") {
   }
   queryPage(params) {
     const { pageNum, pageSize, matchKey = [], order = [], where = {} } = params;
-    const tableOrders = order.map((item) => {
-      if (item.prop == "10086") {
-      } else {
-        return [
-          cast(col(item.prop), "SIGNED"),
-          item.order == "ascending" ? "ASC" : "DESC",
-        ];
-      }
-    });
+    const tableOrders = this.orderArray(order);
 
-    const whereArr = [];
-    for (let key of Object.keys(where)) {
-      // 股票名称
-      whereArr.push({
-        [key]: {
-          [Op.like]: `%${where[key]}%`,
-        },
-      });
-    }
+    let whereArr = [];
+    whereArr = whereArr.concat(this.whereArray(where));
 
     const whereMap = {
       [Op.and]: whereArr,
@@ -85,5 +70,4 @@ module.exports = new Np({
   template,
   chineseName: "指数",
   updateKey: "f12",
-  extend: require(RESOLVE_PATH("spider/model/kline")).extend
 });

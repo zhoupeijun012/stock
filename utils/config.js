@@ -19,7 +19,7 @@ class Config {
     this.defineModel = null;
   }
   async init() {
-    this.defineModel = sequelize.define("Config", model);
+    this.defineModel = sequelize.define("config", model);
     await this.defineModel.sync({ force: false });
     const list = await this.defineModel.findAll();
     list.forEach((item) => {

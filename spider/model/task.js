@@ -18,34 +18,19 @@ class Task extends require("./base-query") {
   queryPage(params) {
     const { pageNum, pageSize, matchKey = [], order = [], where = {} } = params;
 
-    const tableOrders = order.map((item) => {
-      if (item.prop == "10086") {
-      } else {
-        return [
-          cast(col(item.prop), "SIGNED"),
-          item.order == "ascending" ? "ASC" : "DESC",
-        ];
-      }
-    });
+    const tableOrders = this.orderArray(order);
 
-    const whereArr = [];
-    for (let key of Object.keys(where)) {
-      // 股票名称
-      if (key == "retryCount") {
-        whereArr.push({
-          [key]: {
-            [Op.lt]: where[key],
-          },
-        });
-      } else {
-        whereArr.push({
-          [key]: {
-            [Op.like]: `%${where[key]}%`,
-          },
-        });
-      }
+    let whereArr = [];
+    if(where['retryCount'] ) {
+      whereArr.push({
+        retryCount: {
+          [Op.lt]: where['retryCount'],
+        },
+      });
+      delete where['retryCount']
     }
-
+    whereArr = whereArr.concat(this.whereArray(where));
+    
     const whereMap = {
       [Op.and]: whereArr,
     };

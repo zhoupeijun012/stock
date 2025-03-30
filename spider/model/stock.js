@@ -1,4 +1,4 @@
-const { col, Op, cast, fn,literal } = require("sequelize");
+const { col, Op, cast, fn, literal } = require("sequelize");
 
 const template = [
   { prop: "f2", label: "最新价" },
@@ -249,21 +249,10 @@ class Stock extends require("./base-query") {
   queryPage(params) {
     const { pageNum, pageSize, matchKey = [], order = [], where = [] } = params;
 
-    const tableOrders = order.map((item) => {
-      if (item.prop == "f102" || item.prop == "f100") {
-        return [item.prop, item.order == "ascending" ? "ASC" : "DESC"];
-      } else {
-        return [
-          cast(col(item.prop), "SIGNED"),
-          item.order == "ascending" ? "ASC" : "DESC",
-        ];
-      }
-    });
+    const tableOrders = this.orderArray(order);
 
-    const whereArr = [];
-    for (let key of Object.keys(where)) {
-      // 股票名称
-      if (key == "f6666") {
+    let whereArr = [];
+    if(where['f6666'] && Array.isArray(where['f6666'])) {
         const arr = where["f6666"].map((item) => {
           return {
             [Op.startsWith]: item,
@@ -274,38 +263,49 @@ class Stock extends require("./base-query") {
             [Op.or]: arr,
           },
         });
-      } else if (key == "f21") {
-        if (where[key].length > 1) {
-          whereArr.push(literal(`CAST(${key} AS INTEGER) >= ${where[key][0] * 100000000}`))
-          whereArr.push(literal(`CAST(${key} AS INTEGER) < ${where[key][1] * 100000000}`))
-        } else {
-          whereArr.push(literal(`CAST(${key} AS INTEGER) >= ${where[key][0] * 100000000}`))
-        }
-      } else if(key == 'f9') {
-        if(where[key] > 0) {
-          whereArr.push(literal(`CAST(${key} AS INTEGER) < 0`))
-        } else {
-          whereArr.push(literal(`CAST(${key} AS INTEGER) >= 0`))
-        }
-      } else if(key == 'f23') {
-        if(where[key] > 0) {
-          whereArr.push(literal(`CAST(${key} AS INTEGER) < 1`))
-        } else {
-          whereArr.push(literal(`CAST(${key} AS INTEGER) >= 1`))
-        }
-      } else {
-        whereArr.push({
-          [key]: {
-            [Op.like]: `%${where[key]}%`,
-          },
-        });
-      }
+        delete where['f6666']
     }
+    if(where['f9'] ) {
+      if (where['f9'] > 0) {
+        whereArr.push(literal(`CAST( f9 AS INTEGER) < 0`));
+      } else {
+        whereArr.push(literal(`CAST(f9 AS INTEGER) >= 0`));
+      }
+      delete where['f9']
+    }
+    if(where['f23'] ) {
+      if (where['f23'] > 0) {
+        whereArr.push(literal(`CAST(f23 AS INTEGER) < 1`));
+      } else {
+        whereArr.push(literal(`CAST(f23 AS INTEGER) >= 1`));
+      }
+      delete where['f23']
+    }
+
+    whereArr = whereArr.concat(this.whereArray(where));
 
     const whereMap = {
       [Op.and]: whereArr,
     };
 
+    matchKey.push([
+      literal(
+        `(SELECT json_group_array(json_object('f14',region.f14,'f12',region.f12,'f3',region.f3)) FROM regions AS region WHERE region.f14 = stock.f102)`
+      ),
+      "c_f102",
+    ]);
+    matchKey.push([
+      literal(
+        `(SELECT json_group_array(json_object('f14',industry.f14,'f12',industry.f12,'f3',industry.f3)) FROM industries AS industry WHERE industry.f14 = stock.f100)`
+      ),
+      "c_f100",
+    ]);
+    matchKey.push([
+      literal(
+        `(SELECT json_group_array(json_object('f14',concept.f14,'f12',concept.f12,'f3',concept.f3)) FROM concepts AS concept WHERE INSTR(stock.f103,concept.f14) > 0)`
+      ),
+      "c_f103",
+    ]);
     return super.queryPage({
       pageNum,
       pageSize,
@@ -321,5 +321,8 @@ module.exports = new Stock({
   template,
   chineseName: "股票",
   updateKey: "f12",
-  extend: require(RESOLVE_PATH("spider/model/kline")).extend,
+  extend: [
+    ...require(RESOLVE_PATH("spider/model/kline")).extend,
+    ...require(RESOLVE_PATH("spider/model/fund")).extend,
+  ],
 });

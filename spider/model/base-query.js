@@ -1,3 +1,4 @@
+const fetchSize = 10000;
 class BaseQuery extends require("./base") {
   constructor({ name, template,extend, chineseName = "模板", updateKey = "f12" }) {
     super({
@@ -77,7 +78,7 @@ class BaseQuery extends require("./base") {
     const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
     const { list = [] } = await this.queryPage({
       pageNum: 1,
-      pageSize: 10000,
+      pageSize: fetchSize,
       matchKey: ["f12", "f14"],
     });
 
@@ -117,7 +118,7 @@ class BaseQuery extends require("./base") {
     const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
     const { list = [] } = await this.queryPage({
       pageNum: 1,
-      pageSize: 10000,
+      pageSize: fetchSize,
       matchKey: ["f12", "f14"],
     });
 
@@ -139,6 +140,8 @@ class BaseQuery extends require("./base") {
     const kInstance = require(RESOLVE_PATH("spider/model/fund"));
     await kInstance.delete({ f12 });
     await kInstance.add({ f12, f14, f50003 });
+    const indexObj = kInstance.calculateIndex({ f12, f14, f50003 });
+    await this.update('f12',indexObj)
   }
   useRouter(app) {
     const upperName = this.name.charAt(0).toUpperCase() + this.name.slice(1);

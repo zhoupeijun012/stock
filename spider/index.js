@@ -17,24 +17,24 @@ taskManage.register({
   },
 });
 
-// 初始化数据库
-taskManage.register({
-  type: "init",
-  async: false,
-  func: async () => {
-    // 初始化数据库
-    await PACKAGE_EXCUTE(
-      RESOLVE_PATH("spider/model"),
-      ["base.js", "base-query.js"],
-      async (module, moduleName) => {
-        await module.init();
-      }
-    );
+// // 初始化数据库
+// taskManage.register({
+//   type: "init",
+//   async: false,
+//   func: async () => {
+//     // 初始化数据库
+//     await PACKAGE_EXCUTE(
+//       RESOLVE_PATH("spider/model"),
+//       ["base.js", "base-query.js"],
+//       async (module, moduleName) => {
+//         await module.init();
+//       }
+//     );
 
-    // 初始化任务数据库
-    await require(RESOLVE_PATH("spider/task-queue.js")).init();
-  },
-});
+//     // 初始化任务数据库
+//     await require(RESOLVE_PATH("spider/task-queue.js")).init();
+//   },
+// });
 
 // 初始化爬取数据
 taskManage.register({
@@ -45,19 +45,24 @@ taskManage.register({
     await require(RESOLVE_PATH("spider/model/region.js")).fetchList();
     await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/region.js")).fetchKList("day");
-    
+    await require(RESOLVE_PATH("spider/model/region.js")).fetchFundList();
+
     // 先获取概念/行业/地区数据
     await require(RESOLVE_PATH("spider/model/concept.js")).fetchList();
     await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/concept.js")).fetchKList("day");
+    await require(RESOLVE_PATH("spider/model/concept.js")).fetchFundList();
+
 
     await require(RESOLVE_PATH("spider/model/industry.js")).fetchList();
     await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/industry.js")).fetchKList("day");
+    await require(RESOLVE_PATH("spider/model/industry.js")).fetchFundList();
 
     await require(RESOLVE_PATH("spider/model/stock.js")).fetchList();
     await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/stock.js")).fetchKList("day");
+    await require(RESOLVE_PATH("spider/model/stock.js")).fetchFundList();
 
     // 获取etf与lof数据
     await require(RESOLVE_PATH("spider/model/etf.js")).fetchList();
@@ -113,19 +118,19 @@ taskManage.register({
     // 获取K线
     await require(RESOLVE_PATH("spider/model/concept.js")).fetchKList("day");
     await TIME_WAIT(1000 * 20);
-    // await require(RESOLVE_PATH("spider/model/concept.js")).fetchFundList('day');
-
+    await require(RESOLVE_PATH("spider/model/concept.js")).fetchFundList();
+    await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/stock.js")).fetchKList("day");
     await TIME_WAIT(1000 * 20);
-    // await require(RESOLVE_PATH("spider/model/stock.js")).fetchFundList('day');
-
+    await require(RESOLVE_PATH("spider/model/stock.js")).fetchFundList();
+    await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/industry.js")).fetchKList("day");
     await TIME_WAIT(1000 * 20);
-    // await require(RESOLVE_PATH("spider/model/industry.js")).fetchFundList('day');
-
+    await require(RESOLVE_PATH("spider/model/industry.js")).fetchFundList();
+    await TIME_WAIT(1000 * 20);
     await require(RESOLVE_PATH("spider/model/region.js")).fetchKList("day");
     await TIME_WAIT(1000 * 20);
-    // await require(RESOLVE_PATH("spider/model/region.js")).fetchFundList('day');
+    await require(RESOLVE_PATH("spider/model/region.js")).fetchFundList();
   },
 });
 
