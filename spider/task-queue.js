@@ -3,7 +3,7 @@ let excuting = false;
 class TaskQueue {
   constructor() {
     this.modelList = {};
-    this.asyncCount = 10;
+    this.asyncCount = 5;
   }
   async init() {
     // 初始化任务列表数据库
@@ -106,7 +106,7 @@ class TaskQueue {
       await taskInstance.update("uuid", failList);
 
       if (total > 0) {
-        await TIME_WAIT(200);
+        await TIME_WAIT(300);
         excuting = false;
         this._execTask();
       } else {
