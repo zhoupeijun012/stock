@@ -5,6 +5,20 @@ server.start();
 const spider = require(RESOLVE_PATH("spider/index"));
 spider.start();
 
+process.on("unhandledRejection", (error, promise) => {
+  WECHAT_SENG_TEXT(error.message).catch((error) => {
+    console.log(error.message);
+  });
+});
+
+// 捕获未捕获的异常
+process.on("uncaughtException", (error) => {
+  WECHAT_SENG_TEXT(error.message).catch((error) => {
+    console.log(error.message);
+  });
+});
+
+
 // setTimeout(() => {
 //   (async () => {
 //     await PACKAGE_EXCUTE(
