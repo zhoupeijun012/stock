@@ -108,6 +108,9 @@ class TaskQueue {
         excuting = false;
       }
     } catch (error) {
+      setTimeout(() => {
+        this.excuting = false;
+      }, 60 * 1000);
       console.log(error.message);
       WECHAT_SENG_TEXT(error.message).catch((error) => {
         console.log(error.message);
