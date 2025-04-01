@@ -27,7 +27,13 @@ class BaseModel {
     this.extend = extend;
   }
   async query(params) {
-    const data = await this.pageModel.findOne(params);
+    const { matchKey = [], order = [], where = [] } = params;
+    const data = await this.pageModel.findOne({
+      distinct: true,
+      attributes: matchKey,
+      order: order,
+      where: where,
+    });
     return data;
   }
   async queryPage(params) {
@@ -37,7 +43,7 @@ class BaseModel {
     }
     const { count, rows } = await this.pageModel.findAndCountAll({
       distinct: true,
-      attributes:matchKey,
+      attributes: matchKey,
       offset: (pageNum - 1) * pageSize,
       limit: pageSize,
       order: order,
