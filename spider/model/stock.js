@@ -252,34 +252,34 @@ class Stock extends require("./base-query") {
     const tableOrders = this.orderArray(order);
 
     let whereArr = [];
-    if(where['f6666'] && Array.isArray(where['f6666'])) {
-        const arr = where["f6666"].map((item) => {
-          return {
-            [Op.startsWith]: item,
-          };
-        });
-        whereArr.push({
-          ["f12"]: {
-            [Op.or]: arr,
-          },
-        });
-        delete where['f6666']
+    if (where["f6666"] && Array.isArray(where["f6666"])) {
+      const arr = where["f6666"].map((item) => {
+        return {
+          [Op.startsWith]: item,
+        };
+      });
+      whereArr.push({
+        ["f12"]: {
+          [Op.or]: arr,
+        },
+      });
+      delete where["f6666"];
     }
-    if(where['f9'] ) {
-      if (where['f9'] > 0) {
+    if (where["f9"]) {
+      if (where["f9"] > 0) {
         whereArr.push(literal(`CAST( f9 AS INTEGER) < 0`));
       } else {
         whereArr.push(literal(`CAST(f9 AS INTEGER) >= 0`));
       }
-      delete where['f9']
+      delete where["f9"];
     }
-    if(where['f23'] ) {
-      if (where['f23'] > 0) {
+    if (where["f23"]) {
+      if (where["f23"] > 0) {
         whereArr.push(literal(`CAST(f23 AS INTEGER) < 1`));
       } else {
         whereArr.push(literal(`CAST(f23 AS INTEGER) >= 1`));
       }
-      delete where['f23']
+      delete where["f23"];
     }
 
     whereArr = whereArr.concat(this.whereArray(where));
@@ -312,6 +312,32 @@ class Stock extends require("./base-query") {
       matchKey,
       order: tableOrders,
       where: whereMap,
+    });
+  }
+  queryOne(params) {
+    const { matchKey = [], order = [], where = [] } = params;
+    matchKey.push([
+      literal(
+        `(SELECT json_group_array(json_object('f14',region.f14,'f12',region.f12,'f3',region.f3)) FROM regions AS region WHERE region.f14 = stock.f102)`
+      ),
+      "c_f102",
+    ]);
+    matchKey.push([
+      literal(
+        `(SELECT json_group_array(json_object('f14',industry.f14,'f12',industry.f12,'f3',industry.f3)) FROM industries AS industry WHERE industry.f14 = stock.f100)`
+      ),
+      "c_f100",
+    ]);
+    matchKey.push([
+      literal(
+        `(SELECT json_group_array(json_object('f14',concept.f14,'f12',concept.f12,'f3',concept.f3)) FROM concepts AS concept WHERE INSTR(stock.f103,concept.f14) > 0)`
+      ),
+      "c_f103",
+    ]);
+    return super.queryOne({
+      matchKey,
+      order,
+      where,
     });
   }
 }

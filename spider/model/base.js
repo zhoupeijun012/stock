@@ -38,9 +38,7 @@ class BaseModel {
     }
     const { count, rows } = await this.pageModel.findAndCountAll({
       distinct: true,
-      attributes: {
-        include: matchKey,
-      },
+      attributes: matchKey,
       offset: (pageNum - 1) * pageSize,
       limit: pageSize,
       order: order,
