@@ -335,7 +335,8 @@ class Stock extends require("./base-query") {
       "c_f103",
     ]);
     return super.queryOne({
-      matchKey,
+      distinct: true,
+      attributes: matchKey,
       order,
       where,
     });
