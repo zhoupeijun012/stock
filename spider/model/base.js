@@ -30,7 +30,9 @@ class BaseModel {
     const { matchKey = [], order = [], where = [] } = params;
     const data = await this.pageModel.findOne({
       distinct: true,
-      attributes: matchKey,
+      attributes: {
+        include: matchKey
+      },
       order: order,
       where: where,
     });
@@ -43,7 +45,9 @@ class BaseModel {
     }
     const { count, rows } = await this.pageModel.findAndCountAll({
       distinct: true,
-      attributes: matchKey,
+      attributes: {
+        include: matchKey
+      },
       offset: (pageNum - 1) * pageSize,
       limit: pageSize,
       order: order,
