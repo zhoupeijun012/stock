@@ -314,7 +314,7 @@ class Stock extends require("./base-query") {
       where: whereMap,
     });
   }
-  queryOne(params) {
+  query(params) {
     const { matchKey = [], order = [], where = [] } = params;
     matchKey.push([
       literal(
@@ -334,7 +334,7 @@ class Stock extends require("./base-query") {
       ),
       "c_f103",
     ]);
-    return super.queryOne({
+    return super.query({
       matchKey,
       order,
       where,
