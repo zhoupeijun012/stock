@@ -26,6 +26,7 @@ class TaskManager {
             console.log(error.message);
           }
         );
+        require(RESOLVE_PATH("spider/task-queue.js")).init();
       } else {
         WECHAT_SENG_TEXT(
           `${DAYJS().format("YYYY-MM-DD")}\nA股今日不开盘`

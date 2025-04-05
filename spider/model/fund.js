@@ -34,7 +34,44 @@ class Fund extends require("./base-query") {
       where: whereMap,
     });
   }
-  calculateIndex({ f12, f14, f50003 }) {
+  async getListByLive(list) {
+    list = Array.isArray(list) ? list : [list];
+    const newKList = [];
+    for (let stockRowItem of list) {
+      // 首先先读取出数据，然后删除当天那条
+      // 日期/主力净流入/小单净流入/中单净流入/大单净流入/超大单净流入/主力流入净占比/小单净占比/中单净占比/大单净占比/超大单净占比/收盘价/涨跌幅
+      const { f12, f62, f84, f78, f72, f66, f184, f87, f81, f75, f69, f2, f3 } = stockRowItem;
+      const stockKLineItem = await this.query({
+        where: [{ f12 }],
+      });
+      if (!stockKLineItem) {
+        continue;
+      }
+      let { f50003 } = stockKLineItem;
+      let klines = JSON.parse(f50003);
+      const currentDay = DAYJS().format("YYYY-MM-DD");
+      const timeArr = [currentDay,f62, f84, f78, f72, f66, f184/100, f87/100, f81/100, f75/100, f69/100, f2/100, f3/100,'0.00','0.00'].join(',');
+      const lastObj = klines[klines.length - 1];
+      if(lastObj.startsWith(currentDay)) {
+        klines.pop();
+      }
+      klines.push(timeArr);
+      newKList.push({
+        f12,
+        f50003: JSON.stringify(klines)
+      })
+    }
+    return newKList;
+  }
+  async getIndexListByLive(list) {
+    let newIndexList = [];
+    for(let indexItem of list) {
+      newIndexList.push(this.calculateIndex(indexItem));
+      await TIME_WAIT(0);
+    }
+    return newIndexList;
+  }
+  calculateIndex({ f12, f50003 }) {
     // 日期/主力净流入/小单净流入/中单净流入/大单净流入/超大单净流入/主力流入净占比/小单净占比/中单净占比/大单净占比/超大单净占比/收盘价/涨跌幅
     f50003 = JSON.parse(f50003);
     let f50004 = 0;

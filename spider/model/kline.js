@@ -1,4 +1,4 @@
-const { col, Op, cast } = require("sequelize");
+const { col, Op, cast, where, TIME } = require("sequelize");
 
 const template = [
   { prop: "f12", label: "股票代码" },
@@ -13,13 +13,13 @@ class Kline extends require("./base-query") {
     this.extend = [
       { prop: "f40003", label: "历史最低价" },
       { prop: "f40004", label: "历史最高价" },
-      { prop: "f40005", label: "至今涨跌幅倍数", filter: 'range' },
-      { prop: "f40006", label: "2024年9月20日至今涨幅", filter: 'range' },
-      { prop: "f40007", label: "2025年2月05日至今涨幅", filter: 'range' },
-      { prop: "f40008", label: "均线多头排列天数", filter: 'range' },
-      { prop: "f40009", label: "均线多头排列涨幅", filter: 'range' },
-      { prop: "f40010", label: "站上60日均线天数", filter: 'range' },
-      { prop: "f40011", label: "站上60日均线涨幅", filter: 'range' },
+      { prop: "f40005", label: "至今涨跌幅倍数", filter: "range" },
+      { prop: "f40006", label: "2024年9月20日至今涨幅", filter: "range" },
+      { prop: "f40007", label: "2025年2月05日至今涨幅", filter: "range" },
+      { prop: "f40008", label: "均线多头排列天数", filter: "range" },
+      { prop: "f40009", label: "均线多头排列涨幅", filter: "range" },
+      { prop: "f40010", label: "站上60日均线天数", filter: "range" },
+      { prop: "f40011", label: "站上60日均线涨幅", filter: "range" },
     ];
   }
   queryPage(params) {
@@ -29,7 +29,7 @@ class Kline extends require("./base-query") {
 
     let whereArr = [];
     whereArr = whereArr.concat(this.whereArray(where));
-    
+
     const whereMap = {
       [Op.and]: whereArr,
     };
@@ -41,6 +41,45 @@ class Kline extends require("./base-query") {
       order: tableOrders,
       where: whereMap,
     });
+  }
+  async getListByLive(list,type) {
+    list = Array.isArray(list) ? list : [list];
+    const newKList = [];
+    for (let stockRowItem of list) {
+      // 首先先读取出数据，然后删除当天那条
+      // 2024-05-21,840.58,839.62,843.56,837.63,4094051,1940203777.00,0.71,0.27,2.26,0.56\
+      // 日期/开/收/高/低/成交量/成交额/震幅/涨跌幅/涨跌额/换手率
+      const { f12, f17,f2,f15,f16,f5,f6,f7,f3,f4,f8 } = stockRowItem;
+      const stockKLineItem = await this.query({
+        where: [{ f12,f40001: type }],
+      });
+      if (!stockKLineItem) {
+        continue;
+      }
+      let { f40002 } = stockKLineItem;
+      let klines = JSON.parse(f40002);
+      const currentDay = DAYJS().format("YYYY-MM-DD");
+      const timeArr = [currentDay,f17/100,f2/100,f15/100,f16/100,f5,f6,f7/100,f3/100,f4/100,f8/100].join(',');
+      const lastObj = klines[klines.length - 1];
+      if(lastObj.startsWith(currentDay)) {
+        klines.pop();
+      }
+      klines.push(timeArr);
+      newKList.push({
+        f12,
+        f40001: type,
+        f40002: JSON.stringify(klines)
+      })
+    }
+    return newKList;
+  }
+  async getIndexListByLive(list) {
+    let newIndexList = [];
+    for(const indexItem of list) {
+      newIndexList.push(this.calculateIndex(indexItem));
+      await TIME_WAIT(0);
+    }
+    return newIndexList;
   }
   // 在这里计算数据
   calculateIndex(stockKLineItem) {
@@ -168,7 +207,6 @@ class Kline extends require("./base-query") {
       f40011,
     };
   }
-
   destDate(klines, desDate) {
     let prevObj = klines.pop();
     const lastPrice = prevObj[2];

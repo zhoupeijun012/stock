@@ -1,10 +1,16 @@
 const fetchSize = 10000;
 class BaseQuery extends require("./base") {
-  constructor({ name, template,extend, chineseName = "模板", updateKey = "f12" }) {
+  constructor({
+    name,
+    template,
+    extend,
+    chineseName = "模板",
+    updateKey = "f12",
+  }) {
     super({
       name,
       template,
-      extend
+      extend,
     });
     this.chineseName = chineseName;
     this.updateKey = updateKey;
@@ -38,7 +44,34 @@ class BaseQuery extends require("./base") {
       params
     );
     if (params.update) {
-      await this.update(params.updateKey, list);
+      const kInstance = require(RESOLVE_PATH("spider/model/kline"));
+      const newKList = await kInstance.getListByLive(list,'day');
+      await kInstance.update("f12", newKList);
+      const newKIndexList = await kInstance.getIndexListByLive(newKList);
+
+      const fundInstance = require(RESOLVE_PATH("spider/model/fund"));
+      const newFundList = await fundInstance.getListByLive(list);
+      await fundInstance.update("f12", newFundList);
+      const newFundIndexList = await fundInstance.getIndexListByLive(newFundList);
+
+      const f12Map = {};
+      list.forEach((stockItem) => {
+        f12Map[stockItem.f12] = stockItem;
+      });
+
+      newKIndexList.forEach((indexItem) => {
+        if (f12Map[indexItem["f12"]]) {
+          Object.assign(f12Map[indexItem["f12"]], indexItem);
+        }
+      });
+
+      newFundIndexList.forEach((indexItem) => {
+        if (f12Map[indexItem["f12"]]) {
+          Object.assign(f12Map[indexItem["f12"]], indexItem);
+        }
+      });
+
+      await this.update("f12", list);
     } else {
       await this.add(list);
     }
@@ -102,7 +135,7 @@ class BaseQuery extends require("./base") {
     await kInstance.delete({ f12, f40001 });
     await kInstance.add({ f12, f14, f40001, f40002 });
     const indexObj = kInstance.calculateIndex({ f12, f14, f40001, f40002 });
-    await this.update('f12',indexObj)
+    await this.update("f12", indexObj);
   }
   async fetchFundList() {
     const taskQueue = require(RESOLVE_PATH("spider/task-queue.js"));
@@ -141,7 +174,7 @@ class BaseQuery extends require("./base") {
     await kInstance.delete({ f12 });
     await kInstance.add({ f12, f14, f50003 });
     const indexObj = kInstance.calculateIndex({ f12, f14, f50003 });
-    await this.update('f12',indexObj)
+    await this.update("f12", indexObj);
   }
   useRouter(app) {
     const upperName = this.name.charAt(0).toUpperCase() + this.name.slice(1);
