@@ -178,11 +178,11 @@ class Stock extends require("./base-query") {
     let data = res.data;
     data = data.slice(3, -2);
     data = JSON.parse(data).data || {};
-    const { total, diff } = data;
+    const { total, diff=[] } = data;
     const pages = Math.ceil(total / diff.length);
     return {
       total,
-      list: diff,
+      list: diff.filter((item) => item.f2 != "-"),
       pageSize: diff.length,
       pageNum: params.pageNum,
       pages,
