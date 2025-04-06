@@ -128,7 +128,7 @@ global.GET_STOCK_AREA = (code) => {
 global.GET_STOCK_PREFIX = (code) => {
   if (["60", "68", "90"].some((item) => code.startsWith(item))) {
     return "1." + code;
-  } else if (["00", "300", "200"].some((item) => code.startsWith(item))) {
+  } else if (["00", "30", "20"].some((item) => code.startsWith(item))) {
     return "0." + code;
   } else {
     return "0." + code;
