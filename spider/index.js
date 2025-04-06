@@ -110,6 +110,7 @@ taskManage.register({
 taskManage.register({
   type: "close",
   func: async () => {
+    await require(RESOLVE_PATH("spider/model/stock.js")).fetchList();
     // 获取K线
     await require(RESOLVE_PATH("spider/model/concept.js")).fetchKList("day");
     await require(RESOLVE_PATH("spider/model/concept.js")).fetchFundList();
