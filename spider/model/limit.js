@@ -1,5 +1,5 @@
 const { col, Op, cast } = require("sequelize");
-
+const StockModel = require(RESOLVE_PATH("spider/model/stock.js"));
 const template = [
   { prop: "n", alias: "f14", label: "股票名称" },
   { prop: "c", alias: "f12", label: "股票代码" },
@@ -78,7 +78,7 @@ class Limit extends require("./base-query") {
     }
   }
   async fetchTodayList() {
-    if (IS_OPEN_DAY(DAYJS().format("YYYY-MM-DD"))) {
+    if (!IS_OPEN_DAY(DAYJS().format("YYYY-MM-DD"))) {
       return "";
     }
 
@@ -109,7 +109,7 @@ class Limit extends require("./base-query") {
     });
     await this.add(pool);
   }
-  queryPage(params) {
+  async queryPage(params) {
     const { pageNum, pageSize, matchKey = [], order = [], where = {} } = params;
     const tableOrders = this.orderArray(order);
 
@@ -120,13 +120,51 @@ class Limit extends require("./base-query") {
       [Op.and]: whereArr,
     };
 
-    return super.queryPage({
+    const limitMaths = matchKey.filter(
+      (keyItem) => this.modelKeys.includes(keyItem)
+    );
+    const { total, list, pages } = await super.queryPage({
       pageNum,
       pageSize,
-      matchKey,
+      matchKey: limitMaths,
       order: tableOrders,
       where: whereMap,
     });
+
+    const stockIds = list.map((item) => item.f12);
+    const stockMatchs = matchKey.filter(
+      (keyItem) => !this.modelKeys.includes(keyItem)
+    );
+
+    const stockList = (
+      await StockModel.queryPage({
+        pageNum: 1,
+        pageSize: 10000,
+        matchKey: stockMatchs,
+        where: {
+          f12: stockIds,
+        },
+      })
+    ).list;
+
+    const f12Map = {};
+    list.forEach((stockItem) => {
+      f12Map[stockItem.f12] = stockItem;
+    });
+
+    stockList.forEach((indexItem) => {
+      if (f12Map[indexItem["f12"]]) {
+        Object.assign(f12Map[indexItem["f12"]],indexItem);
+      }
+    });
+
+    return {
+      total,
+      list,
+      pageNum,
+      pageSize,
+      pages,
+    };
   }
 }
 

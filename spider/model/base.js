@@ -1,5 +1,5 @@
 const { sequelize } = require(RESOLVE_PATH("utils/sql.js"));
-const { DataTypes } = require("sequelize");
+const { DataTypes, ARRAY } = require("sequelize");
 const { col, Op, cast, fn, literal } = require("sequelize");
 class BaseModel {
   constructor({ name, template, extend = [] }) {
@@ -29,9 +29,10 @@ class BaseModel {
   async query(params) {
     const { matchKey = [], order = [], where = [] } = params;
     const data = await this.pageModel.findOne({
+      raw: true,
       distinct: true,
       attributes: {
-        include: matchKey
+        include: matchKey,
       },
       order: order,
       where: where,
@@ -44,9 +45,10 @@ class BaseModel {
       matchKey.push("uuid");
     }
     const { count, rows } = await this.pageModel.findAndCountAll({
+      raw: true,
       distinct: true,
       attributes: {
-        include: matchKey
+        include: matchKey,
       },
       offset: (pageNum - 1) * pageSize,
       limit: pageSize,
@@ -73,7 +75,7 @@ class BaseModel {
     const template = [...this.template, ...this.extend];
     const whereArr = [];
     for (let key of Object.keys(where)) {
-      const findObj = template.find((item) => item.prop == key);
+      const findObj = template.find((item) => item.alias == key || item.prop == key);
       if (findObj) {
         const filterType = findObj.filter || "like";
 
@@ -93,7 +95,6 @@ class BaseModel {
           }
         }
 
-        // 处理模糊筛选
         if (filterType == "like") {
           whereArr.push({
             [key]: {
@@ -109,6 +110,23 @@ class BaseModel {
             },
           });
         }
+
+        if (filterType == "in" && Array.isArray(where[key])) {
+          whereArr.push({
+            [key]: {
+              [Op.in]: where[key],
+            },
+          });
+        }
+
+        if (filterType == "in" && typeof where[key] == 'string') {
+          whereArr.push({
+            [key]: {
+              [Op.like]: `%${where[key]}%`,
+            },
+          });
+        }
+        
       }
     }
 

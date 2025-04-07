@@ -15,7 +15,7 @@ class BaseQuery extends require("./base") {
     this.chineseName = chineseName;
     this.updateKey = updateKey;
   }
-  async fetchList(update = false) {
+  async fetchList(update = false, updateOther = false) {
     if (!update) {
       await this.clear();
     }
@@ -32,6 +32,7 @@ class BaseQuery extends require("./base") {
           pageSize: 1000,
           update,
           taskLevel: "10",
+          updateOther,
         }),
         taskLevel: "1",
       });
@@ -44,33 +45,36 @@ class BaseQuery extends require("./base") {
       params
     );
     if (params.update) {
-      const kInstance = require(RESOLVE_PATH("spider/model/kline"));
-      const newKList = await kInstance.getListByLive(list,'day');
-      await kInstance.update("f12", newKList);
-      const newKIndexList = await kInstance.getIndexListByLive(newKList);
+      if (params.updateOther) {
+        const kInstance = require(RESOLVE_PATH("spider/model/kline"));
+        const newKList = await kInstance.getListByLive(list, "day");
+        await kInstance.update("f12", newKList);
+        const newKIndexList = await kInstance.getIndexListByLive(newKList);
 
-      const fundInstance = require(RESOLVE_PATH("spider/model/fund"));
-      const newFundList = await fundInstance.getListByLive(list);
-      await fundInstance.update("f12", newFundList);
-      const newFundIndexList = await fundInstance.getIndexListByLive(newFundList);
+        const fundInstance = require(RESOLVE_PATH("spider/model/fund"));
+        const newFundList = await fundInstance.getListByLive(list);
+        await fundInstance.update("f12", newFundList);
+        const newFundIndexList = await fundInstance.getIndexListByLive(
+          newFundList
+        );
 
-      const f12Map = {};
-      list.forEach((stockItem) => {
-        f12Map[stockItem.f12] = stockItem;
-      });
+        const f12Map = {};
+        list.forEach((stockItem) => {
+          f12Map[stockItem.f12] = stockItem;
+        });
 
-      newKIndexList.forEach((indexItem) => {
-        if (f12Map[indexItem["f12"]]) {
-          Object.assign(f12Map[indexItem["f12"]], indexItem);
-        }
-      });
+        newKIndexList.forEach((indexItem) => {
+          if (f12Map[indexItem["f12"]]) {
+            Object.assign(f12Map[indexItem["f12"]], indexItem);
+          }
+        });
 
-      newFundIndexList.forEach((indexItem) => {
-        if (f12Map[indexItem["f12"]]) {
-          Object.assign(f12Map[indexItem["f12"]], indexItem);
-        }
-      });
-
+        newFundIndexList.forEach((indexItem) => {
+          if (f12Map[indexItem["f12"]]) {
+            Object.assign(f12Map[indexItem["f12"]], indexItem);
+          }
+        });
+      }
       await this.update("f12", list);
     } else {
       await this.add(list);
@@ -88,6 +92,7 @@ class BaseQuery extends require("./base") {
             pageNum: index,
             pageSize,
             update: params.update,
+            updateOther: params.updateOther,
           }),
           taskLevel: params.taskLevel,
         });

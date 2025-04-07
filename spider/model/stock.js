@@ -10,7 +10,7 @@ const template = [
   { prop: "f9", label: "市盈率" },
   { prop: "f10", label: "量比" },
   { prop: "f11", label: "5分钟涨跌幅" },
-  { prop: "f12", label: "股票代码" },
+  { prop: "f12", label: "股票代码", filter: "in" },
   { prop: "f13", label: "市场" },
   { prop: "f14", label: "股票名称" },
   { prop: "f15", label: "最高价" },
@@ -178,7 +178,7 @@ class Stock extends require("./base-query") {
     let data = res.data;
     data = data.slice(3, -2);
     data = JSON.parse(data).data || {};
-    const { total, diff=[] } = data;
+    const { total, diff = [] } = data;
     const pages = Math.ceil(total / diff.length);
     return {
       total,

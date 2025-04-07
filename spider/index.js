@@ -10,7 +10,7 @@ taskManage.register({
     await PACKAGE_EXCUTE(
       RESOLVE_PATH("spider/model"),
       ["base.js"],
-      async (module, moduleName) => {
+      (module, moduleName) => {
         taskQueue.registerModel(moduleName, module);
       }
     );
@@ -76,16 +76,16 @@ taskManage.register({
   type: "mid",
   func: async () => {
     // 先获取概念/行业/地区数据
-    await require(RESOLVE_PATH("spider/model/concept.js")).fetchList(true);
-    await require(RESOLVE_PATH("spider/model/industry.js")).fetchList(true);
-    await require(RESOLVE_PATH("spider/model/region.js")).fetchList(true);
+    await require(RESOLVE_PATH("spider/model/concept.js")).fetchList(true,true);
+    await require(RESOLVE_PATH("spider/model/industry.js")).fetchList(true,true);
+    await require(RESOLVE_PATH("spider/model/region.js")).fetchList(true,true);
+
+    // 获取股票数据
+    await require(RESOLVE_PATH("spider/model/stock.js")).fetchList(true,true);
 
     // 获取etf与lof数据
     await require(RESOLVE_PATH("spider/model/etf.js")).fetchList(true);
     await require(RESOLVE_PATH("spider/model/lof.js")).fetchList(true);
-
-    // 获取股票数据
-    await require(RESOLVE_PATH("spider/model/stock.js")).fetchList(true);
 
     // 当日涨停数据
     await require(RESOLVE_PATH("spider/model/limit.js")).fetchTodayList();
@@ -111,13 +111,16 @@ taskManage.register({
   type: "close",
   func: async () => {
     await require(RESOLVE_PATH("spider/model/stock.js")).fetchList();
+
+    await require(RESOLVE_PATH("spider/model/stock.js")).fetchKList("day");
+    await require(RESOLVE_PATH("spider/model/stock.js")).fetchFundList();
     // 获取K线
     await require(RESOLVE_PATH("spider/model/concept.js")).fetchKList("day");
     await require(RESOLVE_PATH("spider/model/concept.js")).fetchFundList();
-    await require(RESOLVE_PATH("spider/model/stock.js")).fetchKList("day");
-    await require(RESOLVE_PATH("spider/model/stock.js")).fetchFundList();
+
     await require(RESOLVE_PATH("spider/model/industry.js")).fetchKList("day");
     await require(RESOLVE_PATH("spider/model/industry.js")).fetchFundList();
+
     await require(RESOLVE_PATH("spider/model/region.js")).fetchKList("day");
     await require(RESOLVE_PATH("spider/model/region.js")).fetchFundList();
   },
