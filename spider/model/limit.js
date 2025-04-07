@@ -16,7 +16,7 @@ const template = [
   { prop: "hybk", alias: "f100", label: "所属行业" },
   { prop: "zttj.days", alias: "f10006", label: "涨停区间" },
   { prop: "zttj.ct", alias: "f10007", label: "区间涨停次数" },
-  { prop: "date", label: "日期",filter: 'eq' },
+  { prop: "date", label: "日期", filter: "eq" },
 ];
 
 class Limit extends require("./base-query") {
@@ -78,8 +78,8 @@ class Limit extends require("./base-query") {
     }
   }
   async fetchTodayList() {
-    if(IS_OPEN_DAY(DAYJS().format("YYYY-MM-DD"))) {
-      return ''
+    if (IS_OPEN_DAY(DAYJS().format("YYYY-MM-DD"))) {
+      return "";
     }
 
     const currentDay = DAYJS().format("YYYYMMDD");
@@ -119,6 +119,7 @@ class Limit extends require("./base-query") {
     const whereMap = {
       [Op.and]: whereArr,
     };
+
     return super.queryPage({
       pageNum,
       pageSize,
