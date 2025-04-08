@@ -259,7 +259,7 @@ class Stock extends require("./base-query") {
         };
       });
       whereArr.push({
-        [OP.and]: {
+        [Op.and]: {
           ["f12"]: {
             [Op.or]: arr,
           },
@@ -269,17 +269,17 @@ class Stock extends require("./base-query") {
     }
     if (where["f9"]) {
       if (where["f9"] > 0) {
-        whereArr.push({ [OP.and]: literal(`CAST( f9 AS INTEGER) < 0`) });
+        whereArr.push({ [Op.and]: literal(`CAST( f9 AS INTEGER) < 0`) });
       } else {
-        whereArr.push({ [OP.and]: literal(`CAST(f9 AS INTEGER) >= 0`) });
+        whereArr.push({ [Op.and]: literal(`CAST(f9 AS INTEGER) >= 0`) });
       }
       delete where["f9"];
     }
     if (where["f23"]) {
       if (where["f23"] > 0) {
-        whereArr.push({ [OP.and]: literal(`CAST(f23 AS INTEGER) < 1`) });
+        whereArr.push({ [Op.and]: literal(`CAST(f23 AS INTEGER) < 1`) });
       } else {
-        whereArr.push({ [OP.and]: literal(`CAST(f23 AS INTEGER) >= 1`) });
+        whereArr.push({ [Op.and]: literal(`CAST(f23 AS INTEGER) >= 1`) });
       }
       delete where["f23"];
     }
