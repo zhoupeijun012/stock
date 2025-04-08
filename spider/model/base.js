@@ -1,5 +1,5 @@
 const { sequelize } = require(RESOLVE_PATH("utils/sql.js"));
-const { DataTypes, ARRAY } = require("sequelize");
+const { DataTypes, } = require("sequelize");
 const { col, Op, cast, fn, literal } = require("sequelize");
 class BaseModel {
   constructor({ name, template, extend = [] }) {
@@ -32,7 +32,7 @@ class BaseModel {
       raw: true,
       distinct: true,
       attributes: {
-        include: matchKey,
+        include: matchKey
       },
       order: order,
       where: where,
@@ -47,9 +47,7 @@ class BaseModel {
     const { count, rows } = await this.pageModel.findAndCountAll({
       raw: true,
       distinct: true,
-      attributes: {
-        include: matchKey,
-      },
+      attributes: matchKey,
       offset: (pageNum - 1) * pageSize,
       limit: pageSize,
       order: order,
