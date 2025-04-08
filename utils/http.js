@@ -26,7 +26,7 @@ const axios = require('axios');
 
 // 创建一个具有默认配置的axios实例
 const instance = axios.create({
-  timeout: 60 * 1000,
+  timeout: 30 * 1000,
 });
 
 global.HTTP = instance;

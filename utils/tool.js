@@ -95,7 +95,7 @@ global.IS_OPEN_DAY = (date) => {
 
 global.IN_OPEN_TIME = () => {
   return (
-    DAYJS().format("HHmmss") >= "092500" && DAYJS().format("HHmmss") <= "150000"
+    ( DAYJS().format("HHmmss") >= "092500" && DAYJS().format("HHmmss") <= "113000") || ( DAYJS().format("HHmmss") >= "130000" && DAYJS().format("HHmmss") <= "150000")
   );
 };
 
