@@ -129,7 +129,7 @@ const template = [
   { prop: "f100", label: "行业" },
   { prop: "f101", label: "板块领涨股" },
   { prop: "f102", label: "地区板块" },
-  { prop: "f103", label: "备注" },
+  { prop: "f103", label: "备注", filter: "strmap" },
   { prop: "f104", label: "上涨家数" },
   { prop: "f105", label: "下跌家数" },
   { prop: "f106", label: "平家家数" },
@@ -259,31 +259,34 @@ class Stock extends require("./base-query") {
         };
       });
       whereArr.push({
-        ["f12"]: {
-          [Op.or]: arr,
+        [OP.and]: {
+          ["f12"]: {
+            [Op.or]: arr,
+          },
         },
       });
       delete where["f6666"];
     }
     if (where["f9"]) {
       if (where["f9"] > 0) {
-        whereArr.push(literal(`CAST( f9 AS INTEGER) < 0`));
+        whereArr.push({ [OP.and]: literal(`CAST( f9 AS INTEGER) < 0`) });
       } else {
-        whereArr.push(literal(`CAST(f9 AS INTEGER) >= 0`));
+        whereArr.push({ [OP.and]: literal(`CAST(f9 AS INTEGER) >= 0`) });
       }
       delete where["f9"];
     }
     if (where["f23"]) {
       if (where["f23"] > 0) {
-        whereArr.push(literal(`CAST(f23 AS INTEGER) < 1`));
+        whereArr.push({ [OP.and]: literal(`CAST(f23 AS INTEGER) < 1`) });
       } else {
-        whereArr.push(literal(`CAST(f23 AS INTEGER) >= 1`));
+        whereArr.push({ [OP.and]: literal(`CAST(f23 AS INTEGER) >= 1`) });
       }
       delete where["f23"];
     }
 
-    whereArr = whereArr.concat(this.whereArray(where));
-
+    const { andArr, orArr } = this.whereArray(where);
+    whereArr = whereArr.concat(andArr);
+    whereArr = whereArr.concat(orArr);
     const whereMap = {
       [Op.and]: whereArr,
     };

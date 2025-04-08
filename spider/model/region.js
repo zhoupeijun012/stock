@@ -251,8 +251,9 @@ class Region extends require("./base-query") {
     const tableOrders = this.orderArray(order);
 
     let whereArr = [];
-    whereArr = whereArr.concat(this.whereArray(where));
-
+    const { andArr, orArr } = this.whereArray(where);
+    whereArr = whereArr.concat(andArr);
+    whereArr = whereArr.concat(orArr);
     const whereMap = {
       [Op.and]: whereArr,
     };

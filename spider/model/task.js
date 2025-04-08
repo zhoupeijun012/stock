@@ -21,16 +21,17 @@ class Task extends require("./base-query") {
     const tableOrders = this.orderArray(order);
 
     let whereArr = [];
-    if(where['retryCount'] ) {
+    if (where["retryCount"]) {
       whereArr.push({
         retryCount: {
-          [Op.lt]: where['retryCount'],
+          [Op.lt]: where["retryCount"],
         },
       });
-      delete where['retryCount']
+      delete where["retryCount"];
     }
-    whereArr = whereArr.concat(this.whereArray(where));
-    
+    const { andArr, orArr } = this.whereArray(where);
+    whereArr = whereArr.concat(andArr);
+    whereArr = whereArr.concat(orArr);
     const whereMap = {
       [Op.and]: whereArr,
     };

@@ -73,30 +73,27 @@ class BaseModel {
   }
   whereArray(where = []) {
     const template = [...this.template, ...this.extend];
-    const whereArr = [];
+    const andArr = [];
+    const orArr = [];
     for (let key of Object.keys(where)) {
-      const findObj = template.find((item) => item.alias == key || item.prop == key);
+      const findObj = template.find(
+        (item) => item.alias == key || item.prop == key
+      );
       if (findObj) {
         const filterType = findObj.filter || "like";
 
         // 处理范围筛选
         if (filterType == "range" && where[key].length > 0) {
           if (where[key].length > 1) {
-            whereArr.push(
-              literal(`CAST(${key} AS INTEGER) >= ${where[key][0]}`)
-            );
-            whereArr.push(
-              literal(`CAST(${key} AS INTEGER) <= ${where[key][1]}`)
-            );
+            andArr.push(literal(`CAST(${key} AS INTEGER) >= ${where[key][0]}`));
+            andArr.push(literal(`CAST(${key} AS INTEGER) <= ${where[key][1]}`));
           } else {
-            whereArr.push(
-              literal(`CAST(${key} AS INTEGER) >= ${where[key][0]}`)
-            );
+            andArr.push(literal(`CAST(${key} AS INTEGER) >= ${where[key][0]}`));
           }
         }
 
         if (filterType == "like") {
-          whereArr.push({
+          andArr.push({
             [key]: {
               [Op.like]: `%${where[key]}%`,
             },
@@ -104,7 +101,7 @@ class BaseModel {
         }
 
         if (filterType == "eq") {
-          whereArr.push({
+          andArr.push({
             [key]: {
               [Op.eq]: where[key],
             },
@@ -112,25 +109,40 @@ class BaseModel {
         }
 
         if (filterType == "in" && Array.isArray(where[key])) {
-          whereArr.push({
+          andArr.push({
             [key]: {
               [Op.in]: where[key],
             },
           });
         }
 
-        if (filterType == "in" && typeof where[key] == 'string') {
-          whereArr.push({
+        if (filterType == "in" && typeof where[key] == "string") {
+          andArr.push({
             [key]: {
               [Op.like]: `%${where[key]}%`,
             },
           });
         }
-        
+
+        if (filterType == "strmap" && where[key].length > 0 ) {
+          orArr.push(
+            {
+              [Op.and]: where[key].map((param) => {
+                return {
+                  [key]: {
+                    [Op.like]: `%${param}%`,
+                  },
+                };
+              })
+            }
+          );
+        }
       }
     }
 
-    return whereArr;
+    return {
+      andArr,orArr
+    };
   }
   async add(list) {
     if (Array.isArray(list)) {
