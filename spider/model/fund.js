@@ -67,7 +67,6 @@ class Fund extends require("./base-query") {
     let newIndexList = [];
     for(let indexItem of list) {
       newIndexList.push(this.calculateIndex(indexItem));
-      await TIME_WAIT(0);
     }
     return newIndexList;
   }

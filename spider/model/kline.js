@@ -77,7 +77,6 @@ class Kline extends require("./base-query") {
     let newIndexList = [];
     for(const indexItem of list) {
       newIndexList.push(this.calculateIndex(indexItem));
-      await TIME_WAIT(0);
     }
     return newIndexList;
   }
