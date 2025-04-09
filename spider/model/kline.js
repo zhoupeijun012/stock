@@ -23,12 +23,12 @@ class Kline extends require("./base-query") {
     ];
   }
   queryPage(params) {
-    const { pageNum, pageSize, matchKey = [], order = [], where = {} } = params;
+    const { pageNum, pageSize, matchKey = [], order = [], where = {},whereNot = {} } = params;
 
     const tableOrders = this.orderArray(order);
 
     let whereArr = [];
-    const { andArr, orArr } = this.whereArray(where);
+    const { andArr, orArr } = this.whereArray(where,whereNot);
     whereArr = whereArr.concat(andArr);
     whereArr = whereArr.concat(orArr);
     const whereMap = {

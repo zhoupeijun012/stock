@@ -20,12 +20,12 @@ const template = [
   { prop: "f17", label: "开盘价" },
   { prop: "f18", label: "昨收" },
   { prop: "f20", label: "总市值" },
-  { prop: "f21", label: "流通市值", filter:'range' },
+  { prop: "f21", label: "流通市值", filter: "range" },
   { prop: "f22", label: "涨速" },
   { prop: "f23", label: "市净率" },
   { prop: "f24", label: "60日涨跌幅" },
   { prop: "f25", label: "年初至今涨跌幅" },
-  { prop: "c1", label: "交易类型",filter: 'eq' },
+  { prop: "c1", label: "交易类型", filter: "eq" },
 ];
 const T_CODE = [
   "518860",
@@ -301,11 +301,18 @@ class Etf extends require("./base-query") {
     };
   }
   queryPage(params) {
-    const { pageNum, pageSize, matchKey = [], order = [], where = {} } = params;
+    const {
+      pageNum,
+      pageSize,
+      matchKey = [],
+      order = [],
+      where = {},
+      whereNot = {},
+    } = params;
     const tableOrders = this.orderArray(order);
 
     let whereArr = [];
-    const { andArr, orArr } = this.whereArray(where);
+    const { andArr, orArr } = this.whereArray(where, whereNot);
     whereArr = whereArr.concat(andArr);
     whereArr = whereArr.concat(orArr);
     const whereMap = {
@@ -328,6 +335,6 @@ module.exports = new Etf({
   updateKey: "f12",
   extend: [
     ...require(RESOLVE_PATH("spider/model/kline")).extend,
-    ...require(RESOLVE_PATH("spider/model/fund")).extend
-  ]
+    ...require(RESOLVE_PATH("spider/model/fund")).extend,
+  ],
 });
