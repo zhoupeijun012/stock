@@ -18,7 +18,7 @@ const template = [
   { prop: "f17", label: "开盘价" },
   { prop: "f18", label: "昨收" },
   { prop: "f20", label: "总市值" },
-  { prop: "f21", label: "流通市值" },
+  { prop: "f21", label: "流通市值", filter:'range' },
   { prop: "f22", label: "涨速" },
   { prop: "f23", label: "市净率" },
   { prop: "f24", label: "60日涨跌幅" },

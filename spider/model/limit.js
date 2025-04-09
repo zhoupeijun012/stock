@@ -5,7 +5,7 @@ const template = [
   { prop: "c", alias: "f12", label: "股票代码" },
   { prop: "p", alias: "f2", label: "最新价" },
   { prop: "zdp", alias: "f3", label: "涨跌幅" },
-  { prop: "ltsz", alias: "f21", label: "流通市值" },
+  { prop: "ltsz", alias: "f21", label: "流通市值", filter:'range' },
   { prop: "tshare", alias: "f20", label: "总市值" },
   { prop: "hs", alias: "f8", label: "换手率" },
   { prop: "fund", alias: "f10001", label: "封板资金" },
