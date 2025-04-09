@@ -45,7 +45,7 @@ class BaseQuery extends require("./base") {
       params
     );
     if (params.update) {
-      if (params.updateOther) {
+      if (params.updateOther && false) {
         const kInstance = require(RESOLVE_PATH("spider/model/kline"));
         const newKList = await kInstance.getListByLive(list, "day");
         await kInstance.update("f12", newKList);

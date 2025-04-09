@@ -120,6 +120,7 @@ class Limit extends require("./base-query") {
     const whereMap = {
       [Op.and]: whereArr,
     };
+
     const limitMaths = matchKey.filter(
       (keyItem) => this.modelKeys.includes(keyItem)
     );
@@ -140,7 +141,7 @@ class Limit extends require("./base-query") {
       await StockModel.queryPage({
         pageNum: 1,
         pageSize: 10000,
-        matchKey: stockMatchs,
+        matchKey: [...stockMatchs,'f12'],
         where: {
           f12: stockIds,
         },
