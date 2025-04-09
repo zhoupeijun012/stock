@@ -110,24 +110,24 @@ taskManage.register({
   },
 });
 
-// taskManage.register({
-//   type: "close",
-//   func: async () => {
-//     await require(RESOLVE_PATH("spider/model/stock.js")).fetchList();
+taskManage.register({
+  type: "close",
+  func: async () => {
+    await require(RESOLVE_PATH("spider/model/stock.js")).fetchList();
 
-//     await require(RESOLVE_PATH("spider/model/stock.js")).fetchKList("day");
-//     await require(RESOLVE_PATH("spider/model/stock.js")).fetchFundList();
-//     // 获取K线
-//     await require(RESOLVE_PATH("spider/model/concept.js")).fetchKList("day");
-//     await require(RESOLVE_PATH("spider/model/concept.js")).fetchFundList();
+    await require(RESOLVE_PATH("spider/model/stock.js")).fetchKList("day");
+    await require(RESOLVE_PATH("spider/model/stock.js")).fetchFundList();
+    // 获取K线
+    await require(RESOLVE_PATH("spider/model/concept.js")).fetchKList("day");
+    await require(RESOLVE_PATH("spider/model/concept.js")).fetchFundList();
 
-//     await require(RESOLVE_PATH("spider/model/industry.js")).fetchKList("day");
-//     await require(RESOLVE_PATH("spider/model/industry.js")).fetchFundList();
+    await require(RESOLVE_PATH("spider/model/industry.js")).fetchKList("day");
+    await require(RESOLVE_PATH("spider/model/industry.js")).fetchFundList();
 
-//     await require(RESOLVE_PATH("spider/model/region.js")).fetchKList("day");
-//     await require(RESOLVE_PATH("spider/model/region.js")).fetchFundList();
-//   },
-// });
+    await require(RESOLVE_PATH("spider/model/region.js")).fetchKList("day");
+    await require(RESOLVE_PATH("spider/model/region.js")).fetchFundList();
+  },
+});
 
 exports.start = () => {
   return taskManage.start().catch((error) => {
