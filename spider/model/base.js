@@ -1,5 +1,5 @@
 const { sequelize } = require(RESOLVE_PATH("utils/sql.js"));
-const { DataTypes, } = require("sequelize");
+const { DataTypes } = require("sequelize");
 const { col, Op, cast, fn, literal } = require("sequelize");
 class BaseModel {
   constructor({ name, template, extend = [] }) {
@@ -32,7 +32,7 @@ class BaseModel {
       raw: true,
       distinct: true,
       attributes: {
-        include: matchKey
+        include: matchKey,
       },
       order: order,
       where: where,
@@ -69,77 +69,128 @@ class BaseModel {
       ];
     });
   }
-  whereArray(where = []) {
+  whereArray(where = {}, whereNot = {}) {
     const template = [...this.template, ...this.extend];
     const andArr = [];
     const orArr = [];
-    for (let key of Object.keys(where)) {
-      const findObj = template.find(
-        (item) => item.alias == key || item.prop == key
-      );
-      if (findObj) {
-        const filterType = findObj.filter || "like";
 
-        // 处理范围筛选
-        if (filterType == "range" && where[key].length > 0) {
-          if (where[key].length > 1) {
-            andArr.push(literal(`CAST(${key} AS INTEGER) >= ${where[key][0]}`));
-            andArr.push(literal(`CAST(${key} AS INTEGER) <= ${where[key][1]}`));
+    template.forEach((templateItem) => {
+      const templateKey = templateItem.alias || templateItem.prop;
+
+      const whereItem = where[templateKey];
+      const notWhereItem = whereNot[templateKey];
+
+      const filterType = templateItem.filter || "like";
+
+      // 处理范围筛选
+      if (
+        filterType == "range" &&
+        ((Array.isArray(whereItem) && whereItem.length > 0) ||
+          (Array.isArray(notWhereItem) && notWhereItem.length > 0))
+      ) {
+        if (whereItem) {
+          if (whereItem.length > 1) {
+            andArr.push(
+              literal(`CAST(${templateKey} AS INTEGER) >= ${whereItem[0]}`)
+            );
+            andArr.push(
+              literal(`CAST(${templateKey} AS INTEGER) <= ${whereItem[1]}`)
+            );
           } else {
-            andArr.push(literal(`CAST(${key} AS INTEGER) >= ${where[key][0]}`));
+            andArr.push(
+              literal(`CAST(${templateKey} AS INTEGER) >= ${whereItem[0]}`)
+            );
           }
         }
-
-        if (filterType == "like") {
-          andArr.push({
-            [key]: {
-              [Op.like]: `%${where[key]}%`,
-            },
-          });
-        }
-
-        if (filterType == "eq") {
-          andArr.push({
-            [key]: {
-              [Op.eq]: where[key],
-            },
-          });
-        }
-
-        if (filterType == "in" && Array.isArray(where[key])) {
-          andArr.push({
-            [key]: {
-              [Op.in]: where[key],
-            },
-          });
-        }
-
-        if (filterType == "in" && typeof where[key] == "string") {
-          andArr.push({
-            [key]: {
-              [Op.like]: `%${where[key]}%`,
-            },
-          });
-        }
-
-        if (filterType == "strmap" && where[key].length > 0 ) {
-          orArr.push(
-            {
-              [Op.and]: where[key].map((param) => {
-                return {
-                  [key]: {
-                    [Op.like]: `%${param}%`,
-                  },
-                };
-              })
-            }
-          );
+        if (notWhereItem) {
+          if (notWhereItem.length > 1) {
+            andArr.push(
+              literal(`CAST(${templateKey} AS INTEGER) >= ${notWhereItem[0]}`)
+            );
+            andArr.push(
+              literal(`CAST(${templateKey} AS INTEGER) <= ${notWhereItem[1]}`)
+            );
+          } else {
+            andArr.push(
+              literal(`CAST(${templateKey} AS INTEGER) >= ${notWhereItem[0]}`)
+            );
+          }
         }
       }
-    }
+
+      if (
+        filterType == "like" ||
+        (filterType == "in" &&
+          !Array.isArray(whereItem) &&
+          !Array.isArray(notWhereItem))
+      ) {
+        const obj = {};
+        if (whereItem) {
+          obj[Op.like] = `%${whereItem}%`;
+        }
+        if (notWhereItem) {
+          obj[Op.notLike] = `%${notWhereItem}%`;
+        }
+        if (obj[Op.like] || obj[Op.notLike]) {
+          andArr.push({
+            [templateKey]: obj,
+          });
+        }
+      }
+
+      if (filterType == "eq") {
+        const obj = {};
+        if (whereItem) {
+          obj[Op.eq] = whereItem;
+        }
+        if (notWhereItem) {
+          obj[Op.ne] = notWhereItem;
+        }
+        if (obj[Op.eq] || obj[Op.ne]) {
+          andArr.push({
+            [templateKey]: obj,
+          });
+        }
+      }
+      if (
+        filterType == "strmap" &&
+        ((Array.isArray(whereItem) && whereItem.length > 0) ||
+          (Array.isArray(notWhereItem) && notWhereItem.length > 0))
+      ) {
+        if (whereItem) {
+          const matchArr = whereItem.map((param) => {
+            return {
+              [templateKey]: {
+                [Op.like]: `%${param}%`,
+              },
+            };
+          });
+          if (matchArr.length > 0) {
+            orArr.push({
+              [Op.and]: matchArr,
+            });
+          }
+        }
+        if (notWhereItem) {
+          const matchArr = notWhereItem.map((param) => {
+            return {
+              [templateKey]: {
+                [Op.notLike]: `%${param}%`,
+              },
+            };
+          });
+          if (matchArr.length > 0) {
+            andArr.push({
+              [Op.and]: matchArr,
+            });
+          }
+        }
+      }
+    });
 
     return {
-      andArr,orArr
+      andArr,
+      orArr,
     };
   }
   async add(list) {

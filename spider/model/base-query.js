@@ -191,7 +191,8 @@ class BaseQuery extends require("./base") {
           pageSize,
           matchKey,
           order = [],
-          where = [],
+          where = {},
+          whereNot = {},
           prompt,
         } = ctx.request.body;
         if (
@@ -206,6 +207,7 @@ class BaseQuery extends require("./base") {
           matchKey,
           order,
           where,
+          whereNot,
         });
 
         ctx.body = {

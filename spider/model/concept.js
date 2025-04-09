@@ -11,7 +11,7 @@ const template = [
   { prop: "f9", label: "市盈率" },
   { prop: "f10", label: "量比" },
   { prop: "f11", label: "5分钟涨跌幅" },
-  { prop: "f12", label: "股票代码" },
+  { prop: "f12", label: "股票代码", filter: 'strmap' },
   { prop: "f13", label: "市场" },
   { prop: "f14", label: "股票名称" },
   { prop: "f15", label: "最高价" },
@@ -19,7 +19,7 @@ const template = [
   { prop: "f17", label: "开盘价" },
   { prop: "f18", label: "昨收" },
   { prop: "f20", label: "总市值" },
-  { prop: "f21", label: "流通市值", filter:'range' },
+  { prop: "f21", label: "流通市值", filter: "range" },
   { prop: "f22", label: "涨速" },
   { prop: "f23", label: "市净率" },
   { prop: "f24", label: "60日涨跌幅" },
@@ -248,13 +248,22 @@ class Concept extends require("./base-query") {
     };
   }
   queryPage(params) {
-    const { pageNum, pageSize, matchKey = [], order = [], where = {} } = params;
+    const {
+      pageNum,
+      pageSize,
+      matchKey = [],
+      order = [],
+      where = {},
+      whereNot = {},
+    } = params;
     const tableOrders = this.orderArray(order);
 
     let whereArr = [];
-    const { andArr, orArr } = this.whereArray(where);
+    const { andArr, orArr } = this.whereArray(where,whereNot);
     whereArr = whereArr.concat(andArr);
     whereArr = whereArr.concat(orArr);
+
+
     const whereMap = {
       [Op.and]: whereArr,
     };
@@ -276,6 +285,6 @@ module.exports = new Concept({
   updateKey: "f12",
   extend: [
     ...require(RESOLVE_PATH("spider/model/kline")).extend,
-    ...require(RESOLVE_PATH("spider/model/fund")).extend
-  ]
+    ...require(RESOLVE_PATH("spider/model/fund")).extend,
+  ],
 });
