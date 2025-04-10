@@ -18,7 +18,7 @@ const template = [
   { prop: "f17", label: "开盘价" },
   { prop: "f18", label: "昨收" },
   { prop: "f20", label: "总市值" },
-  { prop: "f21", label: "流通市值", filter:'range' },
+  { prop: "f21", label: "流通市值", filter: "range" },
   { prop: "f22", label: "涨速" },
   { prop: "f23", label: "市净率" },
   { prop: "f24", label: "60日涨跌幅" },
@@ -247,7 +247,14 @@ class Stock extends require("./base-query") {
     };
   }
   queryPage(params) {
-    const { pageNum, pageSize, matchKey = [], order = [], where = [],whereNot = {} } = params;
+    const {
+      pageNum,
+      pageSize,
+      matchKey = [],
+      order = [],
+      where = [],
+      whereNot = {},
+    } = params;
 
     const tableOrders = this.orderArray(order);
 
@@ -284,7 +291,17 @@ class Stock extends require("./base-query") {
       delete where["f23"];
     }
 
-    const { andArr, orArr } = this.whereArray(where,whereNot);
+    if (where["f40003"] && where["f40003"] == "1") {
+      whereArr.push({
+        [Op.and]: literal(`CAST(f3 AS INTEGER) > 0 `),
+      });
+      whereArr.push({
+        [Op.and]: literal(`CAST(f6 AS INTEGER) * 10 > CAST(f21 AS INTEGER)`),
+      });
+      delete where["f40003"];
+    }
+
+    const { andArr, orArr } = this.whereArray(where, whereNot);
     whereArr = whereArr.concat(andArr);
     whereArr = whereArr.concat(orArr);
     const whereMap = {

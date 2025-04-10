@@ -11,7 +11,7 @@ class Fund extends require("./base-query") {
     super(params);
     this.extend = [
       { prop: "f50004", label: "资金净流入天数", filter: 'range' },
-      { prop: "f50005", label: "资金净流入数额", filter: 'range' }
+      { prop: "f50005", label: "资金净流入数额", filter: 'range' },
     ]
   }
   queryPage(params) {
