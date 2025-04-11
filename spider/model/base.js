@@ -138,6 +138,25 @@ class BaseModel {
         }
       }
 
+      if (
+        filterType == "in" &&
+        (Array.isArray(whereItem) ||
+        Array.isArray(notWhereItem))
+      ) {
+        const obj = {};
+        if (whereItem) {
+          obj[Op.in] = whereItem;
+        }
+        if (notWhereItem) {
+          obj[Op.notIn] = notWhereItem;
+        }
+        if (obj[Op.in] || obj[Op.notIn]) {
+          andArr.push({
+            [templateKey]: obj,
+          });
+        }
+      }
+
       if (filterType == "eq") {
         const obj = {};
         if (whereItem) {
