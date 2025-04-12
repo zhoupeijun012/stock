@@ -1,8 +1,7 @@
 const { Sequelize } = require("sequelize");
 const sequelize = new Sequelize({
   dialect: "sqlite",
-  storage: ':memory:',
-  // storage: RESOLVE_PATH("db/sqlite.db"),
+  storage: RESOLVE_PATH("db/sqlite.db"),
   logging: false,
   pool: {
     max: 10, // 连接池最大连接数
