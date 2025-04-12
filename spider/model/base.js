@@ -6,11 +6,20 @@ class BaseModel {
     const modelKeys = template.map((item) => item.alias || item.prop);
     const defineModel = {};
     [...template, ...extend].forEach((templateItem) => {
-      defineModel[templateItem.alias || templateItem.prop] = {
+      const obj = {
         type: DataTypes.STRING,
         allowNull: true,
         defaultValue: templateItem.default ? templateItem.default : "",
       };
+      if (templateItem.index) {
+        obj["indexes"] = [
+          {
+            unique: true,
+            fields: [templateItem.alias || templateItem.prop],
+          },
+        ];
+      }
+      defineModel[templateItem.alias || templateItem.prop] = obj;
     });
 
     defineModel["uuid"] = {
@@ -140,8 +149,7 @@ class BaseModel {
 
       if (
         filterType == "in" &&
-        (Array.isArray(whereItem) ||
-        Array.isArray(notWhereItem))
+        (Array.isArray(whereItem) || Array.isArray(notWhereItem))
       ) {
         const obj = {};
         if (whereItem) {
@@ -229,44 +237,28 @@ class BaseModel {
   }
   async update(uniqueKey, list) {
     if (Array.isArray(list)) {
-      // const t = await sequelize.transaction();
-      // try {
-      //   for (let stockItem of list) {
-      //     const sqeObj = {};
-      //     this.modelKeys.forEach((key, index) => {
-      //       if (stockItem[key]) {
-      //         sqeObj[key] = stockItem[key];
-      //       }
-      //     });
-      //     await this.pageModel.update(
-      //       sqeObj,
-      //       {
-      //         where: {
-      //           [uniqueKey]: sqeObj[uniqueKey],
-      //         },
-      //       },
-      //       // { transaction: t }
-      //     );
-      //   }
-      //   await t.commit();
-      // } catch (error) {
-      //   await t.rollback();
-      // }
-      for (let stockItem of list) {
-        const sqeObj = {};
-        this.modelKeys.forEach((key, index) => {
-          if (stockItem[key]) {
-            sqeObj[key] = stockItem[key];
-          }
-        });
-        await this.pageModel.update(
-          sqeObj,
-          {
-            where: {
-              [uniqueKey]: sqeObj[uniqueKey],
-            },
-          },
-        );
+      const t = await sequelize.transaction();
+      try {
+        for (let stockItem of list) {
+          const sqeObj = {};
+          this.modelKeys.forEach((key, index) => {
+            if (stockItem[key]) {
+              sqeObj[key] = stockItem[key];
+            }
+          });
+          await this.pageModel.update(
+            sqeObj,
+            {
+              where: {
+                [uniqueKey]: sqeObj[uniqueKey],
+              },
+            }
+            // { transaction: t }
+          );
+        }
+        await t.commit();
+      } catch (error) {
+        await t.rollback();
       }
     } else {
       await this.pageModel.update(list, {

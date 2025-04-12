@@ -8,7 +8,7 @@ const template = [
   { prop: "f7", label: "振幅" },
   { prop: "f8", label: "换手率" },
   { prop: "f11", label: "5分钟涨跌幅" },
-  { prop: "f12", label: "股票代码" },
+  { prop: "f12", index:true,label: "股票代码" },
   { prop: "f13", label: "市场" },
   { prop: "f14", label: "股票名称" },
 ];

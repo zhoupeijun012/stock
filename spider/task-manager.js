@@ -36,20 +36,15 @@ class TaskManager {
       }
     });
 
-    // // 盘中任务
-    // cron.schedule("*/5 9-15 * * *", () => {
-    //   if (IS_OPEN_DAY(DAYJS().format("YYYY-MM-DD")) && IN_OPEN_TIME()) {
-    //     this._execTask("mid");
-    //   } else {
-    //     console.log("当前非开盘时间");
-    //   }
-    // });
-
-      // 盘中任务
-      cron.schedule("1 1-15 * * *", () => {
+    // 盘中任务
+    cron.schedule("*/5 9-15 * * *", () => {
+      if (IS_OPEN_DAY(DAYJS().format("YYYY-MM-DD")) && IN_OPEN_TIME()) {
         this._execTask("mid");
-      });
-
+      } else {
+        console.log("当前非开盘时间");
+      }
+    });
+   
     // 盘中快速任务
     cron.schedule("*/1 9-15 * * *", () => {
       if (IS_OPEN_DAY(DAYJS().format("YYYY-MM-DD")) && IN_OPEN_TIME()) {
