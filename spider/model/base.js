@@ -91,7 +91,7 @@ class BaseModel {
         if (whereItem) {
           if (whereItem.length > 1) {
             andArr.push(
-              literal(`CAST(${templateKey} AS INTEGER) >= ${whereItem[0]}`)
+              literal(`CAST(${templateKey} AS INTEGER) > ${whereItem[0]}`)
             );
             andArr.push(
               literal(`CAST(${templateKey} AS INTEGER) <= ${whereItem[1]}`)
