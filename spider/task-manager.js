@@ -44,11 +44,6 @@ class TaskManager {
         console.log("当前非开盘时间");
       }
     });
-
-    // 盘中任务
-    cron.schedule("*/30 6-15 * * *", () => {
-      this._execTask("mid");
-    });
    
     // 盘中快速任务
     cron.schedule("*/1 9-15 * * *", () => {
