@@ -45,63 +45,23 @@ class BaseQuery extends require("./base") {
       params
     );
     if (params.update) {
-      const arr = [];
-      const ddTime = Date.now();
       if (params.updateOther) {
-        let startTime = Date.now();
         const kInstance = require(RESOLVE_PATH("spider/model/kline"));
         const newKList = await kInstance.getListByLive(list, "day");
-        arr.push({
-          label: '读取并重写K线数据',
-          value: (Date.now() - startTime) / 1000
-        });
 
-        startTime = Date.now()
-        await kInstance.update("f12", newKList);
-        arr.push({
-          label: '更新K线数据',
-          value: (Date.now() - startTime) / 1000
-        });
-
-        startTime = Date.now()
+        // await kInstance.update("f12", newKList);
         const newKIndexList = await kInstance.getIndexListByLive(newKList);
-        arr.push({
-          label: '计算K线数据',
-          value: (Date.now() - startTime) / 1000
-        });
-        startTime = Date.now()
 
         const fundInstance = require(RESOLVE_PATH("spider/model/fund"));
         const newFundList = await fundInstance.getListByLive(list);
-        arr.push({
-          label: '读取并重写资金数据',
-          value: (Date.now() - startTime) / 1000
-        });
-        startTime = Date.now()
-
-        await fundInstance.update("f12", newFundList);
-        arr.push({
-          label: '写入资金数据',
-          value: (Date.now() - startTime) / 1000
-        });
-        startTime = Date.now()
+        // await fundInstance.update("f12", newFundList);
 
         const newFundIndexList = await fundInstance.getIndexListByLive(
           newFundList
         );
-        arr.push({
-          label: '计算资金数据',
-          value: (Date.now() - startTime) / 1000
-        });
-        arr.push({
-          label: '总计',
-          value: ( Date.now() - ddTime) / 1000
-        });
-        
 
         const f12Map = {};
         list.forEach((stockItem) => {
-          stockItem['cost'] = JSON.stringify(arr);
           f12Map[stockItem.f12] = stockItem;
         });
 
