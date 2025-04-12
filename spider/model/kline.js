@@ -1,7 +1,7 @@
 const { col, Op, cast, where, TIME } = require("sequelize");
 
 const template = [
-  { prop: "f12", label: "股票代码",filter: "in" },
+  { prop: "f12", label: "股票代码", filter: "in" },
   { prop: "f14", label: "股票名称" },
   { prop: "f40001", label: "K线类型" },
   { prop: "f40002", label: "K线数据" },
@@ -23,12 +23,19 @@ class Kline extends require("./base-query") {
     ];
   }
   queryPage(params) {
-    const { pageNum, pageSize, matchKey = [], order = [], where = {},whereNot = {} } = params;
+    const {
+      pageNum,
+      pageSize,
+      matchKey = [],
+      order = [],
+      where = {},
+      whereNot = {},
+    } = params;
 
     const tableOrders = this.orderArray(order);
 
     let whereArr = [];
-    const { andArr, orArr } = this.whereArray(where,whereNot);
+    const { andArr, orArr } = this.whereArray(where, whereNot);
     whereArr = whereArr.concat(andArr);
     whereArr = whereArr.concat(orArr);
     const whereMap = {
@@ -43,40 +50,58 @@ class Kline extends require("./base-query") {
       where: whereMap,
     });
   }
-  async getListByLive(list,type) {
+  async getListByLive(list, type) {
     list = Array.isArray(list) ? list : [list];
+    const kDataList = (
+      await this.queryPage({
+        pageNum: 1,
+        pageSize: list.length,
+        matchKey: ["f12", "f14","f40002"],
+        where: { f12: list.map((item) => item.f12), f40001: type },
+      })
+    ).list;
     const newKList = [];
     for (let stockRowItem of list) {
       // 首先先读取出数据，然后删除当天那条
       // 2024-05-21,840.58,839.62,843.56,837.63,4094051,1940203777.00,0.71,0.27,2.26,0.56\
       // 日期/开/收/高/低/成交量/成交额/震幅/涨跌幅/涨跌额/换手率
-      const { f12, f17,f2,f15,f16,f5,f6,f7,f3,f4,f8 } = stockRowItem;
-      const stockKLineItem = await this.query({
-        where: [{ f12,f40001: type }],
-      });
+      const { f12, f17, f2, f15, f16, f5, f6, f7, f3, f4, f8 } = stockRowItem;
+      const stockKLineItem = kDataList.find((item) => item["f12"] == f12);
       if (!stockKLineItem) {
         continue;
       }
       let { f40002 } = stockKLineItem;
       let klines = JSON.parse(f40002);
       const currentDay = DAYJS().format("YYYY-MM-DD");
-      const timeArr = [currentDay,f17/100,f2/100,f15/100,f16/100,f5,f6,f7/100,f3/100,f4/100,f8/100].join(',');
+      const timeArr = [
+        currentDay,
+        f17 / 100,
+        f2 / 100,
+        f15 / 100,
+        f16 / 100,
+        f5,
+        f6,
+        f7 / 100,
+        f3 / 100,
+        f4 / 100,
+        f8 / 100,
+      ].join(",");
       const lastObj = klines[klines.length - 1];
-      if(lastObj.startsWith(currentDay)) {
+      if (lastObj.startsWith(currentDay)) {
         klines.pop();
       }
       klines.push(timeArr);
       newKList.push({
         f12,
         f40001: type,
-        f40002: JSON.stringify(klines)
-      })
+        f40002: JSON.stringify(klines),
+      });
     }
     return newKList;
   }
   async getIndexListByLive(list) {
     let newIndexList = [];
-    for(const indexItem of list) {
+    for (const indexItem of list) {
       newIndexList.push(this.calculateIndex(indexItem));
     }
     return newIndexList;
@@ -222,6 +247,35 @@ class Kline extends require("./base-query") {
       ((parseFloat(lastPrice) - parseFloat(desPrice)) / parseFloat(desPrice)) *
         10000
     );
+  }
+  queryPage(params) {
+    const {
+      pageNum,
+      pageSize,
+      matchKey = [],
+      order = [],
+      where = {},
+      whereNot = {},
+    } = params;
+    const tableOrders = this.orderArray(order);
+
+    let whereArr = [];
+    const { andArr, orArr } = super.whereArray(where,whereNot);
+    whereArr = whereArr.concat(andArr);
+    whereArr = whereArr.concat(orArr);
+
+
+    const whereMap = {
+      [Op.and]: whereArr,
+    };
+
+    return super.queryPage({
+      pageNum,
+      pageSize,
+      matchKey,
+      order: tableOrders,
+      where: whereMap,
+    });
   }
 }
 

@@ -1,4 +1,4 @@
-const taskInstance = require(RESOLVE_PATH("spider/model/task.js"));
+const taskInstance = require(RESOLVE_PATH("spider/model/queue.js"));
 let excuting = false;
 class TaskQueue {
   constructor() {

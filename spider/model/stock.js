@@ -149,6 +149,10 @@ const template = [
   { prop: "f135", label: "净资产" },
   { prop: "f138", label: "净利润TTM" },
   { prop: "f221", label: "更新日期" },
+  {
+    prop: "cost",
+    label: "用时",
+  },
 ];
 
 class Stock extends require("./base-query") {

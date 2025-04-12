@@ -11,7 +11,7 @@ const template = [
   { prop: "message", label: "错误原因" },
 ];
 
-class Task extends require("./base-query") {
+class Queue extends require("./base-query") {
   constructor(params) {
     super(params);
   }
@@ -46,8 +46,8 @@ class Task extends require("./base-query") {
   }
 }
 
-module.exports = new Task({
-  name: "task",
+module.exports = new Queue({
+  name: "queue",
   template,
   chineseName: "任务",
   updateKey: "uuid",

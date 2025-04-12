@@ -49,3 +49,11 @@ process.on("uncaughtException", (error) => {
 
 //   })();
 // }, 3000);
+
+// setTimeout(() => {
+//   (async () => {
+//     await require(RESOLVE_PATH("utils/sql.js")).copyDatabase();
+//     await require(RESOLVE_PATH("spider/model/stock.js")).fetchList(true, true);
+
+//   })();
+// }, 3000);

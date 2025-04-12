@@ -12,6 +12,11 @@ const model = {
     allowNull: true,
     defaultValue: "",
   },
+  uuid: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true,
+  }
 };
 class Config {
   constructor() {

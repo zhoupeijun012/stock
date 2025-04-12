@@ -1,7 +1,7 @@
 const { col, Op, cast } = require("sequelize");
 
 const template = [
-  { prop: "f12", label: "股票代码" },
+  { prop: "f12", label: "股票代码",filter: "in"},
   { prop: "f14", label: "股票名称" },
   { prop: "f50003", label: "资金数据" },
 ];
@@ -37,14 +37,18 @@ class Fund extends require("./base-query") {
   }
   async getListByLive(list) {
     list = Array.isArray(list) ? list : [list];
+    const kDataList = (await this.queryPage({
+      pageNum: 1,
+      pageSize: list.length,
+      matchKey: ['f12','f50003'],
+      where: { f12: list.map((item)=>item.f12) },
+    })).list;
     const newKList = [];
     for (let stockRowItem of list) {
       // 首先先读取出数据，然后删除当天那条
       // 日期/主力净流入/小单净流入/中单净流入/大单净流入/超大单净流入/主力流入净占比/小单净占比/中单净占比/大单净占比/超大单净占比/收盘价/涨跌幅
       const { f12, f62, f84, f78, f72, f66, f184, f87, f81, f75, f69, f2, f3 } = stockRowItem;
-      const stockKLineItem = await this.query({
-        where: [{ f12 }],
-      });
+      const stockKLineItem = kDataList.find((item)=>item['f12'] == f12)
       if (!stockKLineItem) {
         continue;
       }
@@ -91,6 +95,35 @@ class Fund extends require("./base-query") {
       f50004,
       f50005
     }
+  }
+  queryPage(params) {
+    const {
+      pageNum,
+      pageSize,
+      matchKey = [],
+      order = [],
+      where = {},
+      whereNot = {},
+    } = params;
+    const tableOrders = this.orderArray(order);
+
+    let whereArr = [];
+    const { andArr, orArr } = this.whereArray(where,whereNot);
+    whereArr = whereArr.concat(andArr);
+    whereArr = whereArr.concat(orArr);
+
+
+    const whereMap = {
+      [Op.and]: whereArr,
+    };
+
+    return super.queryPage({
+      pageNum,
+      pageSize,
+      matchKey,
+      order: tableOrders,
+      where: whereMap,
+    });
   }
 }
 
