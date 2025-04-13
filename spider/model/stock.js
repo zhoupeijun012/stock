@@ -12,7 +12,7 @@ const template = [
   { prop: "f11", label: "5分钟涨跌幅" },
   { prop: "f12", index:true,label: "股票代码", filter: "in" },
   { prop: "f13", label: "市场" },
-  { prop: "f14", label: "股票名称" },
+  { prop: "f14",index:true, label: "股票名称" },
   { prop: "f15", label: "最高价" },
   { prop: "f16", label: "最低价" },
   { prop: "f17", label: "开盘价" },

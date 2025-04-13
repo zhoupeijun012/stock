@@ -2,7 +2,7 @@ const { col, Op, cast, where, TIME } = require("sequelize");
 
 const template = [
   { prop: "f12", index: true, label: "股票代码", filter: "in" },
-  { prop: "f14", label: "股票名称" },
+  { prop: "f14",index:true, label: "股票名称" },
   { prop: "f40001", label: "K线类型" },
   { prop: "f40002", label: "K线数据" },
 ];

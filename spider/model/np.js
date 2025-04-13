@@ -10,7 +10,7 @@ const template = [
   { prop: "f11", label: "5分钟涨跌幅" },
   { prop: "f12", index:true,label: "股票代码" },
   { prop: "f13", label: "市场" },
-  { prop: "f14", label: "股票名称" },
+  { prop: "f14",index:true, label: "股票名称" },
 ];
 
 class Np extends require("./base-query") {
