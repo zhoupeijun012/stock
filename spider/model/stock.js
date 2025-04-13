@@ -310,19 +310,19 @@ class Stock extends require("./base-query") {
 
     matchKey.push([
       literal(
-        `(SELECT json_group_array(json_object('f14',region.f14,'f12',region.f12,'f3',region.f3)) FROM regions AS region WHERE region.f14 = stock.f102)`
+        `(SELECT JSON_GROUP_ARRAY(JSON_OBJECT('f14',region.f14,'f12',region.f12,'f3',region.f3)) FROM regions AS region WHERE region.f14 = stock.f102)`
       ),
       "c_f102",
     ]);
     matchKey.push([
       literal(
-        `(SELECT json_group_array(json_object('f14',industry.f14,'f12',industry.f12,'f3',industry.f3)) FROM industries AS industry WHERE industry.f14 = stock.f100)`
+        `(SELECT JSON_GROUP_ARRAY(JSON_OBJECT('f14',industry.f14,'f12',industry.f12,'f3',industry.f3)) FROM industries AS industry WHERE industry.f14 = stock.f100)`
       ),
       "c_f100",
     ]);
     matchKey.push([
       literal(
-        `(SELECT json_group_array(json_object('f14',concept.f14,'f12',concept.f12,'f3',concept.f3)) FROM concepts AS concept WHERE INSTR(stock.f103,concept.f14) > 0)`
+        `(SELECT JSON_GROUP_ARRAY(JSON_OBJECT('f14',concept.f14,'f12',concept.f12,'f3',concept.f3)) FROM concepts AS concept WHERE INSTR(stock.f103,concept.f14) > 0)`
       ),
       "c_f103",
     ]);
@@ -338,19 +338,19 @@ class Stock extends require("./base-query") {
     const { matchKey = [], order = [], where = [] } = params;
     matchKey.push([
       literal(
-        `(SELECT json_group_array(json_object('f14',region.f14,'f12',region.f12,'f3',region.f3)) FROM regions AS region WHERE region.f14 = stock.f102)`
+        `(SELECT JSON_GROUP_ARRAY(JSON_OBJECT('f14',region.f14,'f12',region.f12,'f3',region.f3)) FROM regions AS region WHERE region.f14 = stock.f102)`
       ),
       "c_f102",
     ]);
     matchKey.push([
       literal(
-        `(SELECT json_group_array(json_object('f14',industry.f14,'f12',industry.f12,'f3',industry.f3)) FROM industries AS industry WHERE industry.f14 = stock.f100)`
+        `(SELECT JSON_GROUP_ARRAY(JSON_OBJECT('f14',industry.f14,'f12',industry.f12,'f3',industry.f3)) FROM industries AS industry WHERE industry.f14 = stock.f100)`
       ),
       "c_f100",
     ]);
     matchKey.push([
       literal(
-        `(SELECT json_group_array(json_object('f14',concept.f14,'f12',concept.f12,'f3',concept.f3)) FROM concepts AS concept WHERE INSTR(stock.f103,concept.f14) > 0)`
+        `(SELECT JSON_GROUP_ARRAY(JSON_OBJECT('f14',concept.f14,'f12',concept.f12,'f3',concept.f3)) FROM concepts AS concept WHERE INSTR(stock.f103,concept.f14) > 0)`
       ),
       "c_f103",
     ]);

@@ -7,7 +7,7 @@ class BaseModel {
     const defineModel = {};
     [...template, ...extend].forEach((templateItem) => {
       const obj = {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: true,
         defaultValue: templateItem.default ? templateItem.default : "",
       };

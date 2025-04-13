@@ -3,12 +3,12 @@ const { sequelize } = require(RESOLVE_PATH("utils/sql.js"));
 
 const model = {
   key: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: false,
     unique: true,
   },
   value: {
-    type: DataTypes.STRING,
+    type: DataTypes.TEXT,
     allowNull: true,
     defaultValue: "",
   },
