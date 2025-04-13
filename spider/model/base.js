@@ -52,6 +52,7 @@ class BaseModel {
     const { pageNum, pageSize, matchKey = [], order = [], where = [] } = params;
     if (matchKey.length > 0) {
       matchKey.push("uuid");
+      matchKey.push("updatedAt");
     }
     const { count, rows } = await this.pageModel.findAndCountAll({
       raw: true,
