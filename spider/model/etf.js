@@ -3,10 +3,10 @@ const { col, Op, cast } = require("sequelize");
 
 const template = [
   { prop: "f2", label: "最新价" },
-  { prop: "f3", label: "涨跌幅" },
+  { prop: "f3",index:true, label: "涨跌幅" },
   { prop: "f4", label: "涨跌额" },
   { prop: "f5", label: "总手" },
-  { prop: "f6", label: "成交额" },
+  {prop: "f6",index:true, label: "成交额" },
   { prop: "f7", label: "振幅" },
   { prop: "f8", label: "换手率" },
   { prop: "f9", label: "市盈率" },

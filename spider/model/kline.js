@@ -1,7 +1,7 @@
 const { col, Op, cast, where, TIME } = require("sequelize");
 
 const template = [
-  { prop: "f12", index:true,label: "股票代码", filter: "in" },
+  { prop: "f12", index: true, label: "股票代码", filter: "in" },
   { prop: "f14", label: "股票名称" },
   { prop: "f40001", label: "K线类型" },
   { prop: "f40002", label: "K线数据" },
@@ -13,13 +13,43 @@ class Kline extends require("./base-query") {
     this.extend = [
       { prop: "f40003", label: "历史最低价" },
       { prop: "f40004", label: "历史最高价" },
-      { prop: "f40005", label: "至今涨跌幅倍数", filter: "range" },
-      { prop: "f40006", label: "2024年9月20日至今涨幅", filter: "range" },
-      { prop: "f40007", label: "2025年2月05日至今涨幅", filter: "range" },
-      { prop: "f40008", label: "均线多头排列天数", filter: "range" },
-      { prop: "f40009", label: "均线多头排列涨幅", filter: "range" },
-      { prop: "f40010", label: "站上60日均线天数", filter: "range" },
-      { prop: "f40011", label: "站上60日均线涨幅", filter: "range" },
+      { prop: "f40005", label: "至今涨跌幅倍数", index: true, filter: "range" },
+      {
+        prop: "f40006",
+        label: "2024年9月20日至今涨幅",
+        index: true,
+        filter: "range",
+      },
+      {
+        prop: "f40007",
+        label: "2025年2月05日至今涨幅",
+        index: true,
+        filter: "range",
+      },
+      {
+        prop: "f40008",
+        label: "均线多头排列天数",
+        index: true,
+        filter: "range",
+      },
+      {
+        prop: "f40009",
+        label: "均线多头排列涨幅",
+        index: true,
+        filter: "range",
+      },
+      {
+        prop: "f40010",
+        label: "站上60日均线天数",
+        index: true,
+        filter: "range",
+      },
+      {
+        prop: "f40011",
+        label: "站上60日均线涨幅",
+        index: true,
+        filter: "range",
+      },
     ];
   }
   queryPage(params) {
@@ -56,7 +86,7 @@ class Kline extends require("./base-query") {
       await this.queryPage({
         pageNum: 1,
         pageSize: list.length,
-        matchKey: ["f12", "f14","f40002"],
+        matchKey: ["f12", "f14", "f40002"],
         where: { f12: list.map((item) => item.f12), f40001: type },
       })
     ).list;
@@ -260,10 +290,9 @@ class Kline extends require("./base-query") {
     const tableOrders = this.orderArray(order);
 
     let whereArr = [];
-    const { andArr, orArr } = super.whereArray(where,whereNot);
+    const { andArr, orArr } = super.whereArray(where, whereNot);
     whereArr = whereArr.concat(andArr);
     whereArr = whereArr.concat(orArr);
-
 
     const whereMap = {
       [Op.and]: whereArr,

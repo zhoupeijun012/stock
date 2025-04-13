@@ -4,7 +4,7 @@ const template = [
   { prop: "f2", label: "最新价" },
   { prop: "f4", label: "涨跌额" },
   { prop: "f5", label: "总手" },
-  { prop: "f6", label: "成交额" },
+  {prop: "f6",index:true, label: "成交额" },
   { prop: "f7", label: "振幅" },
   { prop: "f8", label: "换手率" },
   { prop: "f9", label: "市盈率" },
@@ -58,7 +58,7 @@ const template = [
   { prop: "f60", label: "公积金" },
   { prop: "f61", label: "每股公积金" },
 
-  { prop: "f3", label: "今日涨跌幅" },
+  { prop: "f3",index:true, label: "今日涨跌幅" },
   { prop: "f62", label: "今日主力净流入" },
   { prop: "f184", label: "今日主力净流入占比" },
   { prop: "f66", label: "今日超大单净流入" },
