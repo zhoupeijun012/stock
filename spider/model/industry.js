@@ -10,7 +10,7 @@ const template = [
   { prop: "f9", label: "市盈率", type: "REAL" },
   { prop: "f10", label: "量比", type: "REAL" },
   { prop: "f11", label: "5分钟涨跌幅", type: "REAL" },
-  { prop: "f12", label: "股票代码",index:true, type: "REAL" ,filter: "in" },
+  { prop: "f12", label: "股票代码",index:true, filter: "in" },
   { prop: "f13", label: "市场"  },
   { prop: "f14", label: "股票名称",index:true },
   { prop: "f15", label: "最高价", type: "REAL" },
