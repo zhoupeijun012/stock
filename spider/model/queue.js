@@ -5,7 +5,7 @@ const template = [
   { prop: "modelName", label: "模型名称" },
   { prop: "modelFunc", label: "调用方法" },
   { prop: "taskParams", label: "使用参数" },
-  { prop: "taskLevel", label: "任务优先级",index:true, },
+  { prop: "taskLevel", label: "任务优先级", type: "REAL",index:true, },
   { prop: "retryCount", label: "重试次数", default: "1" },
   { prop: "needRetry", label: "是否重试", default: "1" },
   { prop: "message", label: "错误原因" },

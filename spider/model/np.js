@@ -1,16 +1,16 @@
 const { col, Op, cast } = require("sequelize");
 
 const template = [
-  { prop: "f2", label: "最新价" },
-  { prop: "f3",index:true, label: "涨跌幅" },
-  { prop: "f4", label: "涨跌额" },
-  {prop: "f6",index:true, label: "成交额" },
-  { prop: "f7", label: "振幅" },
-  { prop: "f8", label: "换手率" },
-  { prop: "f11", label: "5分钟涨跌幅" },
-  { prop: "f12", index:true,label: "股票代码" },
+  { prop: "f2", label: "最新价", type: "REAL" },
+  { prop: "f3", label: "涨跌幅", type: "REAL",index:true },
+  { prop: "f4", label: "涨跌额", type: "REAL" },
+  {prop: "f6", label: "成交额", type: "REAL",index:true },
+  { prop: "f7", label: "振幅" , type: "REAL"},
+  { prop: "f8", label: "换手率" , type: "REAL"},
+  { prop: "f11", label: "5分钟涨跌幅", type: "REAL" },
+  { prop: "f12",label: "股票代码", index:true },
   { prop: "f13", label: "市场" },
-  { prop: "f14",index:true, label: "股票名称" },
+  { prop: "f14",label: "股票名称",index:true, },
 ];
 
 class Np extends require("./base-query") {

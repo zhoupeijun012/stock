@@ -7,7 +7,7 @@ class BaseModel {
     const defineModel = {};
     [...template, ...extend].forEach((templateItem) => {
       const obj = {
-        type: DataTypes.TEXT,
+        type: templateItem.type ? DataTypes[templateItem.type] : DataTypes.TEXT,
         allowNull: true,
         defaultValue: templateItem.default ? templateItem.default : "",
       };
@@ -74,7 +74,7 @@ class BaseModel {
   orderArray(order = []) {
     return order.map((item) => {
       return [
-        cast(col(item.prop), "SIGNED"),
+        item.prop,
         item.order == "ascending" ? "ASC" : "DESC",
       ];
     });
@@ -101,28 +101,28 @@ class BaseModel {
         if (whereItem) {
           if (whereItem.length > 1) {
             andArr.push(
-              literal(`CAST(${templateKey} AS INTEGER) > ${whereItem[0]}`)
+              literal(`CAST(${templateKey} AS REAL) > ${whereItem[0]}`)
             );
             andArr.push(
-              literal(`CAST(${templateKey} AS INTEGER) <= ${whereItem[1]}`)
+              literal(`CAST(${templateKey} AS REAL) <= ${whereItem[1]}`)
             );
           } else {
             andArr.push(
-              literal(`CAST(${templateKey} AS INTEGER) >= ${whereItem[0]}`)
+              literal(`CAST(${templateKey} AS REAL) >= ${whereItem[0]}`)
             );
           }
         }
         if (notWhereItem) {
           if (notWhereItem.length > 1) {
             andArr.push(
-              literal(`CAST(${templateKey} AS INTEGER) >= ${notWhereItem[0]}`)
+              literal(`CAST(${templateKey} AS REAL) >= ${notWhereItem[0]}`)
             );
             andArr.push(
-              literal(`CAST(${templateKey} AS INTEGER) <= ${notWhereItem[1]}`)
+              literal(`CAST(${templateKey} AS REAL) <= ${notWhereItem[1]}`)
             );
           } else {
             andArr.push(
-              literal(`CAST(${templateKey} AS INTEGER) >= ${notWhereItem[0]}`)
+              literal(`CAST(${templateKey} AS REAL) >= ${notWhereItem[0]}`)
             );
           }
         }

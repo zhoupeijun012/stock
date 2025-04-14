@@ -8,14 +8,14 @@ const template = [
   // { prop: "ltsz", alias: "f21", label: "流通市值", filter:'range' },
   // { prop: "tshare", alias: "f20", label: "总市值" },
   // { prop: "hs", alias: "f8", label: "换手率" },
-  { prop: "fund", alias: "f10001", label: "封板资金" },
+  { prop: "fund", alias: "f10001", label: "封板资金", type: "REAL" },
   { prop: "fbt", alias: "f10002", label: "首次封板时间" },
   { prop: "lbt", alias: "f10003", label: "最后封板时间" },
-  { prop: "zbc", alias: "f10004", label: "炸板次数" },
-  { prop: "lbc", alias: "f10005", label: "连板数" },
+  { prop: "zbc", alias: "f10004", label: "炸板次数", type: "REAL" },
+  { prop: "lbc", alias: "f10005", label: "连板数", type: "REAL" },
   { prop: "hybk", alias: "f100", label: "所属行业" },
-  { prop: "zttj.days", alias: "f10006", label: "涨停区间" },
-  { prop: "zttj.ct", alias: "f10007", label: "区间涨停次数" },
+  { prop: "zttj.days", alias: "f10006", label: "涨停区间", type: "REAL" },
+  { prop: "zttj.ct", alias: "f10007", label: "区间涨停次数", type: "REAL" },
   { prop: "date", label: "日期", filter: "eq" },
 ];
 
@@ -121,8 +121,8 @@ class Limit extends require("./base-query") {
       [Op.and]: whereArr,
     };
 
-    const limitMaths = matchKey.filter(
-      (keyItem) => this.modelKeys.includes(keyItem)
+    const limitMaths = matchKey.filter((keyItem) =>
+      this.modelKeys.includes(keyItem)
     );
     const { total, list, pages } = await super.queryPage({
       pageNum,
@@ -141,7 +141,7 @@ class Limit extends require("./base-query") {
       await StockModel.queryPage({
         pageNum: 1,
         pageSize: 10000,
-        matchKey: [...stockMatchs,'f12'],
+        matchKey: [...stockMatchs, "f12"],
         where: {
           f12: stockIds,
         },
@@ -155,7 +155,7 @@ class Limit extends require("./base-query") {
 
     stockList.forEach((indexItem) => {
       if (f12Map[indexItem["f12"]]) {
-        Object.assign(f12Map[indexItem["f12"]],indexItem);
+        Object.assign(f12Map[indexItem["f12"]], indexItem);
       }
     });
 

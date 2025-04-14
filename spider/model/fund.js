@@ -1,8 +1,8 @@
 const { col, Op, cast } = require("sequelize");
 
 const template = [
-  { prop: "f12", index: true, label: "股票代码", filter: "in" },
-  { prop: "f14",index:true, label: "股票名称" },
+  { prop: "f12", label: "股票代码", index: true, filter: "in" },
+  { prop: "f14", label: "股票名称", index: true },
   { prop: "f50003", label: "资金数据" },
 ];
 
