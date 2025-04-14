@@ -73,10 +73,7 @@ class BaseModel {
   }
   orderArray(order = []) {
     return order.map((item) => {
-      return [
-        item.prop,
-        item.order == "ascending" ? "ASC" : "DESC",
-      ];
+      return [item.prop, item.order == "ascending" ? "ASC" : "DESC"];
     });
   }
   whereArray(where = {}, whereNot = {}) {
@@ -100,30 +97,30 @@ class BaseModel {
       ) {
         if (whereItem) {
           if (whereItem.length > 1) {
-            andArr.push(
-              literal(`CAST(${templateKey} AS REAL) > ${whereItem[0]}`)
-            );
-            andArr.push(
-              literal(`CAST(${templateKey} AS REAL) <= ${whereItem[1]}`)
-            );
+            andArr.push([
+              literal(`CAST(${templateKey} AS REAL) > ${whereItem[0]}`),
+            ]);
+            andArr.push([
+              literal(`CAST(${templateKey} AS REAL) <= ${whereItem[1]}`),
+            ]);
           } else {
-            andArr.push(
-              literal(`CAST(${templateKey} AS REAL) >= ${whereItem[0]}`)
-            );
+            andArr.push([
+              literal(`CAST(${templateKey} AS REAL) >= ${whereItem[0]}`),
+            ]);
           }
         }
         if (notWhereItem) {
           if (notWhereItem.length > 1) {
-            andArr.push(
-              literal(`CAST(${templateKey} AS REAL) >= ${notWhereItem[0]}`)
-            );
-            andArr.push(
-              literal(`CAST(${templateKey} AS REAL) <= ${notWhereItem[1]}`)
-            );
+            andArr.push([
+              literal(`CAST(${templateKey} AS REAL) >= ${notWhereItem[0]}`),
+            ]);
+            andArr.push([
+              literal(`CAST(${templateKey} AS REAL) <= ${notWhereItem[1]}`),
+            ]);
           } else {
-            andArr.push(
-              literal(`CAST(${templateKey} AS REAL) >= ${notWhereItem[0]}`)
-            );
+            andArr.push([
+              literal(`CAST(${templateKey} AS REAL) >= ${notWhereItem[0]}`),
+            ]);
           }
         }
       }
