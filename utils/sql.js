@@ -2,7 +2,7 @@ const { Sequelize } = require("sequelize");
 const sequelize = new Sequelize({
   dialect: "sqlite",
   storage: RESOLVE_PATH("db/sqlite.db"),
-  logging: true,
+  logging: false,
   pool: {
     max: 10, // 连接池最大连接数
     min: 2, // 连接池最小连接数

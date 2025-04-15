@@ -105,30 +105,34 @@ class BaseModel {
       ) {
         if (whereItem) {
           if (whereItem.length > 1) {
-            andArr.push([
-              literal(`CAST(${templateKey} AS REAL) > ${whereItem[0]}`),
-            ]);
-            andArr.push([
-              literal(`CAST(${templateKey} AS REAL) <= ${whereItem[1]}`),
-            ]);
+            andArr.push({
+              [Op.and]: {
+                [Op.gt]: whereItem[0] + '',
+                [Op.lte]: whereItem[1] + ''
+              }
+            })
           } else {
-            andArr.push([
-              literal(`CAST(${templateKey} AS REAL) >= ${whereItem[0]}`),
-            ]);
+            andArr.push({
+              [Op.and]: {
+                [Op.gt]: whereItem[0],
+              }
+            })
           }
         }
         if (notWhereItem) {
           if (notWhereItem.length > 1) {
-            andArr.push([
-              literal(`CAST(${templateKey} AS REAL) >= ${notWhereItem[0]}`),
-            ]);
-            andArr.push([
-              literal(`CAST(${templateKey} AS REAL) <= ${notWhereItem[1]}`),
-            ]);
+            andArr.push({
+              [Op.or]: {
+                [Op.lte]: notWhereItem[0],
+                [Op.gt]: notWhereItem[1]
+              }
+            })
           } else {
-            andArr.push([
-              literal(`CAST(${templateKey} AS REAL) >= ${notWhereItem[0]}`),
-            ]);
+            andArr.push({
+              [Op.or]: {
+                [Op.lte]: notWhereItem[0],
+              }
+            })
           }
         }
       }

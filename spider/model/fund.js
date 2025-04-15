@@ -10,8 +10,8 @@ class Fund extends require("./base-query") {
   constructor(params) {
     super(params);
     this.extend = [
-      { prop: "f50004", index: true, label: "资金净流入天数", filter: "range" },
-      { prop: "f50005", index: true, label: "资金净流入数额", filter: "range" },
+      { prop: "f50004", label: "资金净流入天数", type: "REAL", index: true, filter: "range" },
+      { prop: "f50005", label: "资金净流入数额", type: "REAL", index: true, filter: "range" },
     ];
   }
   queryPage(params) {

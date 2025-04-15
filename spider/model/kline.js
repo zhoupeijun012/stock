@@ -11,42 +11,54 @@ class Kline extends require("./base-query") {
   constructor(params) {
     super(params);
     this.extend = [
-      { prop: "f40003", label: "历史最低价" },
-      { prop: "f40004", label: "历史最高价" },
-      { prop: "f40005", label: "至今涨跌幅倍数", index: true, filter: "range" },
+      { prop: "f40003", label: "历史最低价", type: "REAL" },
+      { prop: "f40004", label: "历史最高价", type: "REAL" },
+      {
+        prop: "f40005",
+        label: "至今涨跌幅倍数",
+        type: "REAL",
+        index: true,
+        filter: "range",
+      },
       {
         prop: "f40006",
         label: "2024年9月20日至今涨幅",
+        type: "REAL",
         index: true,
         filter: "range",
       },
       {
         prop: "f40007",
         label: "2025年2月05日至今涨幅",
+        type: "REAL",
         index: true,
         filter: "range",
       },
       {
         prop: "f40008",
         label: "均线多头排列天数",
+        type: "REAL",
         index: true,
         filter: "range",
       },
       {
         prop: "f40009",
         label: "均线多头排列涨幅",
+        type: "REAL",
         index: true,
         filter: "range",
       },
       {
         prop: "f40010",
         label: "站上60日均线天数",
+        type: "REAL",
         index: true,
         filter: "range",
       },
       {
         prop: "f40011",
         label: "站上60日均线涨幅",
+        type: "REAL",
         index: true,
         filter: "range",
       },
