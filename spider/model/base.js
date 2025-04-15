@@ -106,33 +106,41 @@ class BaseModel {
         if (whereItem) {
           if (whereItem.length > 1) {
             andArr.push({
-              [Op.and]: {
-                [Op.gt]: whereItem[0],
-                [Op.lte]: whereItem[1]
-              }
-            })
+              [templateKey]: {
+                [Op.and]: {
+                  [Op.gt]: whereItem[0],
+                  [Op.lte]: whereItem[1],
+                },
+              },
+            });
           } else {
             andArr.push({
-              [Op.and]: {
-                [Op.gt]: whereItem[0],
-              }
-            })
+              [templateKey]: {
+                [Op.and]: {
+                  [Op.gt]: whereItem[0],
+                },
+              },
+            });
           }
         }
         if (notWhereItem) {
           if (notWhereItem.length > 1) {
             andArr.push({
-              [Op.or]: {
-                [Op.lte]: notWhereItem[0],
-                [Op.gt]: notWhereItem[1]
-              }
-            })
+              [templateKey]: {
+                [Op.or]: {
+                  [Op.lte]: notWhereItem[0],
+                  [Op.gt]: notWhereItem[1],
+                },
+              },
+            });
           } else {
             andArr.push({
-              [Op.or]: {
-                [Op.lte]: notWhereItem[0],
-              }
-            })
+              [templateKey]: {
+                [Op.or]: {
+                  [Op.lte]: notWhereItem[0],
+                },
+              },
+            });
           }
         }
       }
