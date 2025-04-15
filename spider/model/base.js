@@ -28,7 +28,7 @@ class BaseModel {
     this.pageModel = sequelize.define(name, defineModel, {
       indexes: indexes.map((item) => {
         return {
-          name: "idx_" + item,
+          name: `${name}_${item}`,
           fields: [item],
         };
       }),
