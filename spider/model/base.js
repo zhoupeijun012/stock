@@ -107,8 +107,8 @@ class BaseModel {
           if (whereItem.length > 1) {
             andArr.push({
               [Op.and]: {
-                [Op.gt]: whereItem[0] + '',
-                [Op.lte]: whereItem[1] + ''
+                [Op.gt]: whereItem[0],
+                [Op.lte]: whereItem[1]
               }
             })
           } else {
