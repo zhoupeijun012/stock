@@ -5,6 +5,7 @@ class BaseModel {
   constructor({ name, template, extend = [] }) {
     const modelKeys = template.map((item) => item.alias || item.prop);
     const defineModel = {};
+    const indexs = [];
     [...template, ...extend].forEach((templateItem) => {
       const obj = {
         type: templateItem.type ? DataTypes[templateItem.type] : DataTypes.TEXT,
@@ -12,12 +13,7 @@ class BaseModel {
         defaultValue: templateItem.default ? templateItem.default : "",
       };
       if (templateItem.index) {
-        obj["indexes"] = [
-          {
-            unique: true,
-            fields: [templateItem.alias || templateItem.prop],
-          },
-        ];
+        indexs.push(templateItem.alias || templateItem.prop);
       }
       defineModel[templateItem.alias || templateItem.prop] = obj;
     });
@@ -29,7 +25,14 @@ class BaseModel {
     };
     modelKeys.push("uuid");
 
-    this.pageModel = sequelize.define(name, defineModel);
+    this.pageModel = sequelize.define(name, defineModel, {
+      indexes: [
+        {
+          type: "FULLTEXT",
+          fields: indexs,
+        },
+      ],
+    });
     this.name = name;
     this.modelKeys = modelKeys;
     this.template = template;
