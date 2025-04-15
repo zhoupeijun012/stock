@@ -78,7 +78,8 @@ class BaseModel {
   orderArray(order = []) {
     return order.map((item) => {
       return [
-        cast(col(item.prop), "SIGNED"),
+        // cast(col(item.prop), "SIGNED"),
+        item.prop,
         item.order == "ascending" ? "ASC" : "DESC",
       ];
     });
