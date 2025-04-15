@@ -73,7 +73,10 @@ class BaseModel {
   }
   orderArray(order = []) {
     return order.map((item) => {
-      return [item.prop, item.order == "ascending" ? "ASC" : "DESC"];
+      return [
+        cast(col(item.prop), "SIGNED"),
+        item.order == "ascending" ? "ASC" : "DESC",
+      ];
     });
   }
   whereArray(where = {}, whereNot = {}) {
