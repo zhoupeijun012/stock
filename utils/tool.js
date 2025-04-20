@@ -4,7 +4,7 @@ const FS = require("fs");
 const CHINESEDAY = require("chinese-days");
 const requireContext = require("simple-require-context");
 const BASENAME = require("path").basename;
-
+const AXIOS = require("axios");
 global.RESOLVE_PATH = (dir = "") => {
   return PATH.resolve(__dirname, "../", dir);
 };
@@ -95,7 +95,10 @@ global.IS_OPEN_DAY = (date) => {
 
 global.IN_OPEN_TIME = () => {
   return (
-    ( DAYJS().format("HHmmss") >= "092500" && DAYJS().format("HHmmss") <= "113000") || ( DAYJS().format("HHmmss") >= "130000" && DAYJS().format("HHmmss") <= "150000")
+    (DAYJS().format("HHmmss") >= "092500" &&
+      DAYJS().format("HHmmss") <= "113000") ||
+    (DAYJS().format("HHmmss") >= "130000" &&
+      DAYJS().format("HHmmss") <= "150000")
   );
 };
 
@@ -167,4 +170,26 @@ global.GET_KLT = (val) => {
     quarter: 104,
   };
   return typeMap[val] ? typeMap[val] : val;
+};
+
+global.dashscope = (search) => {
+  const apiUrl =
+    "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
+  const apiKey = "sk-328b653854ce428798eebd96e590015c";
+  const config = {
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+  };
+  const data = {
+    model: "qwen-turbo",
+    messages: [
+      {
+        role: "user",
+        content: search,
+      },
+    ],
+  };
+  return AXIOS.post(apiUrl, data, config);
 };
