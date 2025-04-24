@@ -62,6 +62,20 @@ class Kline extends require("./base-query") {
         index: true,
         filter: "range",
       },
+      {
+        prop: "f40012",
+        label: "趋势天数",
+        type: "REAL",
+        index: true,
+        filter: "range",
+      },
+      {
+        prop: "f40013",
+        label: "趋势涨幅",
+        type: "REAL",
+        index: true,
+        filter: "range",
+      },
     ];
   }
   queryPage(params) {
@@ -197,6 +211,11 @@ class Kline extends require("./base-query") {
     indexObj["f40010"] = f40010;
     indexObj["f40011"] = f40011;
 
+    //  9 计算趋势股
+    const { f40012, f40013 } = this.UPQS(maArray, closePrices);
+    indexObj["f40012"] = f40012;
+    indexObj["f40013"] = f40013;
+
     return indexObj;
   }
   MA(closePrices) {
@@ -252,6 +271,34 @@ class Kline extends require("./base-query") {
     return {
       f40008,
       f40009,
+    };
+  }
+  UPQS(maArray, closePrices) {
+    let f40012 = 0;
+    let f40013 = 0;
+    const MA5 = maArray["5日"];
+    const MA10 = maArray["10日"];
+    const MA20 = maArray["20日"];
+    const MA30 = maArray["30日"];
+    const MA60 = maArray["60日"];
+
+    for (let index = MA5.length - 1; index >= 0; index--) {
+      if (
+        parseFloat(MA10[index]) >= parseFloat(MA20[index]) &&
+        parseFloat(MA20[index]) >= parseFloat(MA30[index]) && 
+        parseFloat(MA30[index]) >= parseFloat(MA60[index])
+      ) {
+        f40012++;
+      } else {
+        const lastPrice = closePrices[closePrices.length - 1];
+        const curPrice = closePrices[index];
+        f40013 = parseInt(((lastPrice - curPrice) / curPrice) * 10000);
+        break;
+      }
+    }
+    return {
+      f40012,
+      f40013,
     };
   }
   UP60(maArray, closePrices) {
