@@ -276,6 +276,7 @@ class Kline extends require("./base-query") {
   UPQS(maArray, closePrices) {
     let f40012 = 0;
     let f40013 = 0;
+    let ma5Count = 0;
     const MA5 = maArray["5日"];
     const MA10 = maArray["10日"];
     const MA20 = maArray["20日"];
@@ -285,9 +286,12 @@ class Kline extends require("./base-query") {
     for (let index = MA5.length - 1; index >= 0; index--) {
       if (
         parseFloat(MA10[index]) >= parseFloat(MA20[index]) &&
-        parseFloat(MA20[index]) >= parseFloat(MA30[index]) && 
+        parseFloat(MA20[index]) >= parseFloat(MA30[index]) &&
         parseFloat(MA30[index]) >= parseFloat(MA60[index])
       ) {
+        if (parseFloat(MA5[index]) >= parseFloat(MA10[index])) {
+          ma5Count++;
+        }
         f40012++;
       } else {
         const lastPrice = closePrices[closePrices.length - 1];
@@ -295,6 +299,10 @@ class Kline extends require("./base-query") {
         f40013 = parseInt(((lastPrice - curPrice) / curPrice) * 10000);
         break;
       }
+    }
+    if(ma5Count / f40012 < 0.88) {
+      f40012 = 0;
+      f40013 = 0;
     }
     return {
       f40012,
