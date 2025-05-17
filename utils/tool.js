@@ -196,7 +196,7 @@ global.dashscope = (search) => {
 
 global.stockKMap = (lines = []) => {
   const mapFunc = (item) => {
-    const splitArr = item.split(",");
+    const splitArr = item;
     //  时间/开/收/最高/最低/成交量/成交额/震幅/涨跌幅/涨跌额/换手率/流通股本
     return {
       timestamp: splitArr[0],
