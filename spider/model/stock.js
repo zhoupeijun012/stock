@@ -58,7 +58,7 @@ const template = [
   { prop: "f60", label: "公积金", type: "REAL" },
   { prop: "f61", label: "每股公积金", type: "REAL" },
 
-  { prop: "f3", label: "今日涨跌幅", type: "REAL", index: true },
+  { prop: "f3", label: "今日涨跌幅", type: "REAL", index: true, filter: "range", },
   { prop: "f62", label: "今日主力净流入", type: "REAL" },
   { prop: "f184", label: "今日主力净流入占比", type: "REAL" },
   { prop: "f66", label: "今日超大单净流入", type: "REAL" },
