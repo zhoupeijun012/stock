@@ -193,3 +193,33 @@ global.dashscope = (search) => {
   };
   return AXIOS.post(apiUrl, data, config);
 };
+
+global.stockKMap = (lines = []) => {
+  const mapFunc = (item) => {
+    const splitArr = item.split(",");
+    //  时间/开/收/最高/最低/成交量/成交额/震幅/涨跌幅/涨跌额/换手率/流通股本
+    return {
+      timestamp: splitArr[0],
+      open: parseFloat(splitArr[1]),
+      close: parseFloat(splitArr[2]),
+      high: parseFloat(splitArr[3]),
+      low: parseFloat(splitArr[4]),
+      // 成交量
+      volume: parseFloat(splitArr[5]),
+      // 成交额
+      turnover: parseFloat(splitArr[6]),
+      // 涨跌额
+      change: formatMoney(splitArr[8]),
+      capital: parseFloat(splitArr[11]),
+    };
+  };
+  let chartData = {};
+  if (Array.isArray(lines)) {
+    chartData = lines.map((item) => {
+      return mapFunc(item);
+    });
+  } else {
+    chartData = lines ? mapFunc(lines) : [];
+  }
+  return chartData;
+};

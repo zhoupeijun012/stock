@@ -1,5 +1,5 @@
 const { col, Op, cast, where, TIME } = require("sequelize");
-
+const { MajorIndicator } = require(RESOLVE_PATH('utils/stock-tdx.js'));
 const template = [
   { prop: "f12", label: "股票代码", filter: "in", index: true },
   { prop: "f14", label: "股票名称", index: true },
@@ -72,6 +72,13 @@ class Kline extends require("./base-query") {
       {
         prop: "f40013",
         label: "趋势涨幅",
+        type: "REAL",
+        index: true,
+        filter: "range",
+      },
+      {
+        prop: "f40014",
+        label: "金叉天数",
         type: "REAL",
         index: true,
         filter: "range",
@@ -216,8 +223,13 @@ class Kline extends require("./base-query") {
     indexObj["f40012"] = f40012;
     indexObj["f40013"] = f40013;
 
+    // 计算金叉天数
+    const majorCrossCount = MajorIndicator.result(stockKMap(klines));
+    indexObj["f40014"] = majorCrossCount;
+
     return indexObj;
   }
+
   MA(closePrices) {
     const periods = [5, 10, 20, 30, 60];
     const movingAverages = {};
