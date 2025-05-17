@@ -49,12 +49,12 @@ class BaseQuery extends require("./base") {
         const kInstance = require(RESOLVE_PATH("spider/model/kline"));
         const newKList = await kInstance.getListByLive(list, "day");
 
-        // await kInstance.update("f12", newKList);
+        await kInstance.update("f12", newKList);
         const newKIndexList = await kInstance.getIndexListByLive(newKList);
 
         const fundInstance = require(RESOLVE_PATH("spider/model/fund"));
         const newFundList = await fundInstance.getListByLive(list);
-        // await fundInstance.update("f12", newFundList);
+        await fundInstance.update("f12", newFundList);
 
         const newFundIndexList = await fundInstance.getIndexListByLive(
           newFundList
@@ -119,7 +119,7 @@ class BaseQuery extends require("./base") {
     const { list = [] } = await this.queryPage({
       pageNum: 1,
       pageSize: fetchSize,
-      matchKey: ["f12", "f14"],
+      matchKey: ["f12", "f14","f39"],
     });
 
     const fetchList = list.map((listItem) => {
@@ -130,6 +130,7 @@ class BaseQuery extends require("./base") {
         taskParams: JSON.stringify({
           code: listItem.f12,
           type: params.type,
+          concatParams: [listItem.f39].join(',')
         }),
         taskLevel: "10000",
       };

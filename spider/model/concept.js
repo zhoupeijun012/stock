@@ -211,7 +211,12 @@ class Concept extends require("./base-query") {
     let data = res.data;
     data = data.slice(3, -2);
     data = JSON.parse(data).data || {};
-    const { code, name, klines = [] } = data;
+    let { code, name, klines = [] } = data;
+    if(params.concatParams) {
+      klines = klines.map((item)=>{
+        return item + ',' + params.concatParams
+      })
+    }
     return {
       f12: code,
       f14: name,
