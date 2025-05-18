@@ -259,6 +259,20 @@ class Region extends require("./base-query") {
     const { andArr, orArr } = this.whereArray(where,whereNot);
     whereArr = whereArr.concat(andArr);
     whereArr = whereArr.concat(orArr);
+
+    matchKey.push([
+      literal(
+        `( SELECT COUNT(*) FROM stocks WHERE f102 LIKE CONCAT('%', region.f14, '%') AND f40014 > 0 )`
+      ),
+      "goldenCrossCount",
+    ]);
+    matchKey.push([
+      literal(
+        `( SELECT COUNT(*) FROM stocks WHERE f102 LIKE CONCAT('%', region.f14, '%') AND f40014 <= 0 )`
+      ),
+      "deathCrossCount",
+    ]);
+    
     const whereMap = {
       [Op.and]: whereArr,
     };
@@ -268,6 +282,26 @@ class Region extends require("./base-query") {
       matchKey,
       order: tableOrders,
       where: whereMap,
+    });
+  }
+  query(params) {
+    const { matchKey = [], order = [], where = [] } = params;
+    matchKey.push([
+      literal(
+        `( SELECT COUNT(*) FROM stocks WHERE f102 LIKE CONCAT('%', region.f14, '%') AND f40014 > 0 )`
+      ),
+      "goldenCrossCount",
+    ]);
+    matchKey.push([
+      literal(
+        `( SELECT COUNT(*) FROM stocks WHERE f102 LIKE CONCAT('%', region.f14, '%') AND f40014 <= 0 )`
+      ),
+      "deathCrossCount",
+    ]);
+    return super.query({
+      matchKey,
+      order,
+      where,
     });
   }
 }

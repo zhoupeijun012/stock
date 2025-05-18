@@ -83,6 +83,13 @@ class Kline extends require("./base-query") {
         index: true,
         filter: "range",
       },
+      {
+        prop: "f40015",
+        label: "连涨天数",
+        type: "REAL",
+        index: true,
+        filter: "range",
+      },
     ];
   }
   queryPage(params) {
@@ -223,9 +230,13 @@ class Kline extends require("./base-query") {
     indexObj["f40012"] = f40012;
     indexObj["f40013"] = f40013;
 
-    // 计算金叉天数
+    // 10 计算金叉天数
     const majorCrossCount = MajorIndicator.result(stockKMap(klines));
     indexObj["f40014"] = majorCrossCount;
+
+    // 11 计算连阳天数
+    const f40015 = this.UPPRICE(closePrices);
+    indexObj["f40015"] = f40015;
 
     return indexObj;
   }
@@ -340,6 +351,19 @@ class Kline extends require("./base-query") {
       f40010,
       f40011,
     };
+  }
+  UPPRICE(closePrices) {
+    let upDays = 0;
+    let lastPrice = closePrices[closePrices.length - 1];
+    for(let i = closePrices.length - 2; i >=0; i--) {
+      if(lastPrice >= closePrices[i]) {
+        upDays ++;
+        lastPrice = closePrices[i];
+      } else {
+        break;
+      }
+    }
+    return upDays
   }
   destDate(klines, desDate) {
     let prevObj = klines.pop();

@@ -5,15 +5,15 @@ const template = [
   { prop: "f2", label: "最新价", type: "REAL" },
   { prop: "f4", label: "涨跌额", type: "REAL" },
   { prop: "f5", label: "总手", type: "REAL" },
-  {prop: "f6",label: "成交额", type: "REAL",index:true,  },
+  { prop: "f6", label: "成交额", type: "REAL", index: true },
   { prop: "f7", label: "振幅", type: "REAL" },
   { prop: "f8", label: "换手率", type: "REAL" },
   { prop: "f9", label: "市盈率", type: "REAL" },
   { prop: "f10", label: "量比", type: "REAL" },
   { prop: "f11", label: "5分钟涨跌幅", type: "REAL" },
-  { prop: "f12", label: "股票代码",index:true, filter: "in" },
-  { prop: "f13", label: "市场"  },
-  { prop: "f14", label: "股票名称",index:true },
+  { prop: "f12", label: "股票代码", index: true, filter: "in" },
+  { prop: "f13", label: "市场" },
+  { prop: "f14", label: "股票名称", index: true },
   { prop: "f15", label: "最高价", type: "REAL" },
   { prop: "f16", label: "最低价", type: "REAL" },
   { prop: "f17", label: "开盘价", type: "REAL" },
@@ -59,7 +59,7 @@ const template = [
   { prop: "f60", label: "公积金", type: "REAL" },
   { prop: "f61", label: "每股公积金", type: "REAL" },
 
-  { prop: "f3",label: "今日涨跌幅", type: "REAL",index:true },
+  { prop: "f3", label: "今日涨跌幅", type: "REAL", index: true },
   { prop: "f62", label: "今日主力净流入", type: "REAL" },
   { prop: "f184", label: "今日主力净流入占比", type: "REAL" },
   { prop: "f66", label: "今日超大单净流入", type: "REAL" },
@@ -74,17 +74,17 @@ const template = [
   { prop: "f127", label: "3日涨跌幅", type: "REAL" },
   { prop: "f267", label: "3日主力净流入", type: "REAL" },
   { prop: "f268", label: "3日主力净流入占比", type: "REAL" },
-  { prop: "f269", label: "3日超大单净流入" , type: "REAL"},
+  { prop: "f269", label: "3日超大单净流入", type: "REAL" },
   { prop: "f270", label: "3日超大单净占比", type: "REAL" },
   { prop: "f271", label: "3日大单净流入", type: "REAL" },
   { prop: "f272", label: "3日大单净占比", type: "REAL" },
-  { prop: "f273", label: "3日中单净流入" , type: "REAL"},
+  { prop: "f273", label: "3日中单净流入", type: "REAL" },
   { prop: "f274", label: "3日中单净流入占比", type: "REAL" },
   { prop: "f275", label: "3日小单净流入", type: "REAL" },
   { prop: "f276", label: "3日小单净流入占比", type: "REAL" },
 
   { prop: "f109", label: "5日涨跌幅", type: "REAL" },
-  { prop: "f164", label: "5日主力净流入" , type: "REAL"},
+  { prop: "f164", label: "5日主力净流入", type: "REAL" },
   { prop: "f165", label: "5日主力净流入占比", type: "REAL" },
   { prop: "f166", label: "5日超大单净流入", type: "REAL" },
   { prop: "f167", label: "5日超大单净占比", type: "REAL" },
@@ -97,35 +97,35 @@ const template = [
 
   { prop: "f160", label: "10日涨跌幅", type: "REAL" },
   { prop: "f174", label: "10日主力净流入", type: "REAL" },
-  { prop: "f175", label: "10日主力净流入占比" , type: "REAL"},
+  { prop: "f175", label: "10日主力净流入占比", type: "REAL" },
   { prop: "f176", label: "10日超大单净流入", type: "REAL" },
   { prop: "f177", label: "10日超大单净占比", type: "REAL" },
   { prop: "f178", label: "10日大单净流入", type: "REAL" },
   { prop: "f179", label: "10日大单净占比", type: "REAL" },
-  { prop: "f180", label: "10日中单净流入" , type: "REAL"},
+  { prop: "f180", label: "10日中单净流入", type: "REAL" },
   { prop: "f181", label: "10日中单净流入占比", type: "REAL" },
   { prop: "f182", label: "10日小单净流入", type: "REAL" },
   { prop: "f183", label: "10日小单净流入占比", type: "REAL" },
 
   { prop: "f63", label: "集合竞价", type: "REAL" },
-  { prop: "f64", label: "超大单流入" , type: "REAL"},
+  { prop: "f64", label: "超大单流入", type: "REAL" },
   { prop: "f65", label: "超大单流出", type: "REAL" },
-  { prop: "f70", label: "大单流入" , type: "REAL"},
-  { prop: "f71", label: "大单流出" , type: "REAL"},
+  { prop: "f70", label: "大单流入", type: "REAL" },
+  { prop: "f71", label: "大单流出", type: "REAL" },
   { prop: "f76", label: "中单流入", type: "REAL" },
-  { prop: "f77", label: "中单流出" , type: "REAL"},
-  { prop: "f82", label: "小单流入" , type: "REAL"},
-  { prop: "f83", label: "小单流出" , type: "REAL"},
+  { prop: "f77", label: "中单流出", type: "REAL" },
+  { prop: "f82", label: "小单流入", type: "REAL" },
+  { prop: "f83", label: "小单流出", type: "REAL" },
 
   { prop: "f88", label: "当日DDX", type: "REAL" },
-  { prop: "f89", label: "当日DDY" , type: "REAL"},
+  { prop: "f89", label: "当日DDY", type: "REAL" },
   { prop: "f90", label: "当日DDZ", type: "REAL" },
-  { prop: "f91", label: "5日DDX" , type: "REAL"},
+  { prop: "f91", label: "5日DDX", type: "REAL" },
   { prop: "f92", label: "5日DDY", type: "REAL" },
-  { prop: "f94", label: "10日DDX" , type: "REAL"},
-  { prop: "f95", label: "10日DDY" , type: "REAL"},
+  { prop: "f94", label: "10日DDX", type: "REAL" },
+  { prop: "f95", label: "10日DDY", type: "REAL" },
   { prop: "f97", label: "DDX飘红天数(连续)", type: "REAL" },
-  { prop: "f98", label: "DDX飘红天数(5日)" , type: "REAL"},
+  { prop: "f98", label: "DDX飘红天数(5日)", type: "REAL" },
   { prop: "f99", label: "DDX飘红天数(10日)", type: "REAL" },
   { prop: "f100", label: "行业" },
   { prop: "f101", label: "板块领涨股" },
@@ -212,10 +212,10 @@ class Concept extends require("./base-query") {
     data = data.slice(3, -2);
     data = JSON.parse(data).data || {};
     let { code, name, klines = [] } = data;
-    if(params.concatParams) {
-      klines = klines.map((item)=>{
-        return item + ',' + params.concatParams
-      })
+    if (params.concatParams) {
+      klines = klines.map((item) => {
+        return item + "," + params.concatParams;
+      });
     }
     return {
       f12: code,
@@ -264,10 +264,22 @@ class Concept extends require("./base-query") {
     const tableOrders = this.orderArray(order);
 
     let whereArr = [];
-    const { andArr, orArr } = this.whereArray(where,whereNot);
+    const { andArr, orArr } = this.whereArray(where, whereNot);
     whereArr = whereArr.concat(andArr);
     whereArr = whereArr.concat(orArr);
 
+    matchKey.push([
+      literal(
+        `( SELECT COUNT(*) FROM stocks WHERE f103 LIKE CONCAT('%', concept.f14, '%') AND f40014 > 0 )`
+      ),
+      "goldenCrossCount",
+    ]);
+    matchKey.push([
+      literal(
+        `( SELECT COUNT(*) FROM stocks WHERE f103 LIKE CONCAT('%', concept.f14, '%') AND f40014 <= 0 )`
+      ),
+      "deathCrossCount",
+    ]);
 
     const whereMap = {
       [Op.and]: whereArr,
@@ -279,6 +291,26 @@ class Concept extends require("./base-query") {
       matchKey,
       order: tableOrders,
       where: whereMap,
+    });
+  }
+  query(params) {
+    const { matchKey = [], order = [], where = [] } = params;
+    matchKey.push([
+      literal(
+        `( SELECT COUNT(*) FROM stocks WHERE f103 LIKE CONCAT('%', concept.f14, '%') AND f40014 > 0 )`
+      ),
+      "goldenCrossCount",
+    ]);
+    matchKey.push([
+      literal(
+        `( SELECT COUNT(*) FROM stocks WHERE f103 LIKE CONCAT('%', concept.f14, '%') AND f40014 <= 0 )`
+      ),
+      "deathCrossCount",
+    ]);
+    return super.query({
+      matchKey,
+      order,
+      where,
     });
   }
 }
