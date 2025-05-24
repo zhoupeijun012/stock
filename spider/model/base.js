@@ -246,7 +246,7 @@ class BaseModel {
         const sqeObj = {};
 
         this.updateKeys.forEach((key, index) => {
-          sqeObj[key] = stockItem[key] || "";
+          sqeObj[key] = stockItem[key];
         });
         listArr.push(sqeObj);
       }
