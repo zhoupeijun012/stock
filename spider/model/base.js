@@ -3,8 +3,7 @@ const { DataTypes } = require("sequelize");
 const { col, Op, cast, fn, literal } = require("sequelize");
 class BaseModel {
   constructor({ name, template, extend = [] }) {
-    let modelKeys = template.map((item) => item.alias || item.prop);
-    modelKeys = modelKeys.concat(extend.map((item) => item.alias || item.prop))
+    const modelKeys = template.map((item) => item.alias || item.prop);
     const defineModel = {};
     const indexes = [];
     [...template, ...extend].forEach((templateItem) => {
@@ -39,6 +38,7 @@ class BaseModel {
     this.modelKeys = modelKeys;
     this.template = template;
     this.extend = extend;
+    this.updateKeys = [...template, ...extend].map((item) => item.alias || item.prop);
   }
   async query(params) {
     const { matchKey = [], order = [], where = [] } = params;
@@ -244,8 +244,9 @@ class BaseModel {
       const listArr = [];
       for (let stockItem of list) {
         const sqeObj = {};
-        this.modelKeys.forEach((key, index) => {
-          sqeObj[key] = stockItem[key] || '';
+
+        this.updateKeys.forEach((key, index) => {
+          sqeObj[key] = stockItem[key] || "";
         });
         listArr.push(sqeObj);
       }
@@ -260,7 +261,7 @@ class BaseModel {
       try {
         for (let stockItem of list) {
           const sqeObj = {};
-          this.modelKeys.forEach((key, index) => {
+          this.updateKeys.forEach((key, index) => {
             if (stockItem[key]) {
               sqeObj[key] = stockItem[key];
             }
