@@ -58,7 +58,7 @@ class Lof extends require("./base-query") {
     const pages = Math.ceil(total / diff.length);
     return {
       total,
-      list: diff.filter((item) => item.f2 != "-" && item.f3 != "-"),
+      list: diff.filter((item) => item.f2 != "-" && item.f2!="" && item.f3 != "-" && item.f3!=''),
       pageSize: diff.length,
       pageNum: params.pageNum,
       pages,
