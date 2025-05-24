@@ -58,7 +58,13 @@ const template = [
   { prop: "f60", label: "公积金", type: "REAL" },
   { prop: "f61", label: "每股公积金", type: "REAL" },
 
-  { prop: "f3", label: "今日涨跌幅", type: "REAL", index: true, filter: "range", },
+  {
+    prop: "f3",
+    label: "今日涨跌幅",
+    type: "REAL",
+    index: true,
+    filter: "range",
+  },
   { prop: "f62", label: "今日主力净流入", type: "REAL" },
   { prop: "f184", label: "今日主力净流入占比", type: "REAL" },
   { prop: "f66", label: "今日超大单净流入", type: "REAL" },
@@ -126,10 +132,10 @@ const template = [
   { prop: "f97", label: "DDX飘红天数(连续)", type: "REAL" },
   { prop: "f98", label: "DDX飘红天数(5日)", type: "REAL" },
   { prop: "f99", label: "DDX飘红天数(10日)", type: "REAL" },
-  { prop: "f100", label: "行业",index:true, filter: "strmap" },
+  { prop: "f100", label: "行业", index: true, filter: "strmap" },
   { prop: "f101", label: "板块领涨股" },
-  { prop: "f102", label: "地区板块",index:true, filter: "strmap" },
-  { prop: "f103", label: "备注",index:true, filter: "strmap" },
+  { prop: "f102", label: "地区板块", index: true, filter: "strmap" },
+  { prop: "f103", label: "备注", index: true, filter: "strmap" },
   { prop: "f104", label: "上涨家数", type: "REAL" },
   { prop: "f105", label: "下跌家数", type: "REAL" },
   { prop: "f106", label: "平家家数", type: "REAL" },
@@ -182,7 +188,7 @@ class Stock extends require("./base-query") {
     const pages = Math.ceil(total / diff.length);
     return {
       total,
-      list: diff.filter((item) => item.f2 != "-"),
+      list: diff.filter((item) => item.f2 != "-" && item.f3 != "-"),
       pageSize: diff.length,
       pageNum: params.pageNum,
       pages,
@@ -211,10 +217,10 @@ class Stock extends require("./base-query") {
     data = data.slice(3, -2);
     data = JSON.parse(data).data || {};
     let { code, name, klines = [] } = data;
-    if(params.concatParams) {
-      klines = klines.map((item)=>{
-        return item + ',' + params.concatParams
-      })
+    if (params.concatParams) {
+      klines = klines.map((item) => {
+        return item + "," + params.concatParams;
+      });
     }
     return {
       f12: code,

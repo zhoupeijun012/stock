@@ -1,5 +1,5 @@
 const { col, Op, cast, where, TIME } = require("sequelize");
-const { MajorIndicator } = require(RESOLVE_PATH('utils/stock-tdx.js'));
+const { MajorIndicator } = require(RESOLVE_PATH("utils/stock-tdx.js"));
 const template = [
   { prop: "f12", label: "股票代码", filter: "in", index: true },
   { prop: "f14", label: "股票名称", index: true },
@@ -86,6 +86,13 @@ class Kline extends require("./base-query") {
       {
         prop: "f40015",
         label: "连涨天数",
+        type: "REAL",
+        index: true,
+        filter: "range",
+      },
+      {
+        prop: "f40016",
+        label: "主力控盘程度",
         type: "REAL",
         index: true,
         filter: "range",
@@ -238,6 +245,10 @@ class Kline extends require("./base-query") {
     const f40015 = this.UPPRICE(closePrices);
     indexObj["f40015"] = f40015;
 
+    // 12 计算控盘程度
+    const f40016 = this.controlDegree(stockKMap(klines));
+    indexObj["f40016"] = f40016;
+
     return indexObj;
   }
 
@@ -323,7 +334,7 @@ class Kline extends require("./base-query") {
         break;
       }
     }
-    if(ma5Count / f40012 < 0.88) {
+    if (ma5Count / f40012 < 0.88) {
       f40012 = 0;
       f40013 = 0;
     }
@@ -355,15 +366,109 @@ class Kline extends require("./base-query") {
   UPPRICE(closePrices) {
     let upDays = 0;
     let lastPrice = closePrices[closePrices.length - 1];
-    for(let i = closePrices.length - 2; i >=0; i--) {
-      if(lastPrice >= closePrices[i]) {
-        upDays ++;
+    for (let i = closePrices.length - 2; i >= 0; i--) {
+      if (lastPrice >= closePrices[i]) {
+        upDays++;
         lastPrice = closePrices[i];
       } else {
         break;
       }
     }
-    return upDays
+    return upDays;
+  }
+  /**
+   * 计算股票控盘程度指标（高性能版本）
+   * @param {Array<Object>} data - 股票数据数组，每个元素包含 high, low, close 三个属性
+   * @returns {number} 控盘程度指标值，保留两位小数
+   */
+  controlDegree(data) {
+    const N = 35;
+    const M = 35;
+    const N1 = 3;
+    const len = data.length;
+
+    // 数据不足时返回0
+    if (len < N) return 0;
+
+    // 预计算HHV和LLV数组（滑动窗口最大值/最小值）
+    const hhvArray = new Array(len);
+    const llvArray = new Array(len);
+
+    for (let i = 0; i < len; i++) {
+      const startIdx = Math.max(0, i - N + 1);
+      let hhv = -Infinity;
+      let llv = Infinity;
+
+      for (let j = startIdx; j <= i; j++) {
+        hhv = Math.max(hhv, data[j].high);
+        llv = Math.min(llv, data[j].low);
+      }
+
+      hhvArray[i] = hhv;
+      llvArray[i] = llv;
+    }
+
+    // 计算B1数组
+    const b1Array = new Array(len);
+    for (let i = 0; i < len; i++) {
+      const denominator = hhvArray[i] - llvArray[i];
+      b1Array[i] =
+        denominator !== 0
+          ? ((hhvArray[i] - data[i].close) / denominator) * 100 - M
+          : 0;
+    }
+
+    // 计算B3数组
+    const b3Array = new Array(len);
+    for (let i = 0; i < len; i++) {
+      const denominator = hhvArray[i] - llvArray[i];
+      b3Array[i] =
+        denominator !== 0
+          ? ((data[i].close - llvArray[i]) / denominator) * 100
+          : 0;
+    }
+
+    // 计算B2（SMA(B1,N,1)+100）
+    let sumB1 = 0;
+    for (let i = len - N; i < len; i++) {
+      sumB1 += b1Array[i];
+    }
+    const b2 = sumB1 / N + 100;
+
+    // 计算B4（SMA(B3,3,1)）
+    const b4Array = new Array(len);
+    for (let i = 0; i < len; i++) {
+      const windowStart = Math.max(0, i - 2);
+      const windowSize = i - windowStart + 1;
+      let sum = 0;
+
+      for (let j = windowStart; j <= i; j++) {
+        sum += b3Array[j];
+      }
+
+      b4Array[i] = sum / windowSize;
+    }
+
+    // 计算B5（SMA(B4,3,1)+100）
+    const b5Array = new Array(len);
+    for (let i = 0; i < len; i++) {
+      const windowStart = Math.max(0, i - 2);
+      const windowSize = i - windowStart + 1;
+      let sum = 0;
+
+      for (let j = windowStart; j <= i; j++) {
+        sum += b4Array[j];
+      }
+
+      b5Array[i] = sum / windowSize + 100;
+    }
+
+    // 计算最后一天的B6和控盘程度
+    const b6 = b5Array[len - 1] - b2;
+    const degree = b6 > N1 ? (b6 - N1) * 2.5 : 0;
+
+    // 保留两位小数
+    return Math.round(degree * 100) / 100;
   }
   destDate(klines, desDate) {
     let prevObj = klines.pop();

@@ -3,7 +3,8 @@ const { DataTypes } = require("sequelize");
 const { col, Op, cast, fn, literal } = require("sequelize");
 class BaseModel {
   constructor({ name, template, extend = [] }) {
-    const modelKeys = template.map((item) => item.alias || item.prop);
+    let modelKeys = template.map((item) => item.alias || item.prop);
+    modelKeys = modelKeys.concat(extend.map((item) => item.alias || item.prop))
     const defineModel = {};
     const indexes = [];
     [...template, ...extend].forEach((templateItem) => {
@@ -244,7 +245,7 @@ class BaseModel {
       for (let stockItem of list) {
         const sqeObj = {};
         this.modelKeys.forEach((key, index) => {
-          sqeObj[key] = stockItem[key];
+          sqeObj[key] = stockItem[key] || '';
         });
         listArr.push(sqeObj);
       }
